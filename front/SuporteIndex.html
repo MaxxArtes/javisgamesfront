@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Central de Suporte - Javis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="/css/meuscursos.css" />
+    <style>
+        /* Scrollbar fina para o chat */
+        .scrollbar-thin::-webkit-scrollbar { width: 6px; }
+        .scrollbar-thin::-webkit-scrollbar-track { background: #111; }
+        .scrollbar-thin::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+        .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: #00FFFF; }
+
+        /* Animação suave */
+        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col bg-[#1a1a1a] text-[#f5f5f5]">
+
+    <header class="navbar border-b border-[#333] bg-[#111] p-4">
+        <div class="flex justify-between items-center container mx-auto max-w-7xl">
+            <div class="logo">
+                <a href="IndexHome.html">
+                    <img src="assets/img/JAVIS - LOGO COM REGISTRO (BRANCO) (2).png" class="h-10 md:h-12" alt="Logo Javis">
+                </a>
+            </div>
+        
+            <ul class="nav-menu hidden md:flex gap-6 items-center">
+                <li><a href="CursosIndex.html" class="nav-link text-gray-400 hover:text-[#00FFFF]"><i class="fas fa-book mr-2"></i> Meus Cursos</a></li>
+                <li><a href="FinanceiroIndex.html" class="nav-link text-gray-400 hover:text-[#00FFFF]"><i class="fas fa-chalkboard-teacher mr-2"></i> Financeiro</a></li>
+                <li><a href="CertificadosIndex.html" class="nav-link text-gray-400 hover:text-[#00FFFF]"><i class="fas fa-graduation-cap mr-2"></i> Certificados</a></li>
+                <li><a href="SuporteIndex.html" class="nav-link text-[#00FFFF] font-bold"><i class="fas fa-headset mr-2"></i> Suporte</a></li>
+            </ul>
+
+            <div class="user-menu flex items-center gap-4">
+                <div class="user-profile relative flex items-center gap-2 cursor-pointer" onclick="toggleUserDropdown()">
+                    <img src="https://ui-avatars.com/api/?name=Aluno&background=00FFFF&color=000" class="w-8 h-8 rounded-full border border-[#00FFFF]">
+                    <span class="text-sm font-semibold hidden md:block">Minha Conta</span>
+                    <i class="fas fa-chevron-down text-xs text-[#00FFFF] hidden md:block"></i>
+                    
+                    <div class="user-dropdown absolute top-12 right-0 bg-[#222] border border-[#333] rounded shadow-xl hidden w-48 z-50" id="userDropdown">
+                        <a href="#" onclick="logout()" class="block px-4 py-3 text-red-400 hover:bg-[#333] flex items-center gap-2">
+                            <i class="fas fa-sign-out-alt"></i> Sair
+                        </a>
+                    </div>
+                </div>
+                <div class="md:hidden text-2xl cursor-pointer" onclick="document.querySelector('.nav-menu').classList.toggle('hidden')">
+                    <i class="fas fa-bars"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow p-4 md:p-8 flex justify-center">
+        <div class="container max-w-5xl neon-container rounded-xl p-6 md:p-8 fade-in">
+            <header class="mb-8 border-b border-[#333] pb-4">
+                <h1 class="text-3xl font-bold text-[#f5f5f5] flex items-center gap-3">
+                    <i class="fas fa-life-ring text-[#00FFFF]"></i>
+                    Central de Suporte
+                </h1>
+                <p class="text-gray-500 mt-2">Encontre ajuda rápida ou abra um novo chamado.</p>
+            </header>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+                <div onclick="toggleChat()" class="bg-[#1a1a1a] p-6 rounded-lg border border-[#333] hover:border-[#00FFFF] hover:bg-[#222] transition duration-300 flex items-center gap-4 cursor-pointer group">
+                    <div class="w-16 h-16 rounded-full bg-[#00FFFF]/10 flex items-center justify-center group-hover:bg-[#00FFFF] transition">
+                        <i class="fas fa-comments text-2xl text-[#00FFFF] group-hover:text-black"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-[#f5f5f5] mb-1">Chat Online</h3>
+                        <p class="text-sm text-gray-400">Fale diretamente com um instrutor ou atendente.</p>
+                        <span class="text-[#00FFFF] font-semibold mt-2 block text-sm">Iniciar Conversa &rarr;</span>
+                    </div>
+                </div>
+
+                <div class="bg-[#1a1a1a] p-6 rounded-lg border border-[#333] hover:border-green-500 transition duration-300 flex items-center gap-4 cursor-pointer" onclick="window.open('https://wa.me/5565992532020', '_blank')">
+                    <div class="w-16 h-16 rounded-full bg-green-900/20 flex items-center justify-center">
+                        <i class="fab fa-whatsapp text-3xl text-green-500"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-[#f5f5f5] mb-1">WhatsApp</h3>
+                        <p class="text-sm text-gray-400">Suporte Financeiro e Comercial rápido.</p>
+                        <span class="text-green-500 font-semibold mt-2 block text-sm">Chamar agora &rarr;</span>
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="text-xl font-bold mb-4 text-[#f5f5f5] flex items-center gap-2 border-b border-[#333] pb-2 w-full">
+                <i class="fas fa-question-circle text-[#00FFFF]"></i> Perguntas Frequentes (FAQ)
+            </h2>
+
+            <div class="space-y-3" id="faq-list">
+                <div class="faq-item bg-[#1a1a1a] rounded-lg border border-[#333]">
+                    <div class="p-4 cursor-pointer flex justify-between items-center text-gray-200 hover:bg-[#222]" onclick="toggleFaq('faq1')">
+                        <span class="font-semibold">Como faço para baixar meu certificado?</span>
+                        <i class="fas fa-chevron-down text-[#00FFFF] transition-transform duration-300" id="icon-faq1"></i>
+                    </div>
+                    <div class="faq-content hidden bg-[#111] border-t border-[#333] p-4 text-gray-400" id="faq1">
+                        Seu certificado é liberado automaticamente na aba **"Certificados"** assim que você atinge 100% de progresso no curso e seu projeto final é validado pelo instrutor.
+                    </div>
+                </div>
+
+                <div class="faq-item bg-[#1a1a1a] rounded-lg border border-[#333]">
+                    <div class="p-4 cursor-pointer flex justify-between items-center text-gray-200 hover:bg-[#222]" onclick="toggleFaq('faq2')">
+                        <span class="font-semibold">Onde vejo minhas faturas em aberto?</span>
+                        <i class="fas fa-chevron-down text-[#00FFFF] transition-transform duration-300" id="icon-faq2"></i>
+                    </div>
+                    <div class="faq-content hidden bg-[#111] border-t border-[#333] p-4 text-gray-400" id="faq2">
+                        Todas as suas transações, boletos e o status de pagamento estão disponíveis na aba **"Financeiro"**. Faturas pendentes estarão marcadas em amarelo.
+                    </div>
+                </div>
+
+                <div class="faq-item bg-[#1a1a1a] rounded-lg border border-[#333]">
+                    <div class="p-4 cursor-pointer flex justify-between items-center text-gray-200 hover:bg-[#222]" onclick="toggleFaq('faq3')">
+                        <span class="font-semibold">Perdi o acesso a uma aula. O que fazer?</span>
+                        <i class="fas fa-chevron-down text-[#00FFFF] transition-transform duration-300" id="icon-faq3"></i>
+                    </div>
+                    <div class="faq-content hidden bg-[#111] border-t border-[#333] p-4 text-gray-400" id="faq3">
+                        Verifique sua conexão. Se o problema persistir, por favor, abra um **Ticket de Suporte Técnico** ou utilize o Chat Online detalhando qual aula ou módulo está inacessível.
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <div id="chat-widget" class="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+        <div id="chat-window" class="hidden w-80 h-[450px] bg-[#161616] border border-[#00FFFF] rounded-lg shadow-2xl flex flex-col mb-4 overflow-hidden">
+            <div class="bg-[#222] p-3 flex justify-between items-center border-b border-[#333]">
+                <div class="flex items-center gap-2">
+                    <div class="w-2 h-2 rounded-full bg-[#00FFFF] animate-pulse"></div>
+                    <span class="font-bold text-gray-200 text-sm">Chat com Instrutor</span>
+                </div>
+                <button onclick="toggleChat()" class="text-gray-400 hover:text-white"><i class="fas fa-times"></i></button>
+            </div>
+            <div id="chat-messages" class="flex-1 p-4 overflow-y-auto space-y-3 bg-[#111] scrollbar-thin">
+                <p class="text-center text-xs text-gray-600 mt-4">Conectando ao servidor...</p>
+            </div>
+            <div class="p-3 bg-[#222] border-t border-[#333] flex gap-2">
+                <input type="text" id="chat-input" placeholder="Digite sua mensagem..." 
+                       class="flex-1 bg-[#1a1a1a] border border-[#444] rounded px-3 py-2 text-sm text-white focus:border-[#00FFFF] outline-none"
+                       onkeypress="if(event.key === 'Enter') enviarMensagemAluno()">
+                <button onclick="enviarMensagemAluno()" class="bg-[#00FFFF] text-black px-3 rounded hover:bg-[#00cccc]">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+        
+        <button onclick="toggleChat()" class="w-14 h-14 bg-[#00FFFF] rounded-full shadow-lg flex items-center justify-center text-black text-xl hover:scale-110 transition-transform duration-200">
+            <i class="fas fa-comment-dots"></i>
+        </button>
+    </div>
+
+<script>
+        const API_BASE = 'https://javisgames.onrender.com';
+        let chatInterval = null;
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Verificar Login
+            const token = localStorage.getItem('access_token');
+            if(!token) {
+                alert("Você não está logado! Redirecionando...");
+                window.location.href = 'IndexHome.html';
+                return;
+            }
+
+            // Dropdown Menu
+            window.toggleUserDropdown = function() {
+                const drop = document.getElementById('userDropdown');
+                if(drop) drop.classList.toggle('hidden');
+            }
+        });
+
+        function toggleFaq(id) {
+            const content = document.getElementById(id);
+            const icon = document.getElementById(`icon-${id}`);
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                icon.style.transform = 'rotate(180deg)';
+            } else {
+                content.classList.add('hidden');
+                icon.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        function toggleChat() {
+            const windowChat = document.getElementById('chat-window');
+            windowChat.classList.toggle('hidden');
+            
+            if (!windowChat.classList.contains('hidden')) {
+                console.log("Abrindo chat...");
+                carregarMensagensAluno();
+                if(chatInterval) clearInterval(chatInterval);
+                chatInterval = setInterval(carregarMensagensAluno, 3000);
+            } else {
+                clearInterval(chatInterval);
+            }
+        }
+
+        async function carregarMensagensAluno() {
+            const token = localStorage.getItem('access_token');
+            if(!token) return;
+
+            try {
+                // Tenta buscar o histórico
+                const res = await fetch(`${API_BASE}/chat/historico`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if(res.status === 404) {
+                    console.error("Erro 404: A rota /chat/historico não existe no servidor Python.");
+                    document.getElementById('chat-messages').innerHTML = '<p class="text-red-500 text-center text-xs mt-4">Erro: Servidor desatualizado (API).</p>';
+                    return;
+                }
+                
+                if(res.status === 401 || res.status === 403) {
+                    console.error("Erro de permissão: Token inválido ou usuário não é aluno.");
+                    return;
+                }
+
+                const msgs = await res.json();
+                renderizarChat(msgs);
+            } catch(e) { 
+                console.error("Erro de conexão:", e); 
+            }
+        }
+
+        function renderizarChat(msgs) {
+            const div = document.getElementById('chat-messages');
+            
+            if(!msgs || msgs.length === 0) {
+                div.innerHTML = '<p class="text-center text-xs text-gray-500 mt-4">Nenhuma mensagem. Inicie a conversa!</p>';
+                return;
+            }
+
+            let html = '';
+            msgs.forEach(m => {
+                if (m.enviado_por_admin) {
+                    html += `<div class="flex justify-start"><div class="bg-[#333] text-gray-200 text-sm p-2 rounded-lg rounded-tl-none max-w-[85%] border border-[#444]">${m.mensagem}</div></div>`;
+                } else {
+                    html += `<div class="flex justify-end"><div class="bg-[#00FFFF]/10 text-[#00FFFF] text-sm p-2 rounded-lg rounded-tr-none max-w-[85%] border border-[#00FFFF]/30">${m.mensagem}</div></div>`;
+                }
+            });
+
+            if(div.innerHTML.length !== html.length) { 
+                 div.innerHTML = html;
+                 div.scrollTop = div.scrollHeight;
+            }
+        }
+
+        async function enviarMensagemAluno() {
+            const input = document.getElementById('chat-input');
+            const msg = input.value.trim();
+            const token = localStorage.getItem('access_token');
+            
+            if(!msg || !token) return;
+
+            input.value = ''; 
+            
+            // Visual Otimista
+            const div = document.getElementById('chat-messages');
+            div.innerHTML += `<div class="flex justify-end opacity-50"><div class="bg-[#00FFFF]/10 text-[#00FFFF] text-sm p-2 rounded-lg max-w-[85%] border border-[#00FFFF]/30">${msg} <i class="fas fa-clock text-[10px] ml-1"></i></div></div>`;
+            div.scrollTop = div.scrollHeight;
+
+            try {
+                const res = await fetch(`${API_BASE}/chat/enviar-aluno`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ mensagem: msg })
+                });
+                
+                if(!res.ok) {
+                    const errData = await res.json();
+                    alert("Erro ao enviar: " + (errData.detail || res.statusText));
+                } else {
+                    carregarMensagensAluno();
+                }
+            } catch(e) { 
+                alert("Erro de conexão com o servidor.");
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('access_token');
+            window.location.href = 'IndexHome.html';
+        }
+    </script>
+</body>
+</html>

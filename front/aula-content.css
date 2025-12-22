@@ -1,0 +1,127 @@
+/* --- Variáveis de Tema --- */
+:root {
+    --neon-cyan: #00FFFF;
+    --neon-purple: #FF00FF;
+    --bg-dark: #1a1a1a;
+    --bg-card: #111111;
+    --bg-section: #2c2c2c;
+    --text-light: #f5f5f5;
+    --text-muted: #ccc;
+}
+
+/* --- Estilos Globais e do Corpo da Página --- */
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-light);
+    font-family: sans-serif;
+    line-height: 1.6;
+    margin: 0;
+}
+
+a {
+    color: var(--neon-cyan);
+    text-decoration: none;
+    transition: color 0.3s;
+}
+a:hover {
+    color: #81ffff;
+}
+strong {
+    color: var(--neon-cyan);
+}
+
+/* --- Layout Principal da Aula --- */
+.aula-body {
+    padding-top: 100px; /* Evita que o conteúdo seja escondido pelo cabeçalho sticky */
+    min-height: 100vh;
+}
+.aula-content {
+    max-width: 1000px;
+    margin: 30px auto;
+    padding: 30px 20px;
+    background-color: var(--bg-card);
+    border-radius: 10px;
+    border: 1px solid var(--neon-cyan);
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.1);
+}
+
+/* --- Cabeçalho da Aula --- */
+.aula-header h1 {
+    color: var(--neon-cyan);
+    font-size: 2.5rem;
+    margin-bottom: 5px;
+    text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
+    text-transform: uppercase;
+}
+.aula-header p {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    margin-bottom: 30px;
+}
+
+/* --- Seções de Conteúdo --- */
+.aula-secao {
+    margin-bottom: 40px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #333;
+}
+.aula-secao:last-child {
+    border-bottom: none;
+}
+
+.aula-secao h3 {
+    color: var(--neon-cyan);
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+    border-left: 4px solid var(--neon-cyan);
+    padding-left: 15px;
+    text-shadow: 0 0 3px rgba(0, 255, 255, 0.3);
+}
+
+.aula-secao h4 {
+    font-size: 1.4rem;
+    color: var(--text-light);
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.aula-secao p {
+    color: var(--text-muted);
+    margin-bottom: 15px;
+}
+
+.aula-secao ul, .aula-secao ol {
+    padding-left: 30px;
+    margin-bottom: 15px;
+}
+
+.aula-secao ul li {
+    list-style: disc;
+    color: var(--text-muted);
+    margin-bottom: 5px;
+}
+.aula-secao ol li {
+    list-style: decimal;
+    color: var(--text-muted);
+    margin-bottom: 5px;
+}
+.aula-secao ul li strong {
+    color: var(--neon-cyan);
+}
+
+
+/* --- Estilos de Atividades / Destaque --- */
+.atividade-box {
+    background-color: var(--bg-section);
+    padding: 20px;
+    border-radius: 8px;
+    border-left: 5px solid var(--neon-purple); /* Roxo para contraste */
+    margin-top: 20px;
+    box-shadow: 0 0 10px rgba(255, 0, 255, 0.2);
+}
+.atividade-box strong {
+    color: var(--neon-purple);
+}
+.atividade-box ul {
+    list-style: square;
+}

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hub E-Sports Pro</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #0f0f0f; color: #fff; margin: 0; display: flex; flex-direction: column; align-items: center; }
+        header { background: #111; width: 100%; padding: 20px; text-align: center; border-bottom: 3px solid #ff4500; }
+        .container { max-width: 1200px; width: 100%; padding: 10px; }
+        
+        /* Acordeão */
+        .accordion {
+            background-color: #1e1e1e; color: #fff; cursor: pointer; padding: 20px; width: 100%;
+            text-align: left; border: none; font-size: 1.2rem; transition: 0.3s;
+            margin-top: 10px; border-left: 5px solid #555; display: flex; justify-content: space-between;
+        }
+        .accordion:hover { background-color: #252525; }
+        .panel { padding: 0 15px; background-color: #121212; display: none; overflow: hidden; border-bottom: 1px solid #333; }
+        .panel.show { display: block; }
+        
+        /* Cores das Bordas */
+        .val-border { border-left-color: #ff4655; }
+        .cs-border { border-left-color: #de9b35; }
+        .fifa-border { border-left-color: #3be582; } /* Verde EA FC */
+
+        /* BRACKET */
+        .bracket-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px 0; /* Menos padding vertical */
+        }
+
+        /* Colunas mais estreitas */
+        .column { 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: space-around; 
+            width: 130px; /* Reduzi de 160px para 130px */
+            margin: 0 2px; /* Margem mínima entre colunas */
+        }
+
+        .column h3 { 
+            text-align: center; 
+            font-size: 11px; /* Fonte menor no título */
+            color: #888; 
+            margin-bottom: 5px; 
+            text-transform: uppercase; 
+            letter-spacing: 1px;
+        }
+
+        /* Caixas dos jogos mais finas */
+        .match { 
+            background: #1e1e1e; 
+            border: 1px solid #333; 
+            padding: 4px; /* Padding interno menor */
+            margin: 6px 0; /* Menos espaço entre os jogos verticais */
+            border-radius: 4px; 
+            position: relative; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .team { 
+            display: flex; 
+            justify-content: space-between; 
+            font-size: 11px; /* Fonte dos times menor (era 0.85em) */
+            padding: 2px 4px; 
+            white-space: nowrap; /* Impede que nomes longos quebrem linha */
+            overflow: hidden;    /* Corta o excesso */
+            text-overflow: ellipsis; /* Adiciona "..." se for muito longo */
+        }
+
+        .score { font-weight: bold; color: #ff4500; margin-left: 5px; }
+        .winner span { color: #28a745; }
+
+        /* --- LADO ESQUERDO --- */
+        .bracket-left { display: flex; }
+
+        .bracket-left .column:not(:last-child) .match::after { 
+            content: ''; position: absolute; 
+            right: -12px; /* Linha mais curta */
+            top: 50%; width: 12px; height: 1px; background: #555; 
+        }
+
+        /* --- LADO DIREITO --- */
+        .bracket-right { display: flex; }
+
+        .bracket-right .column:not(:first-child) .match::after { 
+            content: ''; position: absolute; 
+            left: -12px; /* Linha mais curta */
+            top: 50%; width: 12px; height: 1px; background: #555; 
+        }
+
+        /* --- COLUNA CENTRAL (FINAL) --- */
+        .final-column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0 10px;
+            z-index: 2;
+        }
+
+        /* Troféu menor */
+        .trophy-icon { font-size: 1.8rem; margin-bottom: 2px; filter: drop-shadow(0 0 5px #ffd700); }
+
+        .final-title { color: #ffd700; font-weight: bold; margin-bottom: 5px; font-size: 10px; }
+
+        /* Final sem Scale (tamanho normal) */
+        .final-match {
+            border: 2px solid #ffd700; 
+            /* Removi o transform: scale(1.15) */
+            box-shadow: 0 0 10px rgba(255,215,0,0.2);
+            min-width: 140px; /* Levemente maior que as outras, mas não gigante */
+        }
+        
+        /* Vencedor Verde */
+        .winner span { color: #28a745; }
+
+        /* VÍDEO */
+        .video-wrapper { position: relative; width: 100%; padding-bottom: 56.25%; height: 0; background: #000; margin-top: 20px; border-radius: 8px; overflow: hidden; }
+        .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; z-index: 1; }
+        .overlay-frame { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; pointer-events: none; object-fit: fill; display: none; }
+        .fs-btn { display: block; width: 100%; padding: 10px; background: #333; color: white; border: none; cursor: pointer; text-transform: uppercase; font-weight: bold; margin-bottom: 20px; }
+        .fs-btn:hover { background: #ff4500; }
+        :fullscreen .video-wrapper { width: 100vw; height: 100vh; padding-bottom: 0; display: flex; align-items: center; justify-content: center; background: black; }
+        :fullscreen .overlay-frame { display: block; }
+    </style>
+</head>
+<body>
+
+    <header><h1>Central de E-Sports</h1></header>
+
+    <div class="container">
+        <button class="accordion val-border" onclick="togglePanel('p-val')">VALORANT</button>
+        <div id="p-val" class="panel">
+            <div id="bracket-val" class="bracket-container">Carregando...</div>
+            <div class="video-wrapper" id="video-box-val">
+                <img src="overlay_val.png" class="overlay-frame">
+                <iframe src="https://www.youtube.com/embed/jfKfPfyJRdk" allowfullscreen></iframe>
+            </div>
+            <button class="fs-btn" onclick="ativarModoImersivo('video-box-val')">🖥️ Modo Imersivo</button>
+        </div>
+
+        <button class="accordion cs-border" onclick="togglePanel('p-cs')">CS:GO</button>
+        <div id="p-cs" class="panel">
+            <div id="bracket-cs" class="bracket-container">Carregando...</div>
+            <div class="video-wrapper" id="video-box-cs">
+                <img src="overlay_cs.png" class="overlay-frame">
+                <iframe src="https://player.twitch.tv/?channel=gaules&parent=localhost&parent=https://www.javisgameacademy.com.br/" allowfullscreen></iframe>
+            </div>
+            <button class="fs-btn" onclick="ativarModoImersivo('video-box-cs')">🖥️ Modo Imersivo</button>
+        </div>
+
+        <button class="accordion fifa-border" onclick="togglePanel('p-fifa')">FIFA (EA SPORTS FC)</button>
+        <div id="p-fifa" class="panel">
+            <div id="bracket-fifa" class="bracket-container">Carregando Chaveamento...</div>
+        </div>
+    </div>
+
+    <script>
+        // ========================================================
+        // URL DO RENDER
+        const API_URL = "https://api-torneio.onrender.com/api/torneio";
+        // ========================================================
+
+        function togglePanel(id) {
+            var x = document.getElementById(id);
+            if (x.className.indexOf("show") == -1) x.className += " show"; 
+            else x.className = x.className.replace(" show", "");
+        }
+
+        function ativarModoImersivo(elementId) {
+            var elem = document.getElementById(elementId);
+            if (!document.fullscreenElement) {
+                if (elem.requestFullscreen) elem.requestFullscreen();
+                else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
+            } else {
+                if (document.exitFullscreen) document.exitFullscreen();
+            }
+        }
+
+        // GERADOR DE BRACKET
+        function gerarBracket(dados) {
+            if(!dados || Object.keys(dados).length === 0) return "<p style='padding:20px; text-align:center'>Aguardando dados...</p>";
+            
+            const f = dados.formato || "4"; 
+            
+            const getCls = (s1, s2) => {
+                s1 = parseInt(s1)||0; s2 = parseInt(s2)||0;
+                return { c1: s1>s2?'winner':'', c2: s2>s1?'winner':'' };
+            };
+
+            const criaMatch = (n1, s1, n2, s2) => {
+                const c = getCls(s1, s2);
+                return `
+                <div class="match">
+                    <div class="team ${c.c1}"><span>${n1 || '-'}</span><span class="score">${s1 || ''}</span></div>
+                    <div class="team ${c.c2}"><span>${n2 || '-'}</span><span class="score">${s2 || ''}</span></div>
+                </div>`;
+            }
+
+            // 1. LADO ESQUERDO (Oitavas -> Quartas -> Semi)
+            let leftSide = '<div class="bracket-left">';
+            if (f === '16') {
+                leftSide += '<div class="column"><h3>Oitavas</h3>';
+                for(let i=1; i<=4; i++) leftSide += criaMatch(dados[`o${i}t1n`], dados[`o${i}t1s`], dados[`o${i}t2n`], dados[`o${i}t2s`]);
+                leftSide += '</div>';
+            }
+            if (f === '8' || f === '16') {
+                leftSide += '<div class="column"><h3>Quartas</h3>';
+                for(let i=1; i<=2; i++) leftSide += criaMatch(dados[`q${i}t1n`], dados[`q${i}t1s`], dados[`q${i}t2n`], dados[`q${i}t2s`]);
+                leftSide += '</div>';
+            }
+            // Semi Esquerda
+            leftSide += '<div class="column"><h3>Semis</h3>';
+            leftSide += criaMatch(dados.s1t1n, dados.s1t1s, dados.s1t2n, dados.s1t2s);
+            leftSide += '</div></div>';
+
+            // 2. CENTRO (Final)
+            const cf = getCls(dados.ft1s, dados.ft2s);
+            let centerSide = `
+            <div class="final-column">
+                <div class="trophy-icon">🏆</div>
+                <div class="final-title">GRANDE FINAL</div>
+                <div class="match final-match">
+                    <div class="team ${cf.c1}"><span>${dados.ft1n || 'TBD'}</span><span class="score">${dados.ft1s || 0}</span></div>
+                    <div class="team ${cf.c2}"><span>${dados.ft2n || 'TBD'}</span><span class="score">${dados.ft2s || 0}</span></div>
+                </div>
+            </div>`;
+
+            // 3. LADO DIREITO (Semi -> Quartas -> Oitavas)
+            // A ordem aqui é INVERTIDA de propósito para criar o espelho
+            let rightSide = '<div class="bracket-right">';
+            
+            // Semi Direita (Primeira coluna do lado direito, fica encostada no centro)
+            rightSide += '<div class="column"><h3>Semis</h3>';
+            rightSide += criaMatch(dados.s2t1n, dados.s2t1s, dados.s2t2n, dados.s2t2s);
+            rightSide += '</div>';
+
+            if (f === '8' || f === '16') {
+                rightSide += '<div class="column"><h3>Quartas</h3>';
+                for(let i=3; i<=4; i++) rightSide += criaMatch(dados[`q${i}t1n`], dados[`q${i}t1s`], dados[`q${i}t2n`], dados[`q${i}t2s`]);
+                rightSide += '</div>';
+            }
+            if (f === '16') {
+                rightSide += '<div class="column"><h3>Oitavas</h3>';
+                for(let i=5; i<=8; i++) rightSide += criaMatch(dados[`o${i}t1n`], dados[`o${i}t1s`], dados[`o${i}t2n`], dados[`o${i}t2s`]);
+                rightSide += '</div>';
+            }
+            rightSide += '</div>';
+
+            return `<div class="bracket-wrapper">${leftSide}${centerSide}${rightSide}</div>`;
+        }
+
+        async function carregarJogo(jogo, divId) {
+            try {
+                // Adiciona timestamp para evitar cache
+                const res = await fetch(`${API_URL}/${jogo}?t=${new Date().getTime()}`);
+                const dados = await res.json();
+                document.getElementById(divId).innerHTML = gerarBracket(dados);
+            } catch(e) { console.error(e); }
+        }
+
+        function atualizarTudo() {
+            carregarJogo('val', 'bracket-val');
+            carregarJogo('cs', 'bracket-cs');
+            carregarJogo('fifa', 'bracket-fifa'); // Alterado de LOL para FIFA
+        }
+
+        // Atualiza a cada 5 segundos
+        setInterval(atualizarTudo, 5000);
+        atualizarTudo();
+    </script>
+</body>
+</html>
