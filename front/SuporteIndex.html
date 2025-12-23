@@ -6,7 +6,7 @@
     <title>Central de Suporte - Javis</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link rel="stylesheet" href="/css/meuscursos.css" />
+    <link rel="stylesheet" href="css/meuscursos.css" />
     <style>
         /* Scrollbar fina para o chat */
         .scrollbar-thin::-webkit-scrollbar { width: 6px; }
@@ -17,6 +17,9 @@
         /* Animação suave */
         .fade-in { animation: fadeIn 0.3s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Efeito de hover nos cards de contato */
+        .contact-card:hover { transform: translateY(-2px); border-color: #00FFFF; box-shadow: 0 0 10px rgba(0, 255, 255, 0.2); }
     </style>
 </head>
 <body class="min-h-screen flex flex-col bg-[#1a1a1a] text-[#f5f5f5]">
@@ -62,31 +65,27 @@
                     <i class="fas fa-life-ring text-[#00FFFF]"></i>
                     Central de Suporte
                 </h1>
-                <p class="text-gray-500 mt-2">Encontre ajuda rápida ou abra um novo chamado.</p>
+                <p class="text-gray-500 mt-2">Tire dúvidas com seus professores ou contate a coordenação.</p>
             </header>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-                <div onclick="toggleChat()" class="bg-[#1a1a1a] p-6 rounded-lg border border-[#333] hover:border-[#00FFFF] hover:bg-[#222] transition duration-300 flex items-center gap-4 cursor-pointer group">
-                    <div class="w-16 h-16 rounded-full bg-[#00FFFF]/10 flex items-center justify-center group-hover:bg-[#00FFFF] transition">
-                        <i class="fas fa-comments text-2xl text-[#00FFFF] group-hover:text-black"></i>
-                    </div>
-                    <div>
-                        <h3 class="text-xl font-bold text-[#f5f5f5] mb-1">Chat Online</h3>
-                        <p class="text-sm text-gray-400">Fale diretamente com um instrutor ou atendente.</p>
-                        <span class="text-[#00FFFF] font-semibold mt-2 block text-sm">Iniciar Conversa &rarr;</span>
-                    </div>
-                </div>
-
-                <div class="bg-[#1a1a1a] p-6 rounded-lg border border-[#333] hover:border-green-500 transition duration-300 flex items-center gap-4 cursor-pointer" onclick="window.open('https://wa.me/5565992532020', '_blank')">
-                    <div class="w-16 h-16 rounded-full bg-green-900/20 flex items-center justify-center">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+                <div class="bg-[#1a1a1a] p-5 rounded-lg border border-[#333] hover:border-green-500 transition duration-300 flex flex-col items-center text-center cursor-pointer contact-card" onclick="window.open('https://wa.me/5565992532020', '_blank')">
+                    <div class="w-14 h-14 rounded-full bg-green-900/20 flex items-center justify-center mb-3">
                         <i class="fab fa-whatsapp text-3xl text-green-500"></i>
                     </div>
-                    <div>
-                        <h3 class="text-xl font-bold text-[#f5f5f5] mb-1">WhatsApp</h3>
-                        <p class="text-sm text-gray-400">Suporte Financeiro e Comercial rápido.</p>
-                        <span class="text-green-500 font-semibold mt-2 block text-sm">Chamar agora &rarr;</span>
-                    </div>
+                    <h3 class="text-lg font-bold text-[#f5f5f5]">Comercial / Financeiro</h3>
+                    <p class="text-xs text-gray-400 mt-1">Atendimento rápido via WhatsApp</p>
                 </div>
+
+                </div>
+
+            <h2 class="text-xl font-bold mb-4 text-[#f5f5f5] flex items-center gap-2 border-b border-[#333] pb-2 w-full">
+                <i class="fas fa-users text-[#00FFFF]"></i> Meus Contatos & Professores
+            </h2>
+
+            <div id="lista-contatos" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
+                <div class="bg-[#222] animate-pulse h-24 rounded-lg border border-[#333]"></div>
+                <div class="bg-[#222] animate-pulse h-24 rounded-lg border border-[#333]"></div>
             </div>
 
             <h2 class="text-xl font-bold mb-4 text-[#f5f5f5] flex items-center gap-2 border-b border-[#333] pb-2 w-full">
@@ -103,190 +102,357 @@
                         Seu certificado é liberado automaticamente na aba **"Certificados"** assim que você atinge 100% de progresso no curso e seu projeto final é validado pelo instrutor.
                     </div>
                 </div>
-
-                <div class="faq-item bg-[#1a1a1a] rounded-lg border border-[#333]">
-                    <div class="p-4 cursor-pointer flex justify-between items-center text-gray-200 hover:bg-[#222]" onclick="toggleFaq('faq2')">
-                        <span class="font-semibold">Onde vejo minhas faturas em aberto?</span>
-                        <i class="fas fa-chevron-down text-[#00FFFF] transition-transform duration-300" id="icon-faq2"></i>
-                    </div>
-                    <div class="faq-content hidden bg-[#111] border-t border-[#333] p-4 text-gray-400" id="faq2">
-                        Todas as suas transações, boletos e o status de pagamento estão disponíveis na aba **"Financeiro"**. Faturas pendentes estarão marcadas em amarelo.
-                    </div>
                 </div>
-
-                <div class="faq-item bg-[#1a1a1a] rounded-lg border border-[#333]">
-                    <div class="p-4 cursor-pointer flex justify-between items-center text-gray-200 hover:bg-[#222]" onclick="toggleFaq('faq3')">
-                        <span class="font-semibold">Perdi o acesso a uma aula. O que fazer?</span>
-                        <i class="fas fa-chevron-down text-[#00FFFF] transition-transform duration-300" id="icon-faq3"></i>
-                    </div>
-                    <div class="faq-content hidden bg-[#111] border-t border-[#333] p-4 text-gray-400" id="faq3">
-                        Verifique sua conexão. Se o problema persistir, por favor, abra um **Ticket de Suporte Técnico** ou utilize o Chat Online detalhando qual aula ou módulo está inacessível.
-                    </div>
-                </div>
-            </div>
 
         </div>
     </main>
 
     <div id="chat-widget" class="fixed bottom-6 right-6 z-50 flex flex-col items-end">
-        <div id="chat-window" class="hidden w-80 h-[450px] bg-[#161616] border border-[#00FFFF] rounded-lg shadow-2xl flex flex-col mb-4 overflow-hidden">
+        <div id="chat-window" class="hidden w-80 md:w-96 h-[500px] bg-[#161616] border border-[#00FFFF] rounded-lg shadow-2xl flex flex-col mb-4 overflow-hidden transition-all">
+            
             <div class="bg-[#222] p-3 flex justify-between items-center border-b border-[#333]">
-                <div class="flex items-center gap-2">
-                    <div class="w-2 h-2 rounded-full bg-[#00FFFF] animate-pulse"></div>
-                    <span class="font-bold text-gray-200 text-sm">Chat com Instrutor</span>
+                <div class="flex items-center gap-3">
+                    <div class="relative">
+                        <div class="w-8 h-8 rounded-full bg-[#333] flex items-center justify-center border border-gray-600">
+                            <i class="fas fa-user text-[#00FFFF]" id="chat-avatar-icon"></i>
+                        </div>
+                        <div class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border border-[#222]"></div>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-gray-200 text-sm leading-tight" id="titulo-chat">Suporte Javis</h4>
+                        <span class="text-[10px] text-gray-400" id="subtitulo-chat">Online</span>
+                    </div>
                 </div>
-                <button onclick="toggleChat()" class="text-gray-400 hover:text-white"><i class="fas fa-times"></i></button>
+                <button onclick="fecharChat()" class="text-gray-400 hover:text-white px-2"><i class="fas fa-times"></i></button>
             </div>
+
             <div id="chat-messages" class="flex-1 p-4 overflow-y-auto space-y-3 bg-[#111] scrollbar-thin">
-                <p class="text-center text-xs text-gray-600 mt-4">Conectando ao servidor...</p>
+                <p class="text-center text-xs text-gray-600 mt-4">Selecione um contato para iniciar.</p>
             </div>
+
             <div class="p-3 bg-[#222] border-t border-[#333] flex gap-2">
                 <input type="text" id="chat-input" placeholder="Digite sua mensagem..." 
                        class="flex-1 bg-[#1a1a1a] border border-[#444] rounded px-3 py-2 text-sm text-white focus:border-[#00FFFF] outline-none"
-                       onkeypress="if(event.key === 'Enter') enviarMensagemAluno()">
-                <button onclick="enviarMensagemAluno()" class="bg-[#00FFFF] text-black px-3 rounded hover:bg-[#00cccc]">
+                       onkeypress="if(event.key === 'Enter') enviarMensagemDireta()">
+                <button onclick="enviarMensagemDireta()" class="bg-[#00FFFF] text-black px-3 rounded hover:bg-[#00cccc] transition">
                     <i class="fas fa-paper-plane"></i>
                 </button>
             </div>
         </div>
         
-        <button onclick="toggleChat()" class="w-14 h-14 bg-[#00FFFF] rounded-full shadow-lg flex items-center justify-center text-black text-xl hover:scale-110 transition-transform duration-200">
-            <i class="fas fa-comment-dots"></i>
+        <button onclick="abrirChatGeral()" class="w-14 h-14 bg-[#00FFFF] rounded-full shadow-lg flex items-center justify-center text-black text-xl hover:scale-110 transition-transform duration-200 hover:shadow-[0_0_15px_#00FFFF]">
+            <i class="fas fa-comments"></i>
         </button>
     </div>
 
-<script>
+    <script>
         const API_BASE = 'https://javisgames.onrender.com';
         let chatInterval = null;
+        let contatoAtualId = null; // 'geral' ou ID numérico do professor
+        let contatoAtualNome = "";
+        
+        // --- ESTADO DO CHAT ---
+        let modoGrupo = false; // Define se estamos num chat de Turma ou Privado
+        let codigoTurmaAtual = null;
 
         document.addEventListener('DOMContentLoaded', function () {
-            // Verificar Login
             const token = localStorage.getItem('access_token');
             if(!token) {
-                alert("Você não está logado! Redirecionando...");
+                alert("Sessão expirada.");
                 window.location.href = 'IndexHome.html';
                 return;
             }
-
-            // Dropdown Menu
+            carregarContatos();
+            
+            // Dropdown Menu Global
             window.toggleUserDropdown = function() {
                 const drop = document.getElementById('userDropdown');
                 if(drop) drop.classList.toggle('hidden');
             }
         });
 
-        function toggleFaq(id) {
-            const content = document.getElementById(id);
-            const icon = document.getElementById(`icon-${id}`);
-            if (content.classList.contains('hidden')) {
-                content.classList.remove('hidden');
-                icon.style.transform = 'rotate(180deg)';
-            } else {
-                content.classList.add('hidden');
-                icon.style.transform = 'rotate(0deg)';
-            }
-        }
-
-        function toggleChat() {
-            const windowChat = document.getElementById('chat-window');
-            windowChat.classList.toggle('hidden');
-            
-            if (!windowChat.classList.contains('hidden')) {
-                console.log("Abrindo chat...");
-                carregarMensagensAluno();
-                if(chatInterval) clearInterval(chatInterval);
-                chatInterval = setInterval(carregarMensagensAluno, 3000);
-            } else {
-                clearInterval(chatInterval);
-            }
-        }
-
-        async function carregarMensagensAluno() {
+        // 1. Carregar Lista de Contatos (Grupos + Professores + Secretaria)
+        async function carregarContatos() {
+            const container = document.getElementById('lista-contatos');
             const token = localStorage.getItem('access_token');
-            if(!token) return;
+            container.innerHTML = '<p class="text-gray-500">Carregando...</p>';
 
             try {
-                // Tenta buscar o histórico
-                const res = await fetch(`${API_BASE}/chat/historico`, {
+                let html = ``;
+
+                const res = await fetch(`${API_BASE}/aluno/meus-contatos`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
 
-                if(res.status === 404) {
-                    console.error("Erro 404: A rota /chat/historico não existe no servidor Python.");
-                    document.getElementById('chat-messages').innerHTML = '<p class="text-red-500 text-center text-xs mt-4">Erro: Servidor desatualizado (API).</p>';
-                    return;
-                }
-                
-                if(res.status === 401 || res.status === 403) {
-                    console.error("Erro de permissão: Token inválido ou usuário não é aluno.");
-                    return;
-                }
+                if(res.ok) {
+                    const contatos = await res.json();
+                    
+                    // B. Cards dos Grupos da Turma
+                    // Verifica se tem código de turma para criar o card do grupo
+                    contatos.forEach(c => {
+                        if(c.tipo === 'Professor' && c.codigo_turma_grupo) {
+                            // Remove "Prof." do nome para ficar "Grupo Game Dev"
+                            const nomeGrupo = c.cargo.replace('Prof. ', ''); 
+                            html += `
+                                <div onclick="abrirGrupo('${c.codigo_turma_grupo}', 'Grupo ${nomeGrupo}')" class="bg-[#1a1a1a] p-4 rounded-lg border border-[#333] cursor-pointer contact-card flex items-center gap-3 transition hover:border-green-500">
+                                    <div class="w-12 h-12 rounded-full bg-green-900/20 flex items-center justify-center text-green-400">
+                                        <i class="fas fa-users text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-gray-200">Grupo da Turma</h4>
+                                        <p class="text-xs text-gray-500">${c.codigo_turma_grupo}</p>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                    });
 
+                    // C. Cards dos Professores (Privado)
+                    contatos.forEach(c => {
+                        const icone = c.tipo === 'Professor' ? 'fa-chalkboard-user' : 'fa-user-tie';
+                        const cor = c.tipo === 'Professor' ? 'text-purple-400' : 'text-orange-400';
+                        const bg = c.tipo === 'Professor' ? 'bg-purple-900/20' : 'bg-orange-900/20';
+
+                        html += `
+                            <div onclick="abrirChat(${c.id}, '${c.nome}', '${c.cargo}')" class="bg-[#1a1a1a] p-4 rounded-lg border border-[#333] cursor-pointer contact-card flex items-center gap-3 transition hover:border-purple-500">
+                                <div class="w-12 h-12 rounded-full ${bg} flex items-center justify-center ${cor}">
+                                    <i class="fas ${icone} text-xl"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-gray-200">${c.nome}</h4>
+                                    <p class="text-xs text-gray-500">${c.cargo} (Privado)</p>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+                container.innerHTML = html;
+            } catch(e) {
+                console.error(e);
+                container.innerHTML = '<p class="text-red-500">Erro ao carregar contatos.</p>';
+            }
+        }
+
+        // --- LÓGICA DO GRUPO (TURMA) ---
+
+        function abrirGrupo(codigo, nome) {
+            modoGrupo = true; // ATIVAR MODO GRUPO
+            codigoTurmaAtual = codigo;
+            contatoAtualId = null;
+
+            const windowChat = document.getElementById('chat-window');
+            windowChat.classList.remove('hidden');
+            
+            // Atualiza Header
+            document.getElementById('titulo-chat').innerText = nome;
+            document.getElementById('subtitulo-chat').innerText = "Todos os membros";
+            document.getElementById('chat-avatar-icon').className = "fas fa-users text-green-400";
+            
+            document.getElementById('chat-messages').innerHTML = '<p class="text-center text-xs text-gray-600 mt-4">Carregando grupo...</p>';
+            
+            if(chatInterval) clearInterval(chatInterval);
+            carregarMensagensGrupo();
+            chatInterval = setInterval(carregarMensagensGrupo, 3000);
+        }
+
+        async function carregarMensagensGrupo() {
+            if(!codigoTurmaAtual) return;
+            const token = localStorage.getItem('access_token');
+            try {
+                const res = await fetch(`${API_BASE}/chat/turma/${codigoTurmaAtual}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const msgs = await res.json();
+                renderizarChatGrupo(msgs);
+            } catch(e) { console.error(e); }
+        }
+
+        function renderizarChatGrupo(msgs) {
+            const div = document.getElementById('chat-messages');
+            let html = '';
+            
+            msgs.forEach(m => {
+                const isProf = m.cargo_exibicao !== 'Aluno';
+                const corNome = isProf ? 'text-purple-400' : 'text-green-400';
+                
+                html += `
+                    <div class="flex flex-col mb-3 fade-in items-start">
+                        <span class="text-[10px] ${corNome} font-bold ml-1 mb-0.5">${m.nome_exibicao} <span class="text-gray-600 font-normal">(${m.cargo_exibicao})</span></span>
+                        <div class="bg-[#222] text-gray-200 text-sm p-2 rounded-lg border border-[#333] shadow-sm max-w-[90%]">
+                            ${m.mensagem}
+                        </div>
+                    </div>`;
+            });
+            
+            // Só atualiza se houver novidades para evitar "pulos" no scroll
+            if(div.innerHTML.length !== html.length) { 
+                div.innerHTML = html;
+                div.scrollTop = div.scrollHeight;
+            }
+        }
+
+        // --- LÓGICA DO PRIVADO (PROFESSOR/SECRETARIA) ---
+
+        function abrirChat(id, nome, cargo) {
+            modoGrupo = false; // DESATIVAR MODO GRUPO (Importante!)
+            codigoTurmaAtual = null;
+
+            const windowChat = document.getElementById('chat-window');
+            windowChat.classList.remove('hidden');
+            
+            contatoAtualId = id;
+            contatoAtualNome = nome;
+
+            // Atualiza Header
+            document.getElementById('titulo-chat').innerText = nome;
+            document.getElementById('subtitulo-chat').innerText = cargo || 'Online';
+            
+            // Ícone dinâmico
+            const iconEl = document.getElementById('chat-avatar-icon');
+            if(id === 'geral') iconEl.className = "fas fa-headset text-[#00FFFF]";
+            else iconEl.className = "fas fa-user text-purple-400";
+
+            document.getElementById('chat-messages').innerHTML = '<p class="text-center text-xs text-gray-600 mt-4">Carregando chat privado...</p>';
+            
+            if(chatInterval) clearInterval(chatInterval);
+            carregarMensagens();
+            chatInterval = setInterval(carregarMensagens, 3000);
+        }
+
+        function abrirChatGeral() {
+            abrirChat('geral', 'Suporte Geral', 'Secretaria');
+        }
+
+        async function carregarMensagens() {
+            if(!contatoAtualId || modoGrupo) return; // Segurança extra
+            const token = localStorage.getItem('access_token');
+            const endpoint = contatoAtualId === 'geral' ? 'geral' : contatoAtualId;
+
+            try {
+                const res = await fetch(`${API_BASE}/chat/mensagens-com/${endpoint}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
                 const msgs = await res.json();
                 renderizarChat(msgs);
-            } catch(e) { 
-                console.error("Erro de conexão:", e); 
-            }
+            } catch(e) { console.error(e); }
         }
 
         function renderizarChat(msgs) {
             const div = document.getElementById('chat-messages');
-            
             if(!msgs || msgs.length === 0) {
-                div.innerHTML = '<p class="text-center text-xs text-gray-500 mt-4">Nenhuma mensagem. Inicie a conversa!</p>';
+                div.innerHTML = `<p class="text-center text-xs text-gray-500 mt-10">Inicie uma conversa com <strong>${contatoAtualNome}</strong>.</p>`;
                 return;
             }
 
             let html = '';
             msgs.forEach(m => {
                 if (m.enviado_por_admin) {
-                    html += `<div class="flex justify-start"><div class="bg-[#333] text-gray-200 text-sm p-2 rounded-lg rounded-tl-none max-w-[85%] border border-[#444]">${m.mensagem}</div></div>`;
+                    // Mensagem DELES (Esquerda)
+                    html += `
+                        <div class="flex justify-start mb-2 fade-in">
+                            <div class="bg-[#333] text-gray-200 text-sm p-3 rounded-lg rounded-tl-none max-w-[85%] border border-[#444] shadow-sm">
+                                ${m.mensagem}
+                            </div>
+                        </div>`;
                 } else {
-                    html += `<div class="flex justify-end"><div class="bg-[#00FFFF]/10 text-[#00FFFF] text-sm p-2 rounded-lg rounded-tr-none max-w-[85%] border border-[#00FFFF]/30">${m.mensagem}</div></div>`;
+                    // Minha Mensagem (Direita)
+                    html += `
+                        <div class="flex justify-end mb-2 fade-in">
+                            <div class="bg-[#00FFFF]/10 text-[#00FFFF] text-sm p-3 rounded-lg rounded-tr-none max-w-[85%] border border-[#00FFFF]/30 shadow-sm">
+                                ${m.mensagem}
+                            </div>
+                        </div>`;
                 }
             });
 
             if(div.innerHTML.length !== html.length) { 
-                 div.innerHTML = html;
-                 div.scrollTop = div.scrollHeight;
+                div.innerHTML = html;
+                div.scrollTop = div.scrollHeight;
             }
         }
 
-        async function enviarMensagemAluno() {
+        // --- ENVIO CENTRALIZADO ---
+
+        async function enviarMensagemDireta() {
             const input = document.getElementById('chat-input');
             const msg = input.value.trim();
+            if(!msg) return;
+
             const token = localStorage.getItem('access_token');
-            
-            if(!msg || !token) return;
+            input.value = ''; // Limpa input imediatamente
 
-            input.value = ''; 
-            
-            // Visual Otimista
-            const div = document.getElementById('chat-messages');
-            div.innerHTML += `<div class="flex justify-end opacity-50"><div class="bg-[#00FFFF]/10 text-[#00FFFF] text-sm p-2 rounded-lg max-w-[85%] border border-[#00FFFF]/30">${msg} <i class="fas fa-clock text-[10px] ml-1"></i></div></div>`;
-            div.scrollTop = div.scrollHeight;
-
-            try {
-                const res = await fetch(`${API_BASE}/chat/enviar-aluno`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify({ mensagem: msg })
-                });
+            // 1. ENVIO PARA GRUPO
+            if (modoGrupo) {
                 
-                if(!res.ok) {
-                    const errData = await res.json();
-                    alert("Erro ao enviar: " + (errData.detail || res.statusText));
-                } else {
-                    carregarMensagensAluno();
+                // Visual Otimista (opcional)
+                const div = document.getElementById('chat-messages');
+                div.innerHTML += `
+                    <div class="flex flex-col mb-3 items-start opacity-50">
+                        <span class="text-[10px] text-green-400 font-bold ml-1 mb-0.5">Eu <span class="text-gray-600 font-normal">(Aluno)</span></span>
+                        <div class="bg-[#222] text-gray-200 text-sm p-2 rounded-lg border border-[#333] shadow-sm max-w-[90%]">
+                            ${msg} <i class="fas fa-clock text-[10px]"></i>
+                        </div>
+                    </div>`;
+                div.scrollTop = div.scrollHeight;
+
+                try {
+                    await fetch(`${API_BASE}/chat/turma/enviar`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                        body: JSON.stringify({ codigo_turma: codigoTurmaAtual, mensagem: msg })
+                    });
+                    carregarMensagensGrupo(); // Atualiza real
+                } catch(e) {
+                    alert("Erro ao enviar no grupo.");
                 }
-            } catch(e) { 
-                alert("Erro de conexão com o servidor.");
+
+            } else {
+                // 2. ENVIO PARA PRIVADO
+                if(!contatoAtualId) return;
+
+                // Visual Otimista
+                const div = document.getElementById('chat-messages');
+                div.innerHTML += `
+                    <div class="flex justify-end mb-2 opacity-50">
+                        <div class="bg-[#00FFFF]/10 text-[#00FFFF] text-sm p-3 rounded-lg rounded-tr-none max-w-[85%] border border-[#00FFFF]/30">
+                            ${msg} <i class="fas fa-clock text-[10px] ml-1"></i>
+                        </div>
+                    </div>`;
+                div.scrollTop = div.scrollHeight;
+
+                const payload = {
+                    mensagem: msg,
+                    id_colaborador: contatoAtualId === 'geral' ? null : parseInt(contatoAtualId)
+                };
+
+                try {
+                    await fetch(`${API_BASE}/chat/enviar-direto`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                        body: JSON.stringify(payload)
+                    });
+                    carregarMensagens(); 
+                } catch(e) {
+                    alert("Erro ao enviar mensagem privada.");
+                }
             }
         }
 
+        function fecharChat() {
+            document.getElementById('chat-window').classList.add('hidden');
+            if(chatInterval) clearInterval(chatInterval);
+        }
+        
         function logout() {
             localStorage.removeItem('access_token');
             window.location.href = 'IndexHome.html';
+        }
+
+        function toggleFaq(id) {
+            const content = document.getElementById(id);
+            const icon = document.getElementById(`icon-${id}`);
+            content.classList.toggle('hidden');
+            icon.style.transform = content.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
         }
     </script>
 </body>
