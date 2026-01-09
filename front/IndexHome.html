@@ -113,13 +113,13 @@
                     <li><a href="#faleconosco" style="margin-right: 20px;">Contato</a></li>
                     
                     <li>
-                        <a href="#" onclick="handleModalOpen(event, 'portal-modal-funcionario.html')" title="Área do Funcionário" style="color: rgba(255,255,255,0.5); font-size: 1.2rem; margin-right: 10px;">
+                        <a href="#" data-modal-url="portal-modal-funcionario.html" title="Área do Funcionário" style="color: rgba(255,255,255,0.5); font-size: 1.2rem; margin-right: 10px;">
                             <i class="fas fa-user-tie"></i>
                         </a>
                     </li>
                     
                     <li>
-                        <a href="#" onclick="handleModalOpen(event, 'portal-modal-content.html')" 
+                        <a href="#" data-modal-url="portal-modal-content.html" 
                         style="
                                border: 1px solid rgba(255,255,255,0.4); 
                                padding: 8px 20px; 
@@ -382,6 +382,6 @@
     });
 </script>
 <script src="js/config.js"></script>
-<script src="js/script.js"></script>
+<script src="js/script.js" defer></script>
 </body>
 </html>

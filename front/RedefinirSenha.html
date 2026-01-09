@@ -11,6 +11,7 @@
         .btn { width: 100%; padding: 10px; cursor: pointer; background: #00d4ff; color: black; font-weight: bold; border: none; margin-top: 10px; }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
 </head>
 <body>
 
@@ -24,11 +25,7 @@
     </div>
 
     <script>
-        // CONFIGURAÇÃO (Mantenha suas chaves reais aqui)
-        const SUPABASE_URL = 'https://qsosuuwzhonkwhnfffjw.supabase.co';
-        const SUPABASE_KEY = 'sb_publishable_AAV5xY79zg1eWOOf9RZ5aQ_wtH5kw-d'; 
-        
-        // CORREÇÃO: Mudamos de 'const supabase' para 'const supabaseClient'
+        // Credenciais carregadas de config.js
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         // Detecta quando o usuário chega pelo link de email

@@ -7,6 +7,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
     
     <style>
         :root { --bg-dark: #0f172a; --bg-card: #1e293b; --text-main: #f8fafc; --text-muted: #94a3b8; --game-color: #22c55e; --design-color: #f97316; --site-color: #3b82f6; --info-color: #06b6d4; --stream-color: #d946ef; }
@@ -138,8 +139,7 @@
     </footer>
 
     <script>
-        const SUPABASE_URL = 'https://qsosuuwzhonkwhnfffjw.supabase.co';
-        const SUPABASE_KEY = 'sb_publishable_AAV5xY79zg1eWOOf9RZ5aQ_wtH5kw-d';
+        // Credenciais carregadas de config.js
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         // CONFIGURAÇÃO DOS LIMITES
