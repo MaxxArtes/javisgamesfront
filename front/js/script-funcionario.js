@@ -519,21 +519,25 @@ async function salvarPerfil(event) {
 
 async function carregarAlunos() {
     const tbody = document.getElementById('listaAlunosBody');
-    tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center">Carregando...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8" class="p-4 text-center">Carregando...</td></tr>';
     try {
-    const res = await fetchAdmin(`${API_URL}/admin/listar-alunos`);
-    if (!res) { tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-red-500">Erro ao carregar alunos.</td></tr>'; return; }
+        const res = await fetchAdmin(`${API_URL}/admin/listar-alunos`);
+        if (!res) { tbody.innerHTML = '<tr><td colspan="8" class="p-4 text-center text-red-500">Erro ao carregar alunos.</td></tr>'; return; }
+        
         const alunos = await res.json();
         tbody.innerHTML = '';
         
         if (alunos.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center">Nenhum aluno encontrado.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="8" class="p-4 text-center">Nenhum aluno encontrado.</td></tr>';
             return;
         }
 
         alunos.forEach(a => {
-            const t = a.tb_matriculas[0]; 
+            const t = a.tb_matriculas && a.tb_matriculas.length > 0 ? a.tb_matriculas[0] : null;
             
+            // Pega o dia da semana da turma vinculada à matrícula
+            const diaSemana = (t && t.tb_turmas && t.tb_turmas.dia_semana) ? t.tb_turmas.dia_semana : '-';
+
             let tipoBadge = '';
             if (t && t.tb_turmas && t.tb_turmas.tipo_turma) {
                 if (t.tb_turmas.tipo_turma === 'PROJETO') {
@@ -545,20 +549,36 @@ async function carregarAlunos() {
                 tipoBadge = '<span class="text-gray-500 text-xs">-</span>';
             }
 
+            // Botão WhatsApp
+            let btnZap = '';
+            if (a.celular) {
+                const nums = a.celular.replace(/\D/g, '');
+                btnZap = `<a href="https://wa.me/55${nums}" target="_blank" class="text-green-500 hover:text-green-400 mr-3 transition" title="Chamar no WhatsApp"><i class="fab fa-whatsapp text-lg"></i></a>`;
+            }
+
+            // Preparar dados para o modal de edição (codifica para não quebrar HTML)
+            const jsonAluno = encodeURIComponent(JSON.stringify(a));
+
             tbody.innerHTML += `
                 <tr class="border-b border-[#333] hover:bg-[#2a2a2a]">
                     <td class="p-4 font-bold text-white">${a.nome_completo}</td>
                     <td class="p-4 text-xs">${a.cpf || '-'}</td>
+                    <td class="p-4 text-xs text-gray-300">${a.celular || '-'}</td>
+                    <td class="p-4 text-xs text-gray-400">${a.telefone || '-'}</td>
                     <td class="p-4 text-[#00FFFF] font-mono text-xs">${t ? t.codigo_turma : '-'}</td>
-                    <td class="p-4">${tipoBadge}</td> <td class="p-4 text-green-400 font-bold text-xs">${t ? t.status_financeiro : '-'}</td>
-                    <td class="p-4">
-                        <button class="text-gray-400 hover:text-white"><i class="fas fa-edit"></i></button>
+                    <td class="p-4 text-xs text-gray-300 font-bold">${diaSemana}</td> <td class="p-4">${tipoBadge}</td> 
+                    <td class="p-4 text-green-400 font-bold text-xs">${t ? t.status_financeiro : '-'}</td>
+                    <td class="p-4 flex items-center">
+                        ${btnZap}
+                        <button onclick="abrirModalEditarAluno('${jsonAluno}')" class="text-gray-400 hover:text-white transition" title="Editar">
+                            <i class="fas fa-edit"></i>
+                        </button>
                     </td>
                 </tr>`;
         });
     } catch(e) {
         console.error(e);
-        tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-red-500">Erro ao carregar alunos.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" class="p-4 text-center text-red-500">Erro ao carregar alunos.</td></tr>';
     }
 }
 
@@ -748,28 +768,68 @@ async function salvarFuncionario(e) {
 document.getElementById('formReposicao').addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn = e.target.querySelector('button');
-    btn.innerText = "AGENDANDO..."; btn.disabled = true;
+    const textoOriginal = btn.innerText; // Salva o texto original
+    btn.innerText = "AGENDANDO..."; 
+    btn.disabled = true;
+
+    // Captura os valores
+    const idAlunoVal = document.getElementById('repIdAluno').value;
+    const idProfVal = document.getElementById('repProfessor').value;
+    const dataHoraVal = document.getElementById('repData').value;
+    const turmaVal = document.getElementById('repTurma').value;
+    const conteudoVal = document.getElementById('repConteudo').value;
+
+    // VALIDAÇÃO PRÉVIA: Verifica se os IDs são válidos e se campos obrigatórios estão cheios
+    if (!idAlunoVal || !idProfVal || !dataHoraVal || !turmaVal) {
+        Swal.fire({ icon: 'warning', title: 'Atenção', text: 'Preencha todos os campos obrigatórios (Aluno, Professor, Data e Turma).', background: '#222', color: '#fff' });
+        btn.innerText = textoOriginal;
+        btn.disabled = false;
+        return;
+    }
+
     const dados = {
-        id_aluno: document.getElementById('repIdAluno').value,
-        data_hora: document.getElementById('repData').value,
-        turma_codigo: document.getElementById('repTurma').value,
-        id_professor: document.getElementById('repProfessor').value,
-        conteudo_aula: document.getElementById('repConteudo').value,
+        id_aluno: parseInt(idAlunoVal), // Converte para Inteiro
+        data_hora: dataHoraVal,
+        turma_codigo: turmaVal,
+        id_professor: parseInt(idProfVal), // Converte para Inteiro
+        conteudo_aula: conteudoVal,
     };
+
     try {
         const res = await fetchAdmin(`${API_URL}/admin/agendar-reposicao`, {
-            method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(dados)
+            method: 'POST', 
+            headers: { 'Content-Type': 'application/json' }, 
+            body: JSON.stringify(dados)
         });
-        if (!res) { Swal.fire({ icon: 'error', title: 'Erro', text: 'Sem resposta do servidor.', background: '#222', color: '#fff' }); return; }
+
+        if (!res) { 
+            Swal.fire({ icon: 'error', title: 'Erro', text: 'Sem resposta do servidor.', background: '#222', color: '#fff' }); 
+            return; 
+        }
+
         if(res.ok) {
             Swal.fire({ icon: 'success', title: 'Agendada!', text: 'Reposição agendada com sucesso.', timer: 1400, showConfirmButton: false, background: '#222', color: '#fff' });
             e.target.reset();
+            // Atualiza o calendário se a função estiver disponível
+            if (typeof renderCalendar === 'function') renderCalendar();
         } else {
-            Swal.fire({ icon: 'error', title: 'Erro', text: 'Erro ao agendar.', background: '#222', color: '#fff' });
+            // Tenta ler a mensagem de erro detalhada da API
+            const erroApi = await res.json().catch(() => ({ detail: 'Erro ao agendar.' }));
+            Swal.fire({ 
+                icon: 'error', 
+                title: 'Erro', 
+                text: erroApi.detail || 'Erro ao agendar reposição.', 
+                background: '#222', 
+                color: '#fff' 
+            });
         }
     } catch(err) {
+        console.error(err);
         Swal.fire({ icon: 'error', title: 'Erro', text: 'Erro de conexão', background: '#222', color: '#fff' });
-    } finally { btn.innerText = "AGENDAR REPOSIÇÃO"; btn.disabled = false; }
+    } finally { 
+        btn.innerText = textoOriginal; // Restaura o texto original
+        btn.disabled = false; 
+    }
 });
 
 function renderCalendar() {
@@ -807,16 +867,116 @@ function atualizarListaAgenda(eventos) {
 }
 
 function abrirModalRepo(jsonDados) {
+    // 1. Decodifica os dados
     const dados = JSON.parse(decodeURIComponent(jsonDados));
-    document.getElementById('viewIdRepo').innerText = "#" + dados.id;
-    document.getElementById('editRepoId').value = dados.id;
-    document.getElementById('editRepoObs').value = dados.observacoes || '';
+    console.log("Dados reposição:", dados);
+
+    // 2. Preenche os campos do formulário
+    const campoId = document.getElementById('editRepoId');
+    if (campoId) campoId.value = dados.id || dados.publicId;
+
+    const campoNome = document.getElementById('editRepoNome');
+    if (campoNome) campoNome.innerText = dados.title || "Aluno";
+
+    const campoData = document.getElementById('editRepoData');
+    if (campoData && dados.start) {
+        const dataObj = new Date(dados.start);
+        // Ajuste de fuso horário simples
+        dataObj.setMinutes(dataObj.getMinutes() - dataObj.getTimezoneOffset());
+        campoData.value = dataObj.toISOString().slice(0, 16);
+    }
+
+    const campoConteudo = document.getElementById('editRepoConteudo');
+    if (campoConteudo) {
+        campoConteudo.value = dados.extendedProps?.conteudo || dados.conteudo || "";
+    }
+
+    // 3. LÓGICA DE PERMISSÃO (NOVO)
+    // Tenta pegar o ID de quem criou (vem no extendedProps do FullCalendar)
+    const idCriador = dados.extendedProps?.id_criador || dados.id_criador;
     
-    const sel = document.getElementById('editRepoPresenca');
-    if (dados.presenca === true) sel.value = "true"; else if (dados.presenca === false) sel.value = "false"; else sel.value = "";
+    // Regra: Pode editar/excluir se for Nível >= 8 OU se for o dono do registro
+    // usuarioLogadoId e nivelUsuarioLogado são variáveis globais definidas no início do seu script
+    const temPermissao = (nivelUsuarioLogado >= 8) || (usuarioLogadoId && idCriador == usuarioLogadoId);
+
+    const btnExcluir = document.getElementById('btnExcluirRepo');
+    const btnSalvar = document.getElementById('btnSalvarRepo');
     
-    document.getElementById('modalEditarRepo').classList.remove('hidden');
-    document.getElementById('modalEditarRepo').classList.add('flex');
+    // Controla visibilidade do botão EXCLUIR
+    if (btnExcluir) {
+        if (temPermissao) {
+            btnExcluir.classList.remove('hidden'); // Mostra a lixeira
+        } else {
+            btnExcluir.classList.add('hidden');    // Esconde a lixeira
+        }
+    }
+
+    // Controla estado do botão SALVAR e Inputs
+    if (btnSalvar) {
+        btnSalvar.disabled = !temPermissao;
+        if (!temPermissao) {
+            btnSalvar.classList.add('opacity-50', 'cursor-not-allowed');
+            if(campoData) campoData.disabled = true;
+            if(campoConteudo) campoConteudo.disabled = true;
+        } else {
+            btnSalvar.classList.remove('opacity-50', 'cursor-not-allowed');
+            if(campoData) campoData.disabled = false;
+            if(campoConteudo) campoConteudo.disabled = false;
+        }
+    }
+
+    // 4. Abre o Modal
+    const modal = document.getElementById('modalEditarRepo');
+    if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+}
+
+// Função que faltava para o botão da lixeira funcionar
+async function deletarReposicao() {
+    const id = document.getElementById('editRepoId').value;
+    if (!id) return;
+
+    // Confirmação
+    const result = await Swal.fire({
+        title: 'Excluir Reposição?',
+        text: "Essa ação não pode ser desfeita.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#333',
+        confirmButtonText: 'Sim, excluir',
+        cancelButtonText: 'Cancelar',
+        background: '#1a1a1a',
+        color: '#fff'
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+        const res = await fetchAdmin(`${API_URL}/admin/reposicao/${id}`, { 
+            method: 'DELETE' 
+        });
+
+        if (!res) throw new Error('Sem resposta');
+
+        if (res.ok) {
+            Swal.fire({
+                icon: 'success', title: 'Excluído!', text: 'Reposição removida.',
+                timer: 1500, showConfirmButton: false, background: '#222', color: '#fff'
+            });
+            document.getElementById('modalEditarRepo').style.display = 'none';
+            document.getElementById('modalEditarRepo').classList.add('hidden'); // Garante que fecha visualmente
+            renderCalendar(); // Atualiza a agenda
+        } else {
+            const erro = await res.json();
+            Swal.fire({ icon: 'error', title: 'Erro', text: erro.detail || 'Não foi possível excluir.', background: '#222', color: '#fff' });
+        }
+    } catch (e) {
+        console.error(e);
+        Swal.fire({ icon: 'error', title: 'Erro', text: 'Erro de conexão.', background: '#222', color: '#fff' });
+    }
 }
 
 function fecharModalRepo() {
@@ -826,19 +986,57 @@ function fecharModalRepo() {
 
 async function salvarEdicaoRepo(event) {
     event.preventDefault(); 
+    
+    // Feedback visual no botão
+    const btn = event.target.querySelector('button[type="submit"]');
+    const textoOriginal = btn ? btn.innerText : "SALVAR";
+    if(btn) { btn.innerText = "SALVANDO..."; btn.disabled = true; }
+
     const id = document.getElementById('editRepoId').value;
-    const formData = new FormData();
-    formData.append('presenca', document.getElementById('editRepoPresenca').value);
-    formData.append('observacoes', document.getElementById('editRepoObs').value);
+    
+    // Dados para enviar ao backend (ajuste conforme sua API espera receber)
+    const dadosParaEnvio = {
+        data_hora: document.getElementById('editRepoData').value,
+        conteudo: document.getElementById('editRepoConteudo').value
+        // Se houver select de status no futuro, adicione aqui
+    };
+
     try {
-    const res = await fetchAdmin(`${API_URL}/admin/reposicao-completa/${id}`, { method: 'PUT', body: formData });
-    if (!res) { Swal.fire({ icon: 'error', title: 'Erro', text: 'Sem resposta do servidor.', background: '#222', color: '#fff' }); return; }
+        // NOTA: Verifique se sua API usa '/reposicao-completa' ou outra rota para editar data.
+        // Se for apenas edição de dados, talvez seja um PUT em /admin/editar-reposicao/{id}
+        const res = await fetchAdmin(`${API_URL}/admin/editar-reposicao/${id}`, { 
+            method: 'PUT', 
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(dadosParaEnvio) 
+        });
+
+        if (!res) { 
+            throw new Error('Sem resposta do servidor'); 
+        }
+
         if(res.ok) {
-            Swal.fire({ icon: 'success', title: 'Salvo!', text: 'Alterações salvas.', timer: 1200, showConfirmButton: false, background: '#222', color: '#fff' });
-            fecharModalRepo(); renderCalendar();
+            Swal.fire({ 
+                icon: 'success', 
+                title: 'Atualizado!', 
+                text: 'Reposição alterada com sucesso.', 
+                timer: 1500, 
+                showConfirmButton: false, 
+                background: '#222', color: '#fff' 
+            });
+            
+            // Fecha modal e atualiza calendário
+            document.getElementById('modalEditarRepo').classList.add('hidden');
+            document.getElementById('modalEditarRepo').classList.remove('flex');
+            renderCalendar(); 
+        } else {
+            const erro = await res.json();
+            Swal.fire({ icon: 'error', title: 'Erro', text: erro.detail || 'Falha ao salvar.', background: '#222', color: '#fff' });
         }
     } catch(e) {
-        Swal.fire({ icon: 'error', title: 'Erro', text: 'Erro ao salvar.', background: '#222', color: '#fff' });
+        console.error(e);
+        Swal.fire({ icon: 'error', title: 'Erro', text: 'Erro de conexão ou rota inválida.', background: '#222', color: '#fff' });
+    } finally {
+        if(btn) { btn.innerText = textoOriginal; btn.disabled = false; }
     }
 }
 
@@ -1030,48 +1228,151 @@ function configurarAreaChat(titulo, subtitulo, iconeClass, corClass) {
 }
 
 async function carregarMensagens() {
-    if(!selecionadoId) return;
-    const div = document.getElementById('msgs-admin');
-    if(!div) return;
+    if (!selecionadoId) return;
     
+    const div = document.getElementById('msgs-admin');
+    if (!div) return;
+
     try {
         let msgs = [];
         let ehGrupo = false;
+
+        // 1. Detectar se é Grupo ou Privado baseado no modo atual
         if (modoChat === 'grupo') ehGrupo = true;
         else if (modoChat === 'conversas') {
             const item = listaChatCache.find(i => i.id == selecionadoId);
             if (item && item.tipo === 'grupo') ehGrupo = true;
         }
 
+        // --- LÓGICA DO CHAT PRIVADO (1x1) ---
         if (!ehGrupo) {
             let url = `${API_URL}/admin/chat/mensagens/${selecionadoId}`;
-            if(nivelUsuarioLogado === 5) url += `?filtro_colaborador=meu`; 
+            // Se for professor, pode ter filtro específico (opcional, mantendo compatibilidade)
+            if (nivelUsuarioLogado === 5) url += `?filtro_colaborador=meu`; 
+
             const res = await fetchAdmin(url);
             if (!res) return;
             msgs = await res.json();
             
             let html = '';
+            
             msgs.forEach(m => {
-                let isMe = m.enviado_por_admin; 
-                let align = isMe ? 'justify-end' : 'justify-start';
-                let bg = isMe ? 'bg-[#00FFFF]/10 text-[#00FFFF] border border-[#00FFFF]/30' : 'bg-[#333] text-gray-200 border border-[#444]';
-                html += `<div class="flex ${align} fade-in"><div class="${bg} p-3 rounded-lg max-w-[75%] text-sm shadow-sm">${m.mensagem}</div></div>`;
+                // Tenta identificar quem mandou usando ID (se disponível) ou fallback para flag boolean
+                // Nota: O backend precisa enviar 'id_colaborador' ou 'id_remetente' para precisão 100%
+                let souEu = false;
+                const ehAdmin = m.enviado_por_admin;
+                const idRemetente = m.id_colaborador || m.id_colaborador_remetente; // Adapte conforme seu backend retornar
+
+                if (ehAdmin) {
+                    if (usuarioLogadoId && idRemetente) {
+                        souEu = (idRemetente == usuarioLogadoId);
+                    } else {
+                        // Fallback: Se não tem ID, assume que admin sou eu (comportamento antigo),
+                        // EXCETO se o cargo for explicitamente Suporte
+                        souEu = true; 
+                    }
+                    // Se for mensagem automática de Suporte, NUNCA é "souEu" visualmente (queremos destaque)
+                    if (m.cargo_exibicao === 'Suporte' || m.nome_exibicao === 'Suporte') {
+                        souEu = false;
+                    }
+                }
+
+                // Configuração Visual
+                let align = 'items-start'; // Esquerda
+                let containerAlign = 'justify-start';
+                let bg = 'bg-[#333] text-gray-200 border border-[#444]'; // Padrão Aluno (Cinza)
+                let labelNome = '';
+
+                if (souEu) {
+                    // MINHA MENSAGEM -> Direita (Azul)
+                    align = 'items-end';
+                    containerAlign = 'justify-end';
+                    bg = 'bg-[#00FFFF]/10 text-[#00FFFF] border border-[#00FFFF]/30';
+                } else if (ehAdmin) {
+                    // OUTRO FUNCIONÁRIO ou SUPORTE -> Esquerda
+                    if (m.cargo_exibicao === 'Suporte' || m.nome_exibicao === 'Suporte') {
+                        // Bot/Suporte (Laranja)
+                        bg = 'bg-orange-900/20 text-orange-400 border border-orange-800';
+                        labelNome = '<span class="text-[10px] text-orange-500 font-bold mb-1 block"><i class="fas fa-robot mr-1"></i>Suporte Javis</span>';
+                    } else {
+                        // Outro Humano (Roxo)
+                        bg = 'bg-purple-900/20 text-purple-300 border border-purple-800';
+                        labelNome = `<span class="text-[10px] text-purple-400 font-bold mb-1 block">${m.nome_exibicao || 'Equipe'}</span>`;
+                    }
+                } else {
+                    // ALUNO -> Esquerda (Cinza Padrão)
+                    labelNome = `<span class="text-[10px] text-gray-500 font-bold mb-1 block">${m.nome_exibicao || 'Aluno'}</span>`;
+                }
+
+                // Montagem do HTML
+                html += `
+                <div class="flex ${containerAlign} w-full mb-2 fade-in">
+                    <div class="flex flex-col ${align} max-w-[85%] md:max-w-[70%]">
+                        ${!souEu ? labelNome : ''}
+                        <div class="${bg} p-3 rounded-lg text-sm shadow-sm break-words relative">
+                            ${m.mensagem}
+                        </div>
+                        <span class="text-[9px] text-gray-600 mt-1 select-none">
+                            ${new Date(m.data_hora || m.timestamp || Date.now()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                        </span>
+                    </div>
+                </div>`;
             });
-            if(div.innerHTML.length !== html.length) { div.innerHTML = html; div.scrollTop = div.scrollHeight; }
+
+            // Só atualiza o DOM se houve mudança no conteúdo (evita flicker no setInterval)
+            if (div.innerHTML.length !== html.length) { 
+                div.innerHTML = html; 
+                div.scrollTop = div.scrollHeight; 
+            }
 
         } else {
+            // --- LÓGICA DO CHAT DE GRUPO ---
             const res = await fetchAdmin(`${API_URL}/chat/turma/${selecionadoId}`);
             if (!res) return;
             msgs = await res.json();
+            
             let html = '';
             msgs.forEach(m => {
-                let isAluno = m.cargo_exibicao === 'Aluno';
-                let corNome = isAluno ? 'text-green-400' : 'text-purple-400';
-                html += `<div class="flex flex-col items-start mb-2 fade-in"><span class="text-[10px] ${corNome} font-bold ml-1 mb-0.5">${m.nome_exibicao} <span class="text-gray-600 font-normal">(${m.cargo_exibicao})</span></span><div class="bg-[#222] border border-[#333] text-gray-200 p-2 rounded-lg max-w-[85%] text-sm shadow-sm">${m.mensagem}</div></div>`;
+                const isAluno = m.cargo_exibicao === 'Aluno';
+                const isSuporte = m.cargo_exibicao === 'Suporte';
+                
+                let corNome = 'text-purple-400'; // Professor/Admin
+                let icone = '';
+                
+                if (isAluno) {
+                    corNome = 'text-green-400';
+                } else if (isSuporte) {
+                    corNome = 'text-orange-400';
+                    icone = '<i class="fas fa-robot mr-1"></i>';
+                }
+
+                // No grupo, mantemos tudo à esquerda por padrão para facilitar leitura linear,
+                // mas destacamos o background do usuário logado se necessário.
+                let bgClass = 'bg-[#222] border border-[#333] text-gray-200';
+                
+                // Se quiser destacar suas mensagens no grupo também:
+                // if (m.id_colaborador == usuarioLogadoId) bgClass = 'bg-[#00FFFF]/5 border border-[#00FFFF]/20 text-gray-200';
+
+                html += `
+                <div class="flex flex-col items-start mb-2 fade-in w-full">
+                    <span class="text-[10px] ${corNome} font-bold ml-1 mb-0.5">
+                        ${icone}${m.nome_exibicao} <span class="text-gray-600 font-normal">(${m.cargo_exibicao})</span>
+                    </span>
+                    <div class="${bgClass} p-2 rounded-lg max-w-[90%] text-sm shadow-sm break-words">
+                        ${m.mensagem}
+                    </div>
+                    <span class="text-[9px] text-gray-700 ml-1">${new Date(m.data_hora || Date.now()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                </div>`;
             });
-            if(div.innerHTML.length !== html.length) { div.innerHTML = html; div.scrollTop = div.scrollHeight; }
+
+            if (div.innerHTML.length !== html.length) { 
+                div.innerHTML = html; 
+                div.scrollTop = div.scrollHeight; 
+            }
         }
-    } catch(e) { console.error(e); }
+    } catch (e) { 
+        console.error("Erro no chat:", e); 
+    }
 }
 
 async function enviarMensagemUnified() {
@@ -1449,5 +1750,393 @@ async function salvarDadosColaborador(isEdit, id = null) {
     } finally {
         btn.innerText = originalText;
         btn.disabled = false;
+    }
+}
+function carregarAulaProfessor(url) {
+    const iframe = document.getElementById('frame-aula-prof');
+    const placeholder = document.getElementById('placeholder-aula');
+    
+    // Carrega a URL
+    iframe.src = url;
+    
+    // Esconde o placeholder e garante que o iframe fique visível (z-index)
+    if(placeholder) {
+        placeholder.style.display = 'none';
+    }
+}
+
+async function carregarConteudoDidatico() {
+    const container = document.getElementById('lista-conteudo-dinamico');
+    
+    // Mostra loading
+    container.innerHTML = '<p class="text-gray-500 text-center text-xs mt-4"><i class="fas fa-spinner fa-spin"></i> Carregando biblioteca...</p>';
+
+    try {
+        const token = localStorage.getItem('access_token');
+        if (!token) throw new Error("Sem token de autenticação");
+
+        const response = await fetch('https://javisgames.onrender.com/conteudo-didatico/cursos', {
+            headers: { 
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) throw new Error('Erro na API');
+
+        const cursos = await response.json();
+
+        // Verifica se veio vazio
+        if (!cursos || cursos.length === 0) {
+            container.innerHTML = '<p class="text-gray-500 text-center text-xs mt-4">Nenhum conteúdo disponível.</p>';
+            return;
+        }
+
+        let htmlFinal = '';
+
+        // 1. Loop Cursos
+        cursos.forEach(curso => {
+            htmlFinal += `
+                <div class="curso-section mb-4">
+                    <h4 class="text-[#00FFFF] font-bold text-xs uppercase mb-2 border-b border-[#333] pb-1 sticky top-0 bg-[#222] z-10 flex items-center">
+                        <i class="${curso.icone || 'fas fa-book'} mr-2"></i> ${curso.titulo}
+                    </h4>
+                    <div class="space-y-1">
+            `;
+
+            // 2. Loop Módulos
+            const modulos = curso.modulos || [];
+            modulos.forEach(modulo => {
+                htmlFinal += `
+                    <details class="group">
+                        <summary class="summary-btn"><span class="text-gray-300">${modulo.titulo}</span><i class="fas fa-chevron-down arrow-icon"></i></summary>
+                        <div class="aula-list">
+                `;
+
+                // 3. Loop Aulas
+                const aulas = modulo.aulas || [];
+                if (aulas.length > 0) {
+                    aulas.forEach(aula => {
+                        // --- LÓGICA DE PERMISSÃO DE EDIÇÃO ---
+                        let podeEditar = false;
+
+                        // REGRA 1: Admins e Coordenadores (Nível >= 8) editam tudo
+                        if (nivelUsuarioLogado >= 8) {
+                            podeEditar = true;
+                        } 
+                        // REGRA 2: Professor (Nível 5) só edita se for DONO da aula
+                        // A API precisa enviar 'aula.id_professor' OU 'curso.id_professor'
+                        else if (nivelUsuarioLogado === 5) {
+                            // Verifica se o ID do professor da aula bate com o usuário logado
+                            // Se a aula não tiver dono específico, tenta ver se o curso tem dono
+                            const donoAula = aula.id_professor || curso.id_professor;
+                            
+                            if (donoAula == usuarioLogadoId) {
+                                podeEditar = true;
+                            }
+                        }
+
+                        // Cria o HTML do botão apenas se tiver permissão
+                        const botaoEditarHTML = podeEditar 
+                            ? `<button onclick="abrirEditorAula(${aula.id}, '${aula.titulo}')" class="text-gray-500 hover:text-[#00FFFF] p-2 opacity-0 group-hover/item:opacity-100 transition" title="Editar Conteúdo">
+                                 <i class="fas fa-pencil-alt text-xs"></i>
+                               </button>`
+                            : ''; // Se não puder editar, não renderiza nada
+
+                        // Renderiza a linha da aula
+                        htmlFinal += `
+                            <div class="flex items-center gap-1 group/item mb-1">
+                                <button onclick="carregarAulaProfessor('visualizador.html?id=${aula.id}')" class="btn-aula flex-1 text-left truncate">
+                                    ${aula.titulo}
+                                </button>
+                                ${botaoEditarHTML}
+                            </div>
+                        `;
+                    });
+                } else {
+                    htmlFinal += `<span class="text-gray-600 text-[10px] p-2">Sem aulas.</span>`;
+                }
+
+                htmlFinal += `
+                        </div>
+                    </details>
+                `;
+            });
+
+            htmlFinal += `
+                    </div>
+                </div>
+            `;
+        });
+
+        container.innerHTML = htmlFinal;
+
+    } catch (err) {
+        console.error('Erro ao carregar cursos:', err);
+        container.innerHTML = '<p class="text-red-500 text-center text-xs mt-4">Não foi possível carregar os cursos.</p>';
+    }
+}
+
+// Toggle da Biblioteca no mobile (mostra/oculta o painel lateral de aulas)
+document.addEventListener('DOMContentLoaded', function() {
+    var btn = document.getElementById('btn-toggle-biblioteca');
+    var bib = document.getElementById('bibliotecaContainer');
+    var vis = document.getElementById('visualizadorContainer');
+    if (!btn || !bib) return;
+    btn.addEventListener('click', function() {
+        bib.classList.toggle('hidden');
+        if (bib.classList.contains('hidden')) {
+            btn.textContent = 'Biblioteca';
+        } else {
+            btn.textContent = 'Fechar Biblioteca';
+        }
+        // garante que o visualizador fique visível após toggle
+        setTimeout(function(){ if (vis) vis.scrollIntoView({behavior: 'smooth', block: 'start'}); }, 120);
+    });
+});
+
+// --- LÓGICA DO EDITOR DE AULAS (ATUALIZADA COM PLUGINS PREMIUM) ---
+let editorInicializado = false;
+let aulaEmEdicaoId = null;
+
+async function abrirEditorAula(idAula, tituloAula) {
+    aulaEmEdicaoId = idAula;
+    document.getElementById('tituloAulaEditor').innerText = `Editando: ${tituloAula}`;
+    document.getElementById('modalEditorAula').classList.remove('hidden');
+    document.getElementById('modalEditorAula').classList.add('flex');
+
+    // 1. Inicializa o TinyMCE com a configuração completa da sua conta
+    if (!editorInicializado) {
+        tinymce.init({
+            selector: '#editorTexto', // Mantemos este ID para focar no textarea do modal
+            height: '100%',
+            plugins: [
+                // Recursos básicos de edição
+                'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
+                // Seus recursos Premium (Gratuitos até Jan 2026)
+                'checklist', 'mediaembed', 'casechange', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'advtemplate', 'ai', 'uploadcare', 'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss', 'markdown', 'importword', 'exportword', 'exportpdf'
+            ],
+            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography uploadcare | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+            
+            // Configurações adicionais do seu plano
+            tinycomments_mode: 'embedded',
+            tinycomments_author: 'Professor',
+            mergetags_list: [
+                { value: 'Nome.Aluno', title: 'Nome do Aluno' },
+                { value: 'Email.Aluno', title: 'Email do Aluno' },
+            ],
+            // Configuração básica da IA (Requer setup adicional no dashboard do TinyMCE para funcionar 100%)
+            ai_request: (request, respondWith) => respondWith.string(() => Promise.reject('Veja a documentação para implementar o Assistente de IA')),
+            
+            // Upload de imagens (Se usar o serviço UploadCare incluído)
+            uploadcare_public_key: '2c7f4ba612b6f92d0de6',
+            
+            // Estilo visual para parecer um documento
+            content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px; padding:20px; }'
+        });
+        editorInicializado = true;
+    }
+
+    // 2. Carrega o conteúdo existente do Banco de Dados
+    try {
+        // Mostra um "Carregando" no editor enquanto busca
+        if(tinymce.get('editorTexto')) tinymce.get('editorTexto').setContent('<p>Carregando...</p>');
+        
+        const res = await fetchAdmin(`${API_URL}/admin/aula/${idAula}/conteudo`);
+        if(res && res.ok) {
+            const dados = await res.json();
+            const conteudoFinal = dados.html || `<p>Comece a escrever a aula de <strong>${tituloAula}</strong> aqui...</p>`;
+            tinymce.get('editorTexto').setContent(conteudoFinal);
+        }
+    } catch (error) {
+        console.error(error);
+        Swal.fire('Erro', 'Não foi possível carregar o conteúdo.', 'error');
+        fecharEditorAula();
+    }
+}
+
+function fecharEditorAula() {
+    document.getElementById('modalEditorAula').classList.add('hidden');
+    document.getElementById('modalEditorAula').classList.remove('flex');
+    aulaEmEdicaoId = null;
+}
+
+async function salvarConteudoAula() {
+    if (!aulaEmEdicaoId) return;
+    
+    // Pega o HTML do editor
+    const conteudoHtml = tinymce.get('editorTexto').getContent();
+    
+    const btn = document.querySelector('#modalEditorAula button.bg-green-600');
+    const textoOriginal = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> SALVANDO...';
+    btn.disabled = true;
+
+    try {
+        const res = await fetchAdmin(`${API_URL}/admin/aula/${aulaEmEdicaoId}/salvar`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ conteudo: conteudoHtml })
+        });
+
+        if (res && res.ok) {
+            Swal.fire({
+                icon: 'success', 
+                title: 'Aula Salva!', 
+                text: 'O conteúdo foi atualizado em tempo real.', 
+                background: '#222', color: '#fff',
+                timer: 1500, showConfirmButton: false
+            });
+            fecharEditorAula();
+            
+            // Recarrega o iframe se estiver a ver esta aula
+            const iframe = document.getElementById('frame-aula-prof');
+            if(iframe && iframe.contentWindow) {
+                iframe.contentWindow.location.reload();
+            }
+        } else {
+            throw new Error('Erro ao salvar');
+        }
+    } catch (error) {
+        Swal.fire({ icon: 'error', title: 'Erro', text: 'Falha ao salvar.', background: '#222', color: '#fff' });
+    } finally {
+        btn.innerHTML = textoOriginal;
+        btn.disabled = false;
+    }
+}
+
+// (Opcional) Função para Upload de Imagem no TinyMCE
+// Para funcionar 100%, você precisaria de uma rota no Python para upload
+// Por enquanto, o TinyMCE converte em Base64 (funciona, mas deixa o banco pesado)
+function uploadImagemHandler (blobInfo, progress) {
+    return new Promise((resolve, reject) => {
+        // AQUI VOCÊ PODE IMPLEMENTAR O UPLOAD PARA O SUPABASE STORAGE NO FUTURO
+        // Por enquanto, vamos usar base64 local (simples)
+        const reader = new FileReader();
+        reader.onload = () => {
+            const base64 = reader.result.split(',')[1];
+            resolve('data:' + blobInfo.blob().type + ';base64,' + base64);
+        };
+        reader.readAsDataURL(blobInfo.blob());
+    });
+}
+
+/* ==========================================================
+   FUNÇÕES DE EDIÇÃO DE ALUNO
+   ========================================================== */
+
+async function abrirModalEditarAluno(jsonAluno) {
+    const aluno = JSON.parse(decodeURIComponent(jsonAluno));
+    
+    // Tenta pegar a turma atual do array de matrículas
+    const matricula = (aluno.tb_matriculas && aluno.tb_matriculas.length > 0) ? aluno.tb_matriculas[0] : null;
+    const turmaAtual = matricula ? matricula.codigo_turma : "";
+
+    // HTML do Formulário
+    const conteudo = `
+        <form id="formEditAluno" class="space-y-4">
+            <input type="hidden" id="editAlunoId" value="${aluno.id_aluno}">
+            
+            <div>
+                <label class="text-xs text-gray-400">Nome Completo</label>
+                <input type="text" id="editAlunoNome" value="${aluno.nome_completo}" class="w-full bg-[#1a1a1a] border border-[#444] rounded p-2 text-white uppercase outline-none focus:border-[#00FFFF]">
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="text-xs text-gray-400">CPF</label>
+                    <input type="text" id="editAlunoCpf" value="${aluno.cpf || ''}" class="w-full bg-[#1a1a1a] border border-[#444] rounded p-2 text-white outline-none">
+                </div>
+                <div>
+                    <label class="text-xs text-gray-400">Turma Atual</label>
+                    <select id="editAlunoTurma" class="w-full bg-[#1a1a1a] border border-[#444] rounded p-2 text-white outline-none focus:border-[#00FFFF]">
+                        <option value="${turmaAtual}" selected>${turmaAtual || 'Sem Turma'}</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="text-xs text-gray-400">Celular (WhatsApp)</label>
+                    <input type="text" id="editAlunoCel" value="${aluno.celular || ''}" class="w-full bg-[#1a1a1a] border border-[#444] rounded p-2 text-white outline-none">
+                </div>
+                <div>
+                    <label class="text-xs text-gray-400">Telefone Fixo</label>
+                    <input type="text" id="editAlunoTel" value="${aluno.telefone || ''}" class="w-full bg-[#1a1a1a] border border-[#444] rounded p-2 text-white outline-none">
+                </div>
+            </div>
+
+            <div>
+                <label class="text-xs text-gray-400">Email (Login)</label>
+                <input type="email" id="editAlunoEmail" value="${aluno.email || ''}" class="w-full bg-[#1a1a1a] border border-[#444] rounded p-2 text-white outline-none">
+            </div>
+        </form>
+    `;
+
+    // Abre o Modal Universal
+    abrirModalUniversal("Editar Aluno", conteudo, salvarEdicaoAluno);
+
+    // Aplica máscaras e carrega as turmas no select
+    setTimeout(async () => {
+        // Máscaras
+        const elCel = document.getElementById('editAlunoCel');
+        const elTel = document.getElementById('editAlunoTel');
+        const elCpf = document.getElementById('editAlunoCpf');
+        if(elCel) IMask(elCel, { mask: '(00) 00000-0000' });
+        if(elTel) IMask(elTel, { mask: '(00) 00000-0000' });
+        if(elCpf) IMask(elCpf, { mask: '000.000.000-00' });
+
+        // Carregar lista de turmas para trocar
+        try {
+            const res = await fetchAdmin(`${API_URL}/admin/listar-turmas`);
+            if(res.ok) {
+                const turmas = await res.json();
+                const select = document.getElementById('editAlunoTurma');
+                // Mantém a atual e adiciona as outras
+                turmas.forEach(t => {
+                    if (t.codigo_turma !== turmaAtual) {
+                        select.innerHTML += `<option value="${t.codigo_turma}">${t.codigo_turma} (${t.horario})</option>`;
+                    }
+                });
+            }
+        } catch(e) {}
+    }, 100);
+}
+
+async function salvarEdicaoAluno() {
+    const btn = document.getElementById('modalConfirmBtn');
+    const originalText = btn.innerText;
+    btn.innerText = "SALVANDO..."; btn.disabled = true;
+
+    const id = document.getElementById('editAlunoId').value;
+    const dados = {
+        nome: document.getElementById('editAlunoNome').value,
+        cpf: document.getElementById('editAlunoCpf').value,
+        turma_codigo: document.getElementById('editAlunoTurma').value,
+        celular: document.getElementById('editAlunoCel').value,
+        telefone: document.getElementById('editAlunoTel').value,
+        email: document.getElementById('editAlunoEmail').value
+    };
+
+    try {
+        const res = await fetchAdmin(`${API_URL}/admin/editar-aluno/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(dados)
+        });
+
+        if (res.ok) {
+            Swal.fire({ icon: 'success', title: 'Sucesso', text: 'Aluno atualizado!', timer: 1500, showConfirmButton: false, background: '#222', color: '#fff' });
+            fecharModalUniversal();
+            carregarAlunos(); // Atualiza a tabela
+        } else {
+            const erro = await res.json();
+            Swal.fire({ icon: 'error', title: 'Erro', text: erro.detail || 'Falha ao salvar.', background: '#222', color: '#fff' });
+        }
+    } catch (e) {
+        console.error(e);
+        Swal.fire({ icon: 'error', title: 'Erro', text: 'Erro de conexão.', background: '#222', color: '#fff' });
+    } finally {
+        if(btn) { btn.innerText = originalText; btn.disabled = false; }
     }
 }
