@@ -1,6 +1,5 @@
 // Configurações Globais
-const SUPABASE_URL = "https://qsosuuwzhonkwhnfffjw.supabase.co";
-const SUPABASE_KEY = "sb_publishable_AAV5xY79zg1eWOOf9RZ5aQ_wtH5kw-d";
+// As credenciais do Supabase agora estão em config.js
 // Verifica se o Supabase foi carregado antes de inicializar
 const supabaseClient = typeof supabase !== 'undefined' ? supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 

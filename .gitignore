@@ -1,0 +1,36 @@
+# Arquivos de configuração com credenciais
+front/js/config.js
+
+# Arquivos de ambiente
+.env
+.env.local
+.env.*.local
+*.env
+
+# Logs
+*.log
+logs/
+
+# Arquivos temporários
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# IDEs e editores
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Node modules (caso seja usado futuramente)
+node_modules/
+
+# Build e dist
+dist/
+build/
+
+# Cache
+.cache/
+*.cache
