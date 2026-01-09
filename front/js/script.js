@@ -1,41 +1,13 @@
 // Configurações Globais
-// As credenciais do Supabase agora estão em config.js
 // Verifica se o Supabase foi carregado antes de inicializar
 const supabaseClient = typeof supabase !== 'undefined' ? supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
-// --- LÓGICA DE INICIALIZAÇÃO ---
-document.addEventListener('DOMContentLoaded', function() {
-    
-    // 1. Setup Modal Handlers
-    setupModalHandlers();
-    
-    // 2. Botão Voltar ao Topo
-    setupBackToTop();
-    
-    // 3. Menu Hamburger
-    setupHamburgerMenu();
-    
-    // 4. Fechar modal ao clicar fora
-    setupModalCloseOnOutsideClick();
-});
-
-// --- SETUP DE MODAIS ---
-function setupModalHandlers() {
-    const modalLinks = document.querySelectorAll('[data-modal-url]');
-    
-    modalLinks.forEach(link => {
-        link.addEventListener('click', function(event) {
-            event.preventDefault();
-            const modalUrl = this.getAttribute('data-modal-url');
-            openModal(modalUrl);
-        });
-    });
-}
-
-function openModal(url) {
+// Função Global para abrir Modal (precisa ser window. para o onclick do HTML funcionar)
+window.handleModalOpen = function(event, url) {
+    event.preventDefault();
     const modalContainer = document.getElementById('studentPortalModal');
     
-    console.log("Abrindo modal:", url);
+    console.log("Tentando abrir modal:", url);
 
     fetch(url)
         .then(response => {
@@ -58,15 +30,17 @@ function openModal(url) {
             setupRecuperarEvent();
         })
         .catch(error => console.error('Erro ao carregar modal:', error));
-}
+};
 
 function setupCloseEvents(modalContainer) {
     const closeBtn = modalContainer.querySelector('.close-btn');
     if (closeBtn) closeBtn.addEventListener('click', () => modalContainer.style.display = 'none');
 }
 
-// --- SETUP BOTÃO VOLTAR AO TOPO ---
-function setupBackToTop() {
+// --- LÓGICA DE INICIALIZAÇÃO ---
+document.addEventListener('DOMContentLoaded', function() {
+    
+    // 1. Botão Voltar ao Topo
     const backToTopButton = document.getElementById('backToTop');
     if (backToTopButton) {
         window.addEventListener('scroll', () => {
@@ -78,10 +52,8 @@ function setupBackToTop() {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
     }
-}
 
-// --- SETUP MENU HAMBURGER ---
-function setupHamburgerMenu() {
+    // 2. Menu Hamburger
     const hamburgerBtn = document.querySelector('.hamburger-btn');
     const mainNav = document.querySelector('.main-nav');
     if (hamburgerBtn && mainNav) {
@@ -91,17 +63,13 @@ function setupHamburgerMenu() {
             icon.classList.replace(isOpen ? 'fa-bars' : 'fa-times', isOpen ? 'fa-times' : 'fa-bars');
         });
     }
-}
 
-// --- SETUP FECHAR MODAL AO CLICAR FORA ---
-function setupModalCloseOnOutsideClick() {
+    // 3. Fechar modal ao clicar fora
     const modalContainer = document.getElementById('studentPortalModal');
-    if (modalContainer) {
-        window.addEventListener('click', (event) => {
-            if (event.target == modalContainer) modalContainer.style.display = 'none';
-        });
-    }
-}
+    window.addEventListener('click', (event) => {
+        if (event.target == modalContainer) modalContainer.style.display = 'none';
+    });
+});
 
 // --- FUNÇÕES DE LOGIN ---
 
