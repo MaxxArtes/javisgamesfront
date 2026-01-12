@@ -1,5 +1,5 @@
 // === CONFIGURAÇÃO DA API ===
-const API_BASE_URL = 'https://javisgames.onrender.com';
+const API_BASE_URL = 'https://javisgames.onrender.com/admin';
 const CONTENT_BASE_PATH = 'designer_start'; // Nome da pasta onde você vai subir os arquivos .html no seu servidor
 
 // === DADOS DOS CURSOS ===

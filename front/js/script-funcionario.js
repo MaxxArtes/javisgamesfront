@@ -1775,7 +1775,7 @@ async function carregarConteudoDidatico() {
         const token = localStorage.getItem('access_token');
         if (!token) throw new Error("Sem token de autenticação");
 
-        const response = await fetch('https://javisgames.onrender.com/conteudo-didatico/cursos', {
+        const response = await fetch('https://javisgames.onrender.com/admin/conteudo-didatico/cursos', {
             headers: { 
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
