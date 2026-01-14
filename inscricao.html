@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscreva-se: Workshops Tech</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <style>
+        :root { --bg-dark: #0f172a; --bg-card: #1e293b; --text-main: #f8fafc; --text-muted: #94a3b8; --game-color: #22c55e; --design-color: #f97316; --site-color: #3b82f6; --info-color: #06b6d4; --stream-color: #d946ef; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-dark); color: var(--text-main); line-height: 1.6; }
+        .hero { text-align: center; padding: 80px 20px; background: radial-gradient(circle at center, #1e293b 0%, #0f172a 70%); }
+        .hero h1 { font-size: 3rem; font-weight: 800; margin-bottom: 20px; background: linear-gradient(to right, #38bdf8, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero p { font-size: 1.2rem; color: var(--text-muted); max-width: 600px; margin: 0 auto 40px; }
+        .btn-cta { display: inline-block; background-color: #3b82f6; color: white; padding: 15px 40px; font-size: 1.1rem; font-weight: bold; border-radius: 50px; text-decoration: none; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 0 20px rgba(59, 130, 246, 0.5); border: none; cursor: pointer; }
+        .btn-cta:hover { transform: scale(1.05); box-shadow: 0 0 30px rgba(59, 130, 246, 0.7); }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin-top: -50px; }
+        .course-card { position: relative; height: 400px; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); transition: transform 0.3s, border-color 0.3s; background-color: var(--bg-card); }
+        .course-card:hover { transform: translateY(-10px); }
+        .card-bg-image { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-size: cover; background-position: center; transition: transform 0.5s ease; z-index: 1; filter: brightness(0.8); }
+        .course-card:hover .card-bg-image { transform: scale(1.1) brightness(1); }
+        .card-content { position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; z-index: 2; background: linear-gradient(to top, rgba(15, 23, 42, 1) 20%, rgba(15, 23, 42, 0.9) 40%, transparent 100%); padding: 25px; display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-start; }
+        .card-category { font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; padding: 5px 10px; border-radius: 5px; background: rgba(0,0,0,0.6); }
+        .course-card h3 { font-size: 1.5rem; margin-bottom: 5px; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); }
+        .course-card p { font-size: 0.95rem; color: #cbd5e1; margin-bottom: 20px; line-height: 1.4; }
+        .btn-card-new { background: white; color: var(--bg-dark); padding: 10px 20px; border-radius: 8px; font-weight: 800; text-decoration: none; border: none; cursor: pointer; width: 100%; text-align: center; transition: 0.3s; }
+        .btn-card-new:hover { background: #cbd5e1; transform: translateY(-2px); }
+        
+        .card-design .card-category { color: var(--design-color); border: 1px solid var(--design-color); } .bg-design { background-image: url('https://images.unsplash.com/photo-1626785774625-ddcddc3445e9?q=80&w=600&auto=format&fit=crop'); }
+        .card-game .card-category { color: var(--game-color); border: 1px solid var(--game-color); } .bg-game { background-image: url('https://images.unsplash.com/photo-1556438064-2d7646166914?q=80&w=600&auto=format&fit=crop'); }
+        .card-info .card-category { color: var(--info-color); border: 1px solid var(--info-color); } .bg-info { background-image: url('https://images.unsplash.com/photo-1496171367470-9ed9a91ea931?q=80&w=600&auto=format&fit=crop'); }
+        .card-site .card-category { color: var(--site-color); border: 1px solid var(--site-color); } .bg-site { background-image: url('https://images.unsplash.com/photo-1621839673705-6617adf9e890?q=80&w=600&auto=format&fit=crop'); }
+        .card-stream .card-category { color: var(--stream-color); border: 1px solid var(--stream-color); } .bg-stream { background-image: url('https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=600&auto=format&fit=crop'); }
+
+        .form-section { padding: 80px 20px; text-align: center; margin-top: 40px; }
+        .form-box { background: var(--bg-card); max-width: 600px; margin: 0 auto; padding: 40px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.05); }
+        .input-group { margin-bottom: 20px; text-align: left; }
+        .input-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.9rem; }
+        .input-group input, .input-group select { width: 100%; padding: 12px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: white; font-size: 1rem; }
+        .input-group input[readonly] { background-color: #1e293b; color: #fbbf24; border-color: #fbbf24; cursor: not-allowed; font-weight: bold; }
+        .required-mark { color: #ef4444; margin-left: 4px; }
+        footer { text-align: center; padding: 40px; color: var(--text-muted); font-size: 0.9rem; border-top: 1px solid #1e293b; }
+        .btn-cta.loading { opacity: 0.7; cursor: not-allowed; }
+
+        .price-alert { background-color: rgba(15, 23, 42, 0.5); border: 1px solid #3b82f6; padding: 20px; border-radius: 10px; margin-bottom: 30px; display: flex; align-items: center; gap: 15px; text-align: left; }
+        .price-alert i { font-size: 2rem; color: #3b82f6; }
+        .price-text { font-size: 0.95rem; color: #e2e8f0; }
+        .price-highlight { color: #fbbf24; font-weight: bold; font-size: 1.1rem; }
+        .free-highlight { color: #22c55e; font-weight: bold; font-size: 1.1rem; }
+    </style>
+</head>
+<body>
+
+    <section class="hero">
+        <h1>Workshops de Férias<br>Javis Game Academy</h1>
+        <p>Aprenda uma nova habilidade em apenas um dia. Vagas limitadas!</p>
+        <button onclick="scrollToForm()" class="btn-cta">Garantir Minha Vaga</button>
+    </section>
+
+    <div class="container">
+        <div class="grid">
+            <div class="course-card card-design"><div class="card-bg-image bg-design"></div><div class="card-content"><span class="card-category"><i class="fas fa-pen-nib"></i> Criatividade</span><h3>Ilustração Digital</h3><p>Crie artes vetoriais incríveis com Adobe Illustrator.</p><button onclick="selectWorkshop('Ilustração Digital')" class="btn-card-new">Dia 23/12</button></div></div>
+            <div class="course-card card-game"><div class="card-bg-image bg-game"></div><div class="card-content"><span class="card-category"><i class="fas fa-gamepad"></i> Games</span><h3>Desenvolvimento de Jogos</h3><p>Aprenda a lógica por trás da criação de jogos.</p><button onclick="selectWorkshop('Desenvolvimento de Jogos')" class="btn-card-new">Dia 27/12</button></div></div>
+            <div class="course-card card-info"><div class="card-bg-image bg-info"></div><div class="card-content"><span class="card-category"><i class="fas fa-laptop"></i> Essencial</span><h3>Informática Básica</h3><p>Domine as ferramentas essenciais do Windows e Office.</p><button onclick="selectWorkshop('Informática Básica')" class="btn-card-new">Dia 28/12</button></div></div>
+            <div class="course-card card-site"><div class="card-bg-image bg-site"></div><div class="card-content"><span class="card-category"><i class="fas fa-code"></i> Web</span><h3>Criação de Sites</h3><p>Desenvolva sua primeira página web profissional.</p><button onclick="selectWorkshop('Criação de Sites')" class="btn-card-new">Dia 03/01</button></div></div>
+            <div class="course-card card-stream"><div class="card-bg-image bg-stream"></div><div class="card-content"><span class="card-category"><i class="fas fa-headset"></i> Carreira</span><h3>Streamer Pro</h3><p>Configure seu setup para fazer lives como um profissional.</p><button onclick="selectWorkshop('Streamer Pro')" class="btn-card-new">Dia 04/01</button></div></div>
+        </div>
+    </div>
+
+    <section class="form-section" id="inscricao">
+        <div class="form-box">
+            <h2 style="margin-bottom: 20px;">Ficha de Inscrição</h2>
+            
+            <div class="price-alert">
+                <i class="fas fa-info-circle"></i>
+                <div class="price-text">
+                    <div>Para quem <strong>NÃO</strong> é aluno: <span class="price-highlight">R$ 19,90</span></div>
+                    <div>Para quem <strong>JÁ É</strong> aluno Javis: <span class="free-highlight">GRATUITO</span></div>
+                </div>
+            </div>
+
+            <form id="registrationForm">
+                <div class="input-group">
+                    <label>Unidade de Preferência <span class="required-mark">*</span></label>
+                    <select id="unidade" required>
+                        <option value="" disabled selected>Escolha sua cidade...</option>
+                        <option value="1">Cuiabá - MT (Max 40 alunos)</option>
+                        <option value="2">Teresina - PI (Max 20 alunos)</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label>Seu Nome Completo <span class="required-mark">*</span></label>
+                    <input type="text" id="name" required placeholder="Ex: João Silva">
+                </div>
+                
+                <div class="input-group">
+                    <label>Seu CPF <span class="required-mark">*</span></label>
+                    <input type="text" id="cpf" required placeholder="000.000.000-00" maxlength="14" oninput="mascaraCPF(this)">
+                </div>
+
+                <div class="input-group">
+                    <label>Seu WhatsApp <span class="required-mark">*</span></label>
+                    <input type="tel" id="phone" required placeholder="Ex: 65 99999-9999">
+                </div>
+                
+                <div class="input-group">
+                    <label>Workshop de Interesse <span class="required-mark">*</span></label>
+                    <select id="workshop" required onchange="updateDate()">
+                        <option value="" disabled selected>Selecione o curso...</option>
+                        <option value="Ilustração Digital">🎨 Ilustração Digital (23/12)</option>
+                        <option value="Desenvolvimento de Jogos">🎮 Desenvolvimento de Jogos (27/12)</option>
+                        <option value="Informática Básica">💻 Informática Básica (28/12)</option>
+                        <option value="Criação de Sites">🌐 Criação de Sites (02/01)</option>
+                        <option value="Streamer Pro">📹 Streamer Pro (03/01)</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label>Data e Horário (Automático) <span class="required-mark">*</span></label>
+                    <input type="text" id="data_display" readonly required placeholder="Selecione um curso acima..." >
+                </div>
+
+                <button type="submit" id="btnSubmit" class="btn-cta" style="width: 100%; border-radius: 8px;">
+                    Confirmar Inscrição
+                </button>
+            </form>
+            
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2025 Javis Game Academy</p>
+    </footer>
+
+    <script>
+        const SUPABASE_URL = 'https://qsosuuwzhonkwhnfffjw.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_AAV5xY79zg1eWOOf9RZ5aQ_wtH5kw-d';
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // CONFIGURAÇÃO DOS LIMITES
+        const LIMITES = {
+            '1': 40, // Cuiabá
+            '2': 20  // Teresina
+        };
+
+        const agenda = {
+            "Ilustração Digital":     "23/12/2025 às 14:00",
+            "Desenvolvimento de Jogos": "27/12/2025 às 14:00",
+            "Informática Básica":     "28/12/2025 às 14:00",
+            "Criação de Sites":       "03/01/2026 às 14:00",
+            "Streamer Pro":           "04/01/2026 às 14:00"
+        };
+
+        function mascaraCPF(i) {
+            let v = i.value;
+            if(isNaN(v[v.length-1])){ 
+               i.value = v.substring(0, v.length-1);
+               return;
+            }
+            i.setAttribute("maxlength", "14");
+            if (v.length == 3 || v.length == 7) i.value += ".";
+            if (v.length == 11) i.value += "-";
+        }
+
+        function scrollToForm() { document.getElementById('inscricao').scrollIntoView({ behavior: 'smooth' }); }
+
+        function selectWorkshop(workshopName) {
+            const select = document.getElementById('workshop');
+            select.value = workshopName;
+            updateDate(); 
+            scrollToForm();
+        }
+
+        function updateDate() {
+            const select = document.getElementById('workshop');
+            const display = document.getElementById('data_display');
+            const selectedCourse = select.value;
+            if (agenda[selectedCourse]) display.value = agenda[selectedCourse];
+            else display.value = "";
+        }
+
+        const form = document.getElementById('registrationForm');
+        
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault(); 
+            
+            const btn = document.getElementById('btnSubmit');
+            const originalText = btn.innerText;
+
+            const unidade = document.getElementById('unidade').value;
+            const name = document.getElementById('name').value;
+            const cpf = document.getElementById('cpf').value;
+            const phone = document.getElementById('phone').value;
+            const workshop = document.getElementById('workshop').value;
+            const data_agendada = document.getElementById('data_display').value;
+
+            if (!unidade || !name || !cpf || !phone || !workshop || !data_agendada) {
+                alert("Por favor, preencha todos os campos obrigatórios.");
+                return;
+            }
+            if(cpf.length < 14) { alert("Por favor, digite o CPF completo."); return; }
+
+            btn.innerText = "Verificando Vagas...";
+            btn.classList.add('loading');
+            btn.disabled = true;
+
+            try {
+                // 1. CONTA APENAS OS CONFIRMADOS PARA VER SE LOTOU
+                // Usa status_vagas para não confundir com status de atendimento
+                const { count, error: countError } = await _supabase
+                    .from('inscricoes')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('workshop', workshop)
+                    .eq('id_unidade', unidade)
+                    .eq('status_vagas', 'confirmado'); 
+
+                if (countError) throw countError;
+
+                const limiteAtual = LIMITES[unidade] || 20;
+                let statusVaga = 'confirmado'; // Padrão
+
+                // 2. SE ATINGIU O LIMITE, OFERECE LISTA DE ESPERA
+                if (count >= limiteAtual) {
+                    const aceitaEspera = confirm(`⚠️ TURMA LOTADA (${count}/${limiteAtual})\n\nAs vagas principais para "${workshop}" já foram preenchidas.\n\nDeseja entrar na LISTA DE ESPERA?\nCaso abra uma vaga extra, avisaremos você.`);
+                    
+                    if (!aceitaEspera) {
+                        btn.innerText = originalText;
+                        btn.classList.remove('loading');
+                        btn.disabled = false;
+                        return; // Cancela se a pessoa não quiser esperar
+                    }
+                    
+                    statusVaga = 'lista_espera';
+                }
+
+                // 3. SALVA (Como confirmado ou lista de espera)
+                btn.innerText = "Salvando...";
+                
+                const { data, error } = await _supabase
+                    .from('inscricoes')
+                    .insert([
+                        { 
+                            nome: name, 
+                            cpf: cpf,
+                            whatsapp: phone, 
+                            workshop: workshop,
+                            data_agendada: data_agendada,
+                            id_unidade: parseInt(unidade),
+                            status: 'Pendente', // CRM começa como Pendente
+                            status_vagas: statusVaga // Controla a vaga (confirmado/espera)
+                        }
+                    ]);
+
+                if (error) throw error;
+
+                // Mensagem personalizada
+                if (statusVaga === 'lista_espera') {
+                    alert(`✅ Você está na LISTA DE ESPERA!\n\nCurso: ${workshop}\n\nFique atento ao WhatsApp, avisaremos se surgir uma vaga.`);
+                } else {
+                    alert(`✅ Inscrição Confirmada!\n\nCurso: ${workshop}\nData: ${data_agendada}\n\nNos vemos lá!`);
+                }
+
+                form.reset();
+                document.getElementById('data_display').value = ""; 
+                btn.innerText = "Sucesso! ✅";
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.classList.remove('loading');
+                    btn.disabled = false;
+                }, 3000);
+
+            } catch (err) {
+                console.error('Erro:', err);
+                alert("Erro ao processar inscrição. Tente novamente.");
+                btn.innerText = originalText;
+                btn.classList.remove('loading');
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

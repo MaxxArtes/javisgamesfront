@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aniversário Gamer | Javis Game Academy</title>
+    <link rel="icon" type="image/png" href="assets/img/CUIABÁ ICON.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); z-index: 1000; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+        .modal-content { background: #111; padding: 30px; border-radius: 15px; width: 90%; max-width: 400px; border: 1px solid #333; box-shadow: 0 0 20px rgba(217, 70, 239, 0.2); position: relative; animation: slideDown 0.3s ease; }
+        @keyframes slideDown { from {transform: translateY(-50px); opacity: 0;} to {transform: translateY(0); opacity: 1;} }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-size: 0.9rem; color: #fff; }
+        .form-group input { width: 100%; padding: 12px; background: #222; border: 1px solid #444; border-radius: 5px; color: white; outline: none; transition: 0.3s; }
+        .form-group input:focus { border-color: #d946ef; box-shadow: 0 0 8px rgba(217, 70, 239, 0.3); }
+        .close-modal { position: absolute; top: 10px; right: 15px; color: #aaa; font-size: 24px; cursor: pointer; }
+        .btn-submit { width: 100%; padding: 12px; background: linear-gradient(90deg, #d946ef, #fbbf24); border: none; color: white; font-weight: bold; border-radius: 5px; cursor: pointer; margin-top: 10px; text-transform: uppercase; }
+        .btn-submit:hover { filter: brightness(1.1); }
+    </style>
+</head>
+<body style="background-color: #000; color: white;">
+
+    <header style="padding: 20px; background: rgba(0,0,0,0.9); position: fixed; width: 100%; z-index: 100; top: 0;">
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
+            <a href="IndexHome.html">
+                <img src="assets/img/JAVIS - LOGO COM REGISTRO (BRANCO) (2).png" width="180" alt="Home">
+            </a>
+            <a href="IndexHome.html" class="btn" style="background: #d946ef; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none;">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </a>
+        </div>
+    </header>
+
+    <section class="course-hero" style="background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.9)), url('assets/img/aniversario.jpg'); margin-top: 0;"> 
+        <div style="padding-top: 80px;">
+            <span class="course-tag" style="background: #d946ef; color: white;">Festa Épica</span>
+            <h1>Aniversário Gamer</h1>
+            <p style="font-size: 1.2rem; max-width: 600px; margin: 0 auto;">A melhor festa da vida do seu filho(a) acontece aqui.</p>
+        </div>
+    </section>
+
+    <div class="course-container">
+        <div class="course-about">
+            <h2>Sua Festa na Javis</h2>
+            <p>Esqueça os buffets tradicionais. No <strong>Aniversário Gamer</strong>, você aluga o espaço e toda a nossa tecnologia fica à disposição dos convidados. É diversão garantida do início ao fim.</p>
+            
+            <h3 style="color: #fbbf24; margin-top: 40px;">Tudo Liberado:</h3>
+            <ul class="modules-list">
+                <li>
+                    <strong>🎉 Espaço Exclusivo:</strong> Área reservada para você, seus amigos e família comemorarem com conforto.
+                </li>
+                <li>
+                    <strong>🖥️ PCs e Consoles:</strong> Acesso livre aos computadores gamer de alta performance, PlayStation 5 e Xbox Series.
+                </li>
+                <li>
+                    <strong>🏎️ Simuladores:</strong> Cockpits de corrida com volantes profissionais disponíveis para todos pilotarem.
+                </li>
+                <li>
+                    <strong>🥽 Realidade Virtual:</strong> Óculos VR liberados para quem quiser experimentar a imersão total.
+                </li>
+            </ul>
+        </div>
+
+        <aside class="course-sidebar">
+            <div class="sidebar-card">
+                <h3 style="color: #fbbf24;">Faça um Orçamento</h3>
+                <div style="text-align: left; margin: 20px 0; color: #ddd;">
+                    <p style="margin-bottom: 10px;"><i class="fas fa-users" style="color: #d946ef;"></i> Capacidade: <strong>Até 30 Pessoas</strong></p>
+                    <p style="margin-bottom: 10px;"><i class="fas fa-clock" style="color: #d946ef;"></i> Duração: <strong>3h ou 4h</strong></p>
+                </div>
+                
+                <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 20px;">
+                    <p style="font-size: 0.9rem; color: #ccc;">Traga seu bolo e salgados! Nós cuidamos da diversão tecnológica.</p>
+                </div>
+
+                <a href="#" id="btn-modal-trigger" class="btn" style="width: 100%; display: block; text-align: center; background: linear-gradient(90deg, #d946ef, #fbbf24); border: none;">
+                    <i class="fab fa-whatsapp"></i> Cotar Agora
+                </a>
+            </div>
+        </aside>
+    </div>
+
+    <footer style="text-align: center; padding: 40px; background: #111; border-top: 1px solid #333;">
+        <p>&copy; 2025 Javis Game Academy.</p>
+    </footer>
+
+    <div id="leadModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div style="text-align: center; margin-bottom: 20px;">
+                <h2 style="color: #fbbf24; margin-bottom: 5px;">Festa Gamer</h2>
+                <p style="font-size: 0.9rem; color: #ccc;">Preencha para receber um orçamento personalizado.</p>
+            </div>
+            <form id="leadForm" onsubmit="enviarLead(event)">
+                <div class="form-group">
+                    <label>Nome do Responsável</label>
+                    <input type="text" id="nome" required placeholder="Seu nome">
+                </div>
+                <div class="form-group">
+                    <label>WhatsApp</label>
+                    <input type="tel" id="whatsapp" required placeholder="(65) 99999-9999">
+                </div>
+                <div class="form-group">
+                    <label>Número de Convidados (Estimado)</label>
+                    <input type="number" id="convidados" placeholder="Ex: 15">
+                </div>
+                <button type="submit" class="btn-submit">RECEBER ORÇAMENTO <i class="fas fa-paper-plane"></i></button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const modal = document.getElementById('leadModal');
+        const btnTrigger = document.getElementById('btn-modal-trigger');
+        const closeBtn = document.querySelector('.close-modal');
+
+        btnTrigger.onclick = (e) => { e.preventDefault(); modal.style.display = 'flex'; }
+        closeBtn.onclick = () => modal.style.display = 'none';
+        window.onclick = (e) => { if(e.target == modal) modal.style.display = 'none'; }
+
+        function enviarLead(e) {
+            e.preventDefault();
+            const nome = document.getElementById('nome').value;
+            const convidados = document.getElementById('convidados').value;
+            const servico = document.title.split('|')[0].trim(); 
+            
+            const texto = `Olá! Me chamo *${nome}*. Quero fazer um orçamento para *${servico}*${convidados ? ` para cerca de *${convidados} convidados*` : ''}.`;
+            window.open(`https://wa.me/5565992532020?text=${encodeURIComponent(texto)}`, '_blank');
+            modal.style.display = 'none';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+# Arquivos de configuração com credenciais
+front/js/config.js
+front/assets/video/video.mp4
+
+# Arquivos de ambiente
+.env
+.env.local
+.env.*.local
+*.env
+settings.json
+
+# Logs
+*.log
+logs/
+
+# Arquivos temporários
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# IDEs e editores
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Node modules (caso seja usado futuramente)
+node_modules/
+
+
+
+# Dependências/build
+node_modules/
+dist/
+build/
+.cache/
+*.cache
+
+# Arquivos grandes comuns
+*.zip
+*.rar
+*.7z
+*.mp4
+*.mov
+*.mkv
+*.psd
+*.ai
