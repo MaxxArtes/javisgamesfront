@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Portal do Aluno - Javis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="css/meuscursos.css" />
+</head>
+<body class="min-h-screen flex flex-col">
+
+<header class="navbar">
+            <div class="logo">
+                <a href="IndexHome.html">
+                    <img src="assets/img/JAVIS - LOGO COM REGISTRO (BRANCO) (2).png" width="320" height="100" alt="Logo Javis Game Academy - Ir para a Home">
+                </a>
+            </div>
+        
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="CursosIndex.html" class="nav-link">
+                    <i class="fas fa-book"></i> Meus Cursos
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="FinanceiroIndex.html" class="nav-link">
+                    <i class="fas fa-chalkboard-teacher"></i> Financeiro
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="CertificadosIndex.html" class="nav-link">
+                    <i class="fas fa-graduation-cap"></i> Certificados
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="SuporteIndex.html" class="nav-link active">
+                    <i class="fas fa-headset"></i> Suporte
+                </a>
+            </li>
+        </ul>
+
+        <div class="user-menu flex items-center gap-4">
+            <div class="search-box hidden lg:flex items-center bg-[#2c2c2c] px-3 py-1 rounded-full border border-gray-700">
+                <input type="text" placeholder="Buscar..." class="bg-transparent border-none outline-none text-sm text-white w-40 placeholder-gray-500">
+                <button class="text-gray-400 hover:text-[#00FFFF]">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+            
+            <div class="user-actions flex items-center gap-4">
+                <button class="notification-btn relative text-gray-400 hover:text-[#00FFFF] transition">
+                    <i class="fas fa-bell text-lg"></i>
+                    <span class="absolute -top-2 -right-2 bg-red-600 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">3</span>
+                </button>
+                
+                <div class="user-profile relative flex items-center gap-2 cursor-pointer">
+                    <img src="https://ui-avatars.com/api/?name=Anderson+Soares&background=00FFFF&color=000" alt="Avatar" class="w-8 h-8 rounded-full border border-[#00FFFF]">
+                    <span class="user-name text-sm font-semibold text-gray-200 hidden md:block">Anderson Soares</span>
+                    <i class="fas fa-chevron-down text-xs text-[#00FFFF] hidden md:block"></i>
+                    
+                    <div class="user-dropdown">
+                        <div class="p-4 border-b border-gray-700 flex items-center gap-3">
+                            <img src="https://ui-avatars.com/api/?name=Anderson+Soares&background=00FFFF&color=000" alt="Avatar" class="w-10 h-10 rounded-full">
+                            <div class="overflow-hidden">
+                                <h4 class="font-bold text-sm text-[#00FFFF]">Anderson Soares</h4>
+                                <p class="text-xs text-gray-400 truncate">anderson@gmail.com</p>
+                            </div>
+                        </div>
+                        <div class="py-1">
+                            <a href="#" class="dropdown-item flex items-center gap-3 px-4 py-3">
+                                <i class="fas fa-user w-5"></i> Meu Perfil
+                            </a>
+                            <a href="#" class="dropdown-item flex items-center gap-3 px-4 py-3">
+                                <i class="fas fa-cog w-5"></i> Configurações
+                            </a>
+                            <div class="h-px bg-gray-700 my-1"></div>
+                            <a href="#" class="dropdown-item flex items-center gap-3 px-4 py-3 text-red-400 hover:text-red-300">
+                                <i class="fas fa-sign-out-alt w-5"></i> Sair
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow p-4 md:p-8 flex justify-center">
+        <div class="container max-w-6xl neon-container rounded-xl p-6 md:p-8">
+            <header class="mb-8 border-b border-[#333] pb-4">
+                <h1 class="text-3xl font-bold text-[#f5f5f5] flex items-center gap-3">
+                    <i class="fas fa-wallet text-[#00FFFF]"></i>
+                    Minhas Transações Financeiras
+                </h1>
+                <p class="text-gray-500 mt-2">Visualize seu histórico de pagamentos e faturas pendentes.</p>
+            </header>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-[#1a1a1a] p-5 rounded-lg border-l-4 border-green-500 shadow-xl">
+                    <div class="text-xs uppercase font-semibold text-gray-500">Status Atual</div>
+                    <div class="text-2xl font-bold text-green-400 mt-1">Adimplente</div>
+                    <p class="text-sm text-gray-400 mt-2">Nenhuma fatura em aberto.</p>
+                </div>
+                <div class="bg-[#1a1a1a] p-5 rounded-lg border-l-4 border-[#00FFFF] shadow-xl">
+                    <div class="text-xs uppercase font-semibold text-gray-500">Próximo Vencimento</div>
+                    <div class="text-2xl font-bold text-[#f5f5f5] mt-1">R$ 499,90</div>
+                    <p class="text-sm text-gray-400 mt-2">Vence em: 10 de Dezembro</p>
+                </div>
+                <div class="bg-[#1a1a1a] p-5 rounded-lg border-l-4 border-yellow-500 shadow-xl">
+                    <div class="text-xs uppercase font-semibold text-gray-500">Valor Pago (Ano)</div>
+                    <div class="text-2xl font-bold text-yellow-400 mt-1">R$ 5.498,90</div>
+                    <p class="text-sm text-gray-400 mt-2">Referente aos 11 meses de 2025.</p>
+                </div>
+            </div>
+
+            <h2 class="text-xl font-bold mb-4 text-[#f5f5f5] flex items-center gap-2">
+                <i class="fas fa-history text-[#00FFFF]"></i> Histórico de Faturas
+            </h2>
+
+            <div class="overflow-x-auto bg-[#1a1a1a] rounded-lg border border-[#333]">
+                <table class="min-w-full divide-y divide-[#333]">
+                    <thead>
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fatura</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Valor</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vencimento</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-[#333]">
+                        <tr class="bg-[#111] hover:bg-[#1a1a1a]/50 transition duration-150 border-l-4 border-[#00FFFF]">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-[#f5f5f5]">Mensalidade - Dez/2025</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-[#00FFFF] font-bold">R$ 499,90</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">10/12/2025</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-900 text-yellow-300">Pendente</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <a href="#" class="text-[#00FFFF] hover:text-[#00FFFF]/70 transition ml-4">
+                                    <i class="fas fa-download mr-1"></i> Pagar
+                                </a>
+                            </td>
+                        </tr>
+                        <tr class="bg-[#111] hover:bg-[#1a1a1a]/50 transition duration-150">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-[#f5f5f5]">Mensalidade - Nov/2025</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-[#f5f5f5]">R$ 499,90</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">10/11/2025</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-900 text-green-300">Pago</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <a href="#" class="text-gray-500 hover:text-gray-400 transition ml-4">
+                                    <i class="fas fa-file-pdf mr-1"></i> Ver PDF
+                                </a>
+                            </td>
+                        </tr>
+                        <tr class="bg-[#111] hover:bg-[#1a1a1a]/50 transition duration-150">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-[#f5f5f5]">Mensalidade - Out/2025</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-[#f5f5f5]">R$ 499,90</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">10/10/2025</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-900 text-green-300">Pago</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <a href="#" class="text-gray-500 hover:text-gray-400 transition ml-4">
+                                    <i class="fas fa-file-pdf mr-1"></i> Ver PDF
+                                </a>
+                            </td>
+                        </tr>
+                        <tr class="bg-[#111] hover:bg-[#1a1a1a]/50 transition duration-150 border-l-4 border-red-500">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-[#f5f5f5]">Mensalidade - Jun/2025</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-red-400 font-bold">R$ 499,90</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">10/06/2025</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-900 text-red-300">Atrasada</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <a href="#" class="text-red-400 hover:text-red-300 transition ml-4">
+                                    <i class="fas fa-money-bill-wave mr-1"></i> Negociar
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="flex justify-center mt-6">
+                <button class="bg-[#00FFFF] text-black font-bold py-2 px-6 rounded-full hover:bg-[#00FFFF]/80 transition duration-300 shadow-[0_0_15px_rgba(0,255,255,0.4)]">
+                    <i class="fas fa-print mr-2"></i> Imprimir Extrato
+                </button>
+            </div>
+
+        </div>
+    </main>
+    <script>
+        // Lógica do Mobile Menu e User Dropdown (copiada do CursosIndex.html)
+        document.addEventListener('DOMContentLoaded', function () {
+            const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+            const navMenu = document.querySelector('.nav-menu');
+            const userProfile = document.querySelector('.user-profile');
+            const userDropdown = document.querySelector('.user-dropdown');
+            
+            if(mobileMenuBtn) {
+                mobileMenuBtn.addEventListener('click', () => navMenu.classList.toggle('active'));
+            }
+
+            if(userProfile) {
+                userProfile.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    userDropdown.classList.toggle('active');
+                });
+            }
+
+            document.addEventListener('click', () => {
+                if(userDropdown) userDropdown.classList.remove('active');
+            });
+        });
+    </script>
+</body>
+</html>

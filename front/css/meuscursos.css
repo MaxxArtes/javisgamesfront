@@ -1,0 +1,197 @@
+/* --- Variáveis e Configurações Gerais --- */
+:root {
+    --neon-cyan: #00FFFF;
+    --bg-dark: #1a1a1a;
+    --bg-card: #111111;
+    --text-light: #f5f5f5;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-light);
+    font-family: sans-serif;
+}
+
+/* --- Barra de Rolagem Personalizada --- */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #111; 
+}
+::-webkit-scrollbar-thumb {
+    background: #333; 
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--neon-cyan); 
+}
+
+/* --- Navbar Estilizada --- */
+.header {
+    background-color: rgba(26, 26, 26, 0.95);
+    min-height: 100%;
+    margin: 0;
+    padding: 15px 0;
+    position: sticky; /* Adicionado para fixar no topo */
+    top: 0;
+    z-index: 1000;
+}
+
+.header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo img {
+    width: 200px;
+    height: auto;
+    display: block;
+}
+
+.main-nav ul {
+    display: flex;
+    gap: 25px;
+    align-items: baseline;
+}
+
+.main-nav a {
+    color: #f5f5f5;
+    font-weight: 500;
+    font-size: 1.1rem;
+    padding-bottom: 5px;
+    position: relative;
+    text-transform: uppercase; 
+}
+
+.main-nav a.active::after {
+    content: ''; /* Adicionado o content para a linha aparecer */
+    display: block;
+    width: 100%;
+    height: 3px;
+    background: #00FFFF; /* Linha de destaque Ciano */
+    position: absolute;
+    bottom: 0;
+    left: 0;
+}
+
+.navbar {
+    background-color: rgba(26, 26, 26, 0.95);
+    border-bottom: 1px solid #333;
+    padding: 0.75rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    backdrop-filter: blur(5px);
+}
+
+.nav-brand h1 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #f5f5f5;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.nav-menu {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+    margin: 0;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #bbb;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+}
+
+.nav-link:hover, .nav-link.active {
+    color: var(--neon-cyan);
+    text-shadow: 0 0 5px rgba(0, 255, 255, 0.7);
+}
+
+/* --- Container Neon --- */
+.neon-container {
+    background-color: var(--bg-card);
+    border: 1px solid var(--neon-cyan);
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.15);
+}
+
+/* --- Dropdown do Usuário --- */
+.user-dropdown {
+    display: none;
+    position: absolute;
+    top: 120%;
+    right: 0;
+    width: 250px;
+    background: #1a1a1a;
+    border: 1px solid var(--neon-cyan);
+    border-radius: 0.5rem;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+    z-index: 100;
+}
+
+.user-dropdown.active {
+    display: block;
+}
+
+.dropdown-item {
+    color: #ccc;
+    transition: 0.2s;
+}
+.dropdown-item:hover {
+    background-color: #333;
+    color: var(--neon-cyan);
+}
+
+/* Mobile */
+.mobile-menu-btn {
+    display: none;
+    cursor: pointer;
+    color: var(--neon-cyan);
+    font-size: 1.5rem;
+}
+
+@media (max-width: 1200px) {
+    .nav-menu {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background: #1a1a1a;
+        padding: 1rem;
+        border-bottom: 1px solid var(--neon-cyan);
+    }
+    .nav-menu.active {
+        display: flex;
+        flex-direction: column;
+    }
+    .main-nav ul {
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+    }
+    .header .container {
+        text-align: center;
+    }
+    .mobile-menu-btn {
+        display: block;
+    }
+    .user-name, .search-box {
+        display: none;
+    }
+}

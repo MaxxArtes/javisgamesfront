@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nova Senha - Javis Game Academy</title>
+    <link rel="stylesheet" href="css/styles.css" /> <style>
+        body { display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #111; color: white; font-family: sans-serif; }
+        .box { background: #222; padding: 40px; border-radius: 10px; width: 100%; max-width: 400px; text-align: center; }
+        input { width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: none; }
+        .btn { width: 100%; padding: 10px; cursor: pointer; background: #00d4ff; color: black; font-weight: bold; border: none; margin-top: 10px; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+</head>
+<body>
+
+    <div class="box">
+        <img src="assets/img/JAVIS - LOGO COM REGISTRO (BRANCO) (2).png" width="200" style="margin-bottom: 20px;">
+        <h2>CRIAR NOVA SENHA</h2>
+        <form id="form-nova-senha">
+            <input type="password" id="nova-senha" placeholder="Nova Senha" required>
+            <button type="submit" class="btn">SALVAR SENHA</button>
+        </form>
+    </div>
+
+    <script>
+        // Credenciais carregadas de config.js
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // Detecta quando o usuário chega pelo link de email
+        supabaseClient.auth.onAuthStateChange(async (event, session) => {
+            if (event === "PASSWORD_RECOVERY") {
+                console.log("Modo de recuperação ativado");
+            }
+        });
+
+        document.getElementById('form-nova-senha').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const newPassword = document.getElementById('nova-senha').value;
+            const btn = document.querySelector('.btn');
+
+            btn.innerText = "Salvando...";
+            
+            // CORREÇÃO: Usamos 'supabaseClient' aqui também
+            const { data, error } = await supabaseClient.auth.updateUser({ 
+                password: newPassword 
+            });
+
+            if (error) {
+                alert("Erro ao salvar: " + error.message);
+                btn.innerText = "SALVAR SENHA";
+            } else {
+                alert("Senha alterada com sucesso! Você será redirecionado.");
+                window.location.href = "IndexHome.html";
+            }
+        });
+    </script>
+</body>
+</html>

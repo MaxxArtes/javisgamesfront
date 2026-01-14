@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Novo Aluno</title>
+    <style>
+        /* Reset básico e Fontes */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Centraliza o formulário na tela e define o fundo */
+        body {
+            background-color: #f4f6f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* O container principal (estilo cartão/modal) */
+        .modal-content {
+            background-color: #ffffff;
+            width: 100%;
+            max-width: 400px;
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            position: relative;
+            text-align: center;
+        }
+
+        /* Botão de fechar (X) */
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 1.5rem;
+            color: #aaa;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        /* Títulos e Textos */
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.8rem;
+        }
+
+        p {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        /* Grupos de Input */
+        .input-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            border-color: #007bff;
+        }
+
+        /* Botão Principal */
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+            margin-bottom: 15px;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        /* Link de login */
+        a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="modal-content">
+        <span class="close-btn" onclick="history.back()">&times;</span> 
+
+        <h1>NOVO ALUNO</h1>
+        <p>
+            Preencha os dados abaixo para criar sua conta.
+            Certifique-se de usar um e-mail válido.
+        </p>
+        
+        <form action="ProcessarCadastro.php" method="POST">
+            <div class="input-group">
+                <input type="text" name="nome" placeholder="Nome Completo" required />
+            </div>
+
+            <div class="input-group">
+                <input type="text" name="cpf" placeholder="CPF (somente números)" pattern="\d*" title="Digite apenas números" inputmode="numeric" required />
+            </div>
+
+            <div class="input-group">
+                <input type="text" name="nascimento" placeholder="Data de Nascimento (DD/MM/AAAA)" required />
+            </div>
+
+            <div class="input-group">
+                <input type="email" name="email" placeholder="E-mail" required />
+            </div>
+            
+            <button type="submit" class="btn">FINALIZAR CADASTRO</button> 
+        </form>
+
+        <p>Já tem uma conta? <a href="LoginIndex.html">Faça Login</a></p>
+    </div>
+
+</body>
+</html>

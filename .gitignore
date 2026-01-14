@@ -1,12 +1,16 @@
 # Arquivos de configuração com credenciais
 front/js/config.js
+
 front/assets/video/video.mp4
+
+
 
 # Arquivos de ambiente
 .env
 .env.local
 .env.*.local
 *.env
+
 settings.json
 
 # Logs
@@ -47,3 +51,11 @@ build/
 *.mkv
 *.psd
 *.ai
+=======
+# Build e dist
+dist/
+build/
+
+# Cache
+.cache/
+*.cache
