@@ -116,9 +116,10 @@ function showTab(tabId) {
     const targetTab = document.getElementById(tabId);
     if (!targetTab) return; // Se a aba não existir, não faz nada e evita erro no console
 
+    
     document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
     targetTab.classList.remove('hidden');
-
+    
     document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
     document.getElementById(tabId).classList.remove('hidden');
     
@@ -128,7 +129,7 @@ function showTab(tabId) {
     });
     const link = document.getElementById('menu-' + tabId);
     if(link) { link.classList.add('active'); if(tabId === 'perfil') link.classList.add('bg-white/5'); }
-
+    
     if(tabId === 'reposicao') { 
         carregarSelectRepTurma(); 
         carregarSelectProfessores(); 
@@ -138,6 +139,9 @@ function showTab(tabId) {
     if(tabId === 'cadastro') carregarOpcoesTurmas();
     if(tabId === 'inscricoes') carregarInscricoes();
     if(tabId === 'alunos') carregarAlunos();
+    if (tabId === 'novo-usuario') {
+        carregarAlunosParaNovoUsuario();
+    }
     if(tabId === 'agenda') renderCalendar();
     if(tabId === 'atendimento') atualizarListaChat();
     if(tabId === 'turmas') carregarListaTurmas();
@@ -2140,3 +2144,77 @@ async function salvarEdicaoAluno() {
         if(btn) { btn.innerText = originalText; btn.disabled = false; }
     }
 }
+async function carregarAlunosParaNovoUsuario() {
+  const select = document.getElementById('novoUsuarioAluno');
+  if (!select) return;
+
+  select.innerHTML = '<option value="" disabled selected>Carregando...</option>';
+
+  try {
+    const res = await fetchAdmin(`${API_URL}/admin/listar-alunos`);
+    if (!res) throw new Error('Falha ao buscar alunos');
+
+    const alunos = await res.json();
+
+    // Opcional: filtrar só quem NÃO tem user_id (se sua API devolver isso)
+    // const filtrados = alunos.filter(a => !a.user_id);
+
+    select.innerHTML = '<option value="" disabled selected>Selecione um aluno...</option>';
+
+    alunos.forEach(a => {
+      const opt = document.createElement('option');
+      opt.value = a.id_aluno;
+      opt.textContent = `${a.nome_completo}${a.turma_codigo ? ' - ' + a.turma_codigo : ''}`;
+      select.appendChild(opt);
+    });
+
+  } catch (err) {
+    console.error(err);
+    select.innerHTML = '<option value="" disabled selected>Erro ao carregar alunos</option>';
+  }
+}
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.getElementById('formNovoUsuario');
+  if (!form) return;
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const id_aluno = Number(document.getElementById('novoUsuarioAluno')?.value);
+    const email = document.getElementById('novoUsuarioEmail')?.value?.trim();
+    const senha = document.getElementById('novoUsuarioSenha')?.value;
+
+    if (!id_aluno || !email || !senha) {
+      Swal.fire('Atenção', 'Preencha aluno, e-mail e senha.', 'warning');
+      return;
+    }
+
+    const btn = document.getElementById('btnCriarNovoUsuario');
+    const original = btn?.innerText;
+    if (btn) { btn.disabled = true; btn.innerText = 'Criando...'; }
+
+    try {
+      const res = await fetchAdmin(`${API_URL}/admin/criar-login-aluno`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id_aluno, email, senha })
+      });
+
+      if (!res) throw new Error('Sem resposta do servidor');
+
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data.detail || data.message || 'Erro ao criar login');
+      }
+
+      Swal.fire('Sucesso!', data.message || 'Login criado com sucesso!', 'success');
+      form.reset();
+      carregarAlunosParaNovoUsuario();
+
+    } catch (err) {
+      Swal.fire('Erro', err.message || 'Erro ao criar login', 'error');
+    } finally {
+      if (btn) { btn.disabled = false; btn.innerText = original; }
+    }
+  });
+});

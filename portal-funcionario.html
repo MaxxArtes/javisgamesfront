@@ -48,6 +48,12 @@
                     <i class="fas fa-layer-group w-6 mr-3"></i> Gestão de Turmas
                 </a>
                 <a href="#" onclick="showTab('cadastro')" id="menu-cadastro" class="sidebar-item flex items-center px-4 py-3 rounded-md text-gray-400"><i class="fas fa-user-plus w-6 mr-3"></i> Novo Aluno</a>
+                <a href="#"
+                    onclick="showTab('novo-usuario')"
+                    id="menu-novo-usuario"
+                    class="sidebar-item flex items-center px-4 py-3 rounded-md text-gray-400">
+                    <i class="fas fa-user-lock w-6 mr-3"></i> Novo Usuário
+                </a>
                 <a href="#" onclick="showTab('reposicao')" id="menu-reposicao" class="sidebar-item flex items-center px-4 py-3 rounded-md text-gray-400"><i class="fas fa-clock w-6 mr-3"></i> Reposições</a>
             </div>
         </nav>
@@ -304,6 +310,43 @@
                     </form>
                 </div>
             </div>
+
+            <div id="novo-usuario" class="tab-content hidden p-4 md:p-8 fade-in">
+                <h1 class="text-2xl md:text-3xl font-bold text-[#00FFFF] mb-6">Novo Usuário (Login)</h1>
+
+                <div class="bg-black/30 border border-[#222] rounded-xl p-6">
+                    <form id="formNovoUsuario" class="space-y-4">
+
+                    <div>
+                        <label class="block text-gray-300 font-semibold mb-1">Selecionar Aluno</label>
+                        <select id="novoUsuarioAluno" class="w-full bg-[#111] border border-[#333] rounded px-3 py-2 text-white" required>
+                        <option value="" disabled selected>Selecione um aluno...</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-300 font-semibold mb-1">E-mail (Login)</label>
+                        <input id="novoUsuarioEmail" type="email"
+                            class="w-full bg-[#111] border border-[#333] rounded px-3 py-2 text-white"
+                            placeholder="email@dominio.com" required />
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-300 font-semibold mb-1">Senha</label>
+                        <input id="novoUsuarioSenha" type="password"
+                            class="w-full bg-[#111] border border-[#333] rounded px-3 py-2 text-white"
+                            placeholder="Senha inicial" required />
+                    </div>
+
+                    <button id="btnCriarNovoUsuario" type="submit"
+                            class="w-full bg-[#00FFFF] text-black font-bold py-3 rounded hover:bg-[#00cccc] mt-4">
+                        CRIAR LOGIN
+                    </button>
+
+                    </form>
+                </div>
+            </div>
+
 
             <div id="agenda" class="tab-content hidden p-4 md:p-8 fade-in">
                 <h1 class="text-2xl md:text-3xl font-bold text-[#00FFFF] mb-6">Agenda</h1>
