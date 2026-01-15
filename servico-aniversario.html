@@ -1,135 +1,400 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aniversário Gamer | Javis Game Academy</title>
-    <link rel="icon" type="image/png" href="assets/img/CUIABÁ ICON.png">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link rel="stylesheet" href="css/styles.css">
-    <style>
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); z-index: 1000; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
-        .modal-content { background: #111; padding: 30px; border-radius: 15px; width: 90%; max-width: 400px; border: 1px solid #333; box-shadow: 0 0 20px rgba(217, 70, 239, 0.2); position: relative; animation: slideDown 0.3s ease; }
-        @keyframes slideDown { from {transform: translateY(-50px); opacity: 0;} to {transform: translateY(0); opacity: 1;} }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; font-size: 0.9rem; color: #fff; }
-        .form-group input { width: 100%; padding: 12px; background: #222; border: 1px solid #444; border-radius: 5px; color: white; outline: none; transition: 0.3s; }
-        .form-group input:focus { border-color: #d946ef; box-shadow: 0 0 8px rgba(217, 70, 239, 0.3); }
-        .close-modal { position: absolute; top: 10px; right: 15px; color: #aaa; font-size: 24px; cursor: pointer; }
-        .btn-submit { width: 100%; padding: 12px; background: linear-gradient(90deg, #d946ef, #fbbf24); border: none; color: white; font-weight: bold; border-radius: 5px; cursor: pointer; margin-top: 10px; text-transform: uppercase; }
-        .btn-submit:hover { filter: brightness(1.1); }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aniversário Gamer | Javis Game Academy</title>
+
+  <link rel="icon" type="image/png" href="assets/img/CUIABÁ ICON.png" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/aniversario.css" />
 </head>
-<body style="background-color: #000; color: white;">
 
-    <header style="padding: 20px; background: rgba(0,0,0,0.9); position: fixed; width: 100%; z-index: 100; top: 0;">
-        <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
-            <a href="IndexHome.html">
-                <img src="assets/img/JAVIS - LOGO COM REGISTRO (BRANCO) (2).png" width="180" alt="Home">
-            </a>
-            <a href="IndexHome.html" class="btn" style="background: #d946ef; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none;">
-                <i class="fas fa-arrow-left"></i> Voltar
-            </a>
-        </div>
-    </header>
+<body class="aniversario-page">
 
-    <section class="course-hero" style="background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.9)), url('assets/img/aniversario.jpg'); margin-top: 0;"> 
-        <div style="padding-top: 80px;">
-            <span class="course-tag" style="background: #d946ef; color: white;">Festa Épica</span>
-            <h1>Aniversário Gamer</h1>
-            <p style="font-size: 1.2rem; max-width: 600px; margin: 0 auto;">A melhor festa da vida do seu filho(a) acontece aqui.</p>
-        </div>
-    </section>
+  <!-- HEADER -->
+  <header class="top-header">
+    <div class="container header-inner">
+      <a href="IndexHome.html" class="logo-link">
+        <img src="assets/img/JAVIS - LOGO COM REGISTRO (BRANCO) (2).png" width="180" alt="Home" />
+      </a>
 
-    <div class="course-container">
-        <div class="course-about">
-            <h2>Sua Festa na Javis</h2>
-            <p>Esqueça os buffets tradicionais. No <strong>Aniversário Gamer</strong>, você aluga o espaço e toda a nossa tecnologia fica à disposição dos convidados. É diversão garantida do início ao fim.</p>
-            
-            <h3 style="color: #fbbf24; margin-top: 40px;">Tudo Liberado:</h3>
-            <ul class="modules-list">
-                <li>
-                    <strong>🎉 Espaço Exclusivo:</strong> Área reservada para você, seus amigos e família comemorarem com conforto.
-                </li>
-                <li>
-                    <strong>🖥️ PCs e Consoles:</strong> Acesso livre aos computadores gamer de alta performance, PlayStation 5 e Xbox Series.
-                </li>
-                <li>
-                    <strong>🏎️ Simuladores:</strong> Cockpits de corrida com volantes profissionais disponíveis para todos pilotarem.
-                </li>
-                <li>
-                    <strong>🥽 Realidade Virtual:</strong> Óculos VR liberados para quem quiser experimentar a imersão total.
-                </li>
+      <a href="IndexHome.html" class="btn btn-voltar">
+        <i class="fas fa-arrow-left"></i> Voltar
+      </a>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="course-hero aniversario-hero">
+    <div class="hero-inner">
+      <span class="course-tag tag-aniversario">Festa Épica</span>
+      <h1>Aniversário Gamer</h1>
+      <p class="hero-subtitle">A melhor festa da vida do seu filho(a) acontece aqui.</p>
+    </div>
+  </section>
+
+  <!-- CONTEÚDO -->
+  <div class="course-container">
+
+    <div class="course-about">
+      <h2>Sua Festa na Javis</h2>
+      <p>
+        Esqueça os buffets tradicionais. No <strong>Aniversário Gamer da JAVIS</strong>, você transforma a festa do seu filho em uma experiência épica.
+        Você aluga todo o espaço e nossa estrutura tecnológica fica liberada para os convidados. Diversão intensa, moderna e garantida do início ao fim.
+      </p>
+
+      <!-- FEATURES (PADRÃO IMPACTANTE EM TODOS) -->
+      <ul class="modules-list">
+
+        <!-- 1) ESPAÇO EXCLUSIVO + STATS -->
+        <li class="feature-block">
+          <div class="space-header">
+            <strong>🎉 Espaço Exclusivo</strong>
+
+            <span class="badge-eventos">
+              <i class="fa-solid fa-crown"></i>
+              Capacidade para grandes eventos
+            </span>
+          </div>
+
+          <p class="space-text">
+            Mantemos um ambiente completo e confortável para até <strong>100 convidados</strong>.
+            São <strong>2 andares</strong> com mais de <strong>80 equipamentos eletrônicos</strong>,
+            além de mesas, cadeiras, poltronas e muito mais.
+          </p>
+
+          <div class="impact-line">
+            Números que impressionam (e fazem a festa acontecer):
+          </div>
+
+          <div class="stats-grid" data-animate="stats">
+            <div class="stat-card">
+              <div class="stat-top">
+                <span class="stat-icon">👥</span>
+                <span class="stat-label">Capacidade</span>
+              </div>
+              <div class="stat-number" data-count="100">0</div>
+              <div class="stat-desc">convidados</div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-top">
+                <span class="stat-icon">🏢</span>
+                <span class="stat-label">Estrutura</span>
+              </div>
+              <div class="stat-number" data-count="2">0</div>
+              <div class="stat-desc">andares</div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-top">
+                <span class="stat-icon">🎮</span>
+                <span class="stat-label">Equipamentos</span>
+              </div>
+              <div class="stat-number" data-count="80" data-prefix="+">+0</div>
+              <div class="stat-desc">eletrônicos</div>
+            </div>
+          </div>
+
+          <div class="hall-exclusive">
+            <div class="hall-icon">
+              <i class="fa-solid fa-star"></i>
+            </div>
+
+            <div class="hall-content">
+              <div class="hall-title">Pacote <strong>HALL EXCLUSIVE</strong></div>
+              <div class="hall-text">
+                Você vem apenas para se divertir e bater fotos.
+                Nossa equipe cuida de tudo — da organização aos detalhes.
+                <span class="hall-cta">Quer saber como funciona? Clique abaixo.</span>
+              </div>
+
+              <button type="button" class="btn-hall" id="btn-ver-pacotes">
+                <i class="fa-solid fa-ticket"></i> Ver Pacotes
+              </button>
+            </div>
+          </div>
+        </li>
+
+        <!-- 2) PCs e Consoles -->
+        <li class="feature-block mini-feature">
+          <div class="mini-head">
+            <div class="mini-title">
+              <span class="mini-emoji">🖥️</span>
+              <strong>PCs e Consoles</strong>
+            </div>
+
+            <span class="mini-badge">
+              <i class="fa-solid fa-gamepad"></i>
+              Diversão pra todo mundo
+            </span>
+          </div>
+
+          <p class="mini-text">
+            Acesso livre aos computadores gamer de alta performance e consoles top de linha,
+            garantindo diversão para todos os perfis de convidados.
+          </p>
+
+          <div class="mini-pills">
+            <span class="pill">PC Gamer</span>
+            <span class="pill">PlayStation 5</span>
+            <span class="pill">Xbox Series X</span>
+            <span class="pill">Nintendo Switch</span>
+            <span class="pill">Just Dance</span>
+          </div>
+
+          <div class="mini-highlight">
+            <i class="fa-solid fa-bolt"></i>
+            Equipamentos prontos e ambiente preparado para festa.
+          </div>
+        </li>
+
+        <!-- 3) Simuladores -->
+        <li class="feature-block mini-feature">
+          <div class="mini-head">
+            <div class="mini-title">
+              <span class="mini-emoji">🏎️</span>
+              <strong>Simuladores de Corrida</strong>
+            </div>
+
+            <span class="mini-badge">
+              <i class="fa-solid fa-flag-checkered"></i>
+              Experiência imersiva
+            </span>
+          </div>
+
+          <p class="mini-text">
+            Cockpits de corrida com volantes profissionais disponíveis para todos pilotarem.
+            A sensação é de estar dentro do carro — adrenalina total.
+          </p>
+
+          <div class="mini-pills">
+            <span class="pill">Forza</span>
+            <span class="pill">Euro Truck</span>
+            <span class="pill">Assetto Corsa</span>
+            <span class="pill">Crossover Off-Road</span>
+          </div>
+
+          <div class="mini-highlight">
+            <i class="fa-solid fa-trophy"></i>
+            Perfeito para desafios entre amigos e família.
+          </div>
+        </li>
+
+        <!-- 4) VR -->
+        <li class="feature-block mini-feature">
+          <div class="mini-head">
+            <div class="mini-title">
+              <span class="mini-emoji">🥽</span>
+              <strong>Realidade Virtual</strong>
+            </div>
+
+            <span class="mini-badge">
+              <i class="fa-solid fa-vr-cardboard"></i>
+              Imersão total
+            </span>
+          </div>
+
+          <p class="mini-text">
+            Óculos VR liberados para quem quiser experimentar a imersão total.
+            É surreal: o equipamento permite você <strong>entrar dentro dos jogos</strong>.
+          </p>
+
+          <div class="mini-highlight">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+            Experiência que surpreende até quem nunca jogou VR.
+          </div>
+        </li>
+
+      </ul>
+
+      <!-- PACOTES EM 3 CARDS -->
+      <h3 class="title-section">Pacotes</h3>
+
+      <div class="packages-grid packages-v2">
+
+        <!-- 1) Espaço -->
+        <article class="pkg2-card">
+          <header class="pkg2-head">
+            <div class="pkg2-title">
+                <h4>Reserva do Espaço</h4>
+                <p class="pkg2-subline">Ideal pra quem já tem tudo organizado</p>
+            </div>
+>
+          </header>
+
+          <div class="pkg2-body">
+            <p class="pkg2-desc">
+              Você garante o espaço da JAVIS e monta o restante da festa do seu jeito.
+            </p>
+
+            <ul class="pkg2-list">
+              <li><i class="fa-solid fa-check"></i> Espaço reservado</li>
+              <li><i class="fa-solid fa-check"></i> Estrutura gamer disponível</li>
+              <li><i class="fa-solid fa-check"></i> Liberdade total</li>
             </ul>
-        </div>
 
-        <aside class="course-sidebar">
-            <div class="sidebar-card">
-                <h3 style="color: #fbbf24;">Faça um Orçamento</h3>
-                <div style="text-align: left; margin: 20px 0; color: #ddd;">
-                    <p style="margin-bottom: 10px;"><i class="fas fa-users" style="color: #d946ef;"></i> Capacidade: <strong>Até 30 Pessoas</strong></p>
-                    <p style="margin-bottom: 10px;"><i class="fas fa-clock" style="color: #d946ef;"></i> Duração: <strong>3h ou 4h</strong></p>
-                </div>
-                
-                <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 20px;">
-                    <p style="font-size: 0.9rem; color: #ccc;">Traga seu bolo e salgados! Nós cuidamos da diversão tecnológica.</p>
-                </div>
-
-                <a href="#" id="btn-modal-trigger" class="btn" style="width: 100%; display: block; text-align: center; background: linear-gradient(90deg, #d946ef, #fbbf24); border: none;">
-                    <i class="fab fa-whatsapp"></i> Cotar Agora
-                </a>
+            <div class="pkg2-mini">
+              <span><i class="fa-solid fa-bolt"></i> Rápido e direto</span>
             </div>
-        </aside>
+          </div>
+
+          <footer class="pkg2-foot">
+            <button class="pkg2-btn" type="button" data-pacote="RESERVA DO ESPAÇO">
+              <i class="fa-brands fa-whatsapp"></i> Quero esse pacote
+            </button>
+          </footer>
+        </article>
+
+        <!-- 2) Montável (destaque) -->
+        <article class="pkg2-card pkg2-featured">
+          <header class="pkg2-head">
+            <div class="pkg2-title">
+              <h4>Pacote Montável</h4>
+              <p>Você escolhe buffet, decoração, bolo e extras</p>
+            </div>
+          </header>
+
+          <div class="pkg2-body">
+            <p class="pkg2-desc">
+              Monte por etapas e deixe a festa com a sua cara, com opções da JAVIS.
+            </p>
+
+            <ul class="pkg2-list">
+              <li><i class="fa-solid fa-check"></i> Escolha por etapas</li>
+              <li><i class="fa-solid fa-check"></i> Personalização total</li>
+              <li><i class="fa-solid fa-check"></i> Melhor custo-benefício</li>
+            </ul>
+
+            <div class="pkg2-mini">
+              <span><i class="fa-solid fa-wand-magic-sparkles"></i> Flexível e completo</span>
+            </div>
+          </div>
+
+          <footer class="pkg2-foot">
+            <button class="pkg2-btn" type="button" data-pacote="PACOTE MONTÁVEL">
+              <i class="fa-brands fa-whatsapp"></i> Quero esse pacote
+            </button>
+          </footer>
+        </article>
+
+        <!-- 3) Hall Exclusive -->
+        <article class="pkg2-card">
+          <header class="pkg2-head">
+            <div class="pkg2-title">
+              <h4>Hall Exclusive</h4>
+              <p>Você chega, se diverte e tira fotos</p>
+            </div>
+          </header>
+
+          <div class="pkg2-body">
+            <p class="pkg2-desc">
+              Nossa equipe cuida de tudo — da organização aos detalhes. Zero preocupação.
+            </p>
+
+            <ul class="pkg2-list">
+              <li><i class="fa-solid fa-check"></i> Equipe cuidando de tudo</li>
+              <li><i class="fa-solid fa-check"></i> Zero preocupação</li>
+              <li><i class="fa-solid fa-check"></i> Experiência premium</li>
+            </ul>
+
+            <div class="pkg2-mini">
+              <span><i class="fa-solid fa-star"></i> Só aproveitar</span>
+            </div>
+          </div>
+
+          <footer class="pkg2-foot">
+            <button class="pkg2-btn" type="button" data-pacote="HALL EXCLUSIVE">
+              <i class="fa-brands fa-whatsapp"></i> Quero esse pacote
+            </button>
+          </footer>
+        </article>
+
+      </div>
     </div>
 
-    <footer style="text-align: center; padding: 40px; background: #111; border-top: 1px solid #333;">
-        <p>&copy; 2025 Javis Game Academy.</p>
-    </footer>
+    <!-- SIDEBAR -->
+    <aside class="course-sidebar">
+      <div class="sidebar-card">
+        <h3 class="sidebar-title">Faça um Orçamento</h3>
 
-    <div id="leadModal" class="modal-overlay" style="display: none;">
-        <div class="modal-content">
-            <span class="close-modal">&times;</span>
-            <div style="text-align: center; margin-bottom: 20px;">
-                <h2 style="color: #fbbf24; margin-bottom: 5px;">Festa Gamer</h2>
-                <p style="font-size: 0.9rem; color: #ccc;">Preencha para receber um orçamento personalizado.</p>
-            </div>
-            <form id="leadForm" onsubmit="enviarLead(event)">
-                <div class="form-group">
-                    <label>Nome do Responsável</label>
-                    <input type="text" id="nome" required placeholder="Seu nome">
-                </div>
-                <div class="form-group">
-                    <label>WhatsApp</label>
-                    <input type="tel" id="whatsapp" required placeholder="(65) 99999-9999">
-                </div>
-                <div class="form-group">
-                    <label>Número de Convidados (Estimado)</label>
-                    <input type="number" id="convidados" placeholder="Ex: 15">
-                </div>
-                <button type="submit" class="btn-submit">RECEBER ORÇAMENTO <i class="fas fa-paper-plane"></i></button>
-            </form>
+        <div class="sidebar-info">
+          <p><i class="fas fa-users icon-purple"></i> Capacidade: <strong>Até 100 Convidados</strong></p>
+          <p><i class="fas fa-clock icon-purple"></i> Duração: <strong>3h, 4h ou Pacote Full</strong></p>
         </div>
+
+        <div class="sidebar-note">
+          <p>Temos pacotes <strong>Hall Exclusive</strong>. Você se diverte e nós cuidamos de toda a sua festa.</p>
+        </div>
+
+        <a href="#" id="btn-modal-trigger" class="btn btn-cotar">
+          <i class="fab fa-whatsapp"></i> Cotar Agora
+        </a>
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="page-footer">
+    <p>&copy; 2025 Javis Game Academy.</p>
+  </footer>
+
+  <!-- MODAL -->
+  <div id="leadModal" class="modal-overlay" style="display:none;">
+    <div class="modal-content">
+      <span class="close-modal" aria-label="Fechar modal">&times;</span>
+
+      <div class="modal-header">
+        <h2>Festa Gamer</h2>
+        <p>Preencha para receber um orçamento personalizado.</p>
+      </div>
+
+      <form id="leadForm">
+        <div class="form-group">
+          <label>Cidade</label>
+          <select id="cidade" class="input-select" required>
+            <option value="cuiaba" selected>Cuiabá</option>
+            <option value="teresina">Teresina</option>
+          </select>
+          <small class="form-hint" id="numeroHint">Atendimento WhatsApp: <strong>(65) 99253-2020</strong></small>
+        </div>
+
+        <div class="form-group">
+          <label>Nome do Responsável</label>
+          <input type="text" id="nome" required placeholder="Seu nome" />
+        </div>
+
+        <div class="form-group">
+          <label>WhatsApp</label>
+          <input type="tel" id="whatsapp" required placeholder="(65) 99999-9999" inputmode="numeric" maxlength="15" />
+        </div>
+
+        <div class="form-group">
+          <label>Número de Convidados (Estimado)</label>
+          <input type="number" id="convidados" placeholder="Ex: 40" min="1" max="100" />
+        </div>
+
+        <div class="form-group">
+          <label>Pacote</label>
+          <select id="pacote" class="input-select" required>
+            <option value="" selected disabled>Selecione um pacote</option>
+            <option value="RESERVA DO ESPAÇO">Reserva do Espaço</option>
+            <option value="PACOTE MONTÁVEL">Pacote Montável</option>
+            <option value="HALL EXCLUSIVE">Hall Exclusive</option>
+          </select>
+          <small class="form-hint">Dica: você pode escolher agora ou clicar em um pacote na página.</small>
+        </div>
+
+        <button type="submit" class="btn-submit">
+          RECEBER ORÇAMENTO <i class="fas fa-paper-plane"></i>
+        </button>
+      </form>
     </div>
+  </div>
 
-    <script>
-        const modal = document.getElementById('leadModal');
-        const btnTrigger = document.getElementById('btn-modal-trigger');
-        const closeBtn = document.querySelector('.close-modal');
-
-        btnTrigger.onclick = (e) => { e.preventDefault(); modal.style.display = 'flex'; }
-        closeBtn.onclick = () => modal.style.display = 'none';
-        window.onclick = (e) => { if(e.target == modal) modal.style.display = 'none'; }
-
-        function enviarLead(e) {
-            e.preventDefault();
-            const nome = document.getElementById('nome').value;
-            const convidados = document.getElementById('convidados').value;
-            const servico = document.title.split('|')[0].trim(); 
-            
-            const texto = `Olá! Me chamo *${nome}*. Quero fazer um orçamento para *${servico}*${convidados ? ` para cerca de *${convidados} convidados*` : ''}.`;
-            window.open(`https://wa.me/5565992532020?text=${encodeURIComponent(texto)}`, '_blank');
-            modal.style.display = 'none';
-        }
-    </script>
+  <script src="js/aniversario.js"></script>
 </body>
 </html>
