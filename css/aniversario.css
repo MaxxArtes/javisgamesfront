@@ -34,7 +34,7 @@
 
 /* ===== Hero ===== */
 .aniversario-hero{
-  background-image: linear-gradient(rgba(0,0,0,0.72), rgba(0,0,0,0.92)), url('../assets/img/aniversario.jpg');
+  background-image: linear-gradient(rgba(0,0,0,0.72), rgba(0,0,0,0.92)), url('../assets/img/aniversario.webp');
   background-position:center;
   background-size:cover;
   margin-top:0;

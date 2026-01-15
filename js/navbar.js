@@ -8,7 +8,7 @@ function carregarNavbar() {
     <header class="navbar">
         <div class="logo">
             <a href="IndexHome.html">
-                <img src="assets/img/JAVIS - LOGO COM REGISTRO (BRANCO) (2).png" width="320" height="100" alt="Logo Javis Game Academy">
+                <img src="assets/img/JAVIS - LOGO COM REGISTRO (BRANCO) (2).webp" width="320" height="100" alt="Logo Javis Game Academy">
             </a>
         </div>
     

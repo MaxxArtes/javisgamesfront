@@ -4,7 +4,7 @@ const servicesData = [
     {
         iconClass: "fas fa-moon fa-3x",
         title: "Corujão Javis",
-        imagePath: "image/corujao.jpeg",
+        imagePath: "image/corujao.webp",
         description: "Noites inteiras de jogos com a melhor estrutura de e-sports. Chame seus amigos!",
         buttonText: "Reservar Corujão",
         whatsappLink: "https://wa.me/5565992532020"
@@ -12,7 +12,7 @@ const servicesData = [
     {
         iconClass: "fas fa-birthday-cake fa-3x",
         title: "Aniversário Gamer",
-        imagePath: "image/aniversario.jpg",
+        imagePath: "image/aniversario.webp",
         description: "Comemore seu aniversário com uma festa inesquecível em um ambiente totalmente temático e pronto para jogos.",
         buttonText: "Agendar Festa",
         whatsappLink: "https://wa.me/5565992532020"

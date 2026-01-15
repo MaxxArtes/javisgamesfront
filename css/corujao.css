@@ -28,7 +28,7 @@
 
 /* Hero */
 .corujao-hero{
-  background-image: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.9)), url('../assets/img/corujao.jpeg');
+  background-image: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.9)), url('../assets/img/corujao.webp');
   background-position:center;
   margin-top:0;
 }

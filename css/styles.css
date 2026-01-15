@@ -1435,7 +1435,7 @@ ul {
 
 /* Hero do Curso (Topo com Título) */
 .course-hero {
-    background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.9)), url('../assets/img/hero-game-dev.jpg'); /* Vamos usar um fallback se a img não existir */
+    background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.9)), url('../assets/img/hero-game-dev.webp'); /* Vamos usar um fallback se a img não existir */
     background-size: cover;
     background-position: center;
     height: 60vh;
