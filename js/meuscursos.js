@@ -272,8 +272,8 @@ function closeReplit() {
   document.getElementById('iframeContainer').innerHTML = '';
   // Restaura sidebar (caso tenha sido escondida)
   const modal = document.getElementById('replitModal');
-  const sidebar = modal.querySelector('.w-1\/3');
-  const mainArea = modal.querySelector('.w-2\/3') || modal.querySelector('.w-full');
+  const sidebar = modal.querySelector('[class~="w-1/3"]');
+  const mainArea = modal.querySelector('[class~="w-2/3"]') || modal.querySelector('.w-full');
   if (sidebar) sidebar.classList.remove('hidden');
   if (mainArea && mainArea.classList.contains('w-full')) {
     mainArea.classList.replace('w-full', 'w-2/3');
@@ -326,8 +326,8 @@ async function abrirConteudoGeral(aulaId, titulo, courseSlug) {
 
   const modal = document.getElementById('replitModal');
   const iframeContainer = document.getElementById('iframeContainer');
-  const sidebar = modal.querySelector('.w-1\/3');
-  const mainArea = modal.querySelector('.w-2\/3') || modal.querySelector('.w-full');
+  const sidebar = modal.querySelector('[class~="w-1/3"]');
+  const mainArea = modal.querySelector('[class~="w-2/3"]') || modal.querySelector('.w-full');
 
   document.getElementById('modalTitle').textContent = titulo;
   iframeContainer.innerHTML = '<p class="text-white p-10 animate-pulse">Carregando...</p>';
