@@ -284,17 +284,22 @@ function closeReplit() {
    Conteúdo (modal)
 ========================= */
 function parseTaggedContent(conteudo) {
+  const txt = (conteudo || "").replace(/\r/g, "");
+
   const get = (tag) => {
-    const r = new RegExp(`\[${tag}\]([\s\S]*?)\[\/${tag}\]`, 'i');
-    const m = (conteudo || '').match(r);
-    return (m && m[1]) ? m[1].trim() : '';
+    // casa literalmente: [TAG] ... [/TAG]
+    const re = new RegExp(`\\[${tag}\\]([\\s\\S]*?)\\[\\/${tag}\\]`, "i");
+    const m = txt.match(re);
+    return m ? m[1].trim() : "";
   };
+
   return {
-    script: get('SCRIPT'),
-    codigo: get('CODIGO'),
-    desafio: get('DESAFIO')
+    script: get("SCRIPT"),
+    codigo: get("CODIGO"),
+    desafio: get("DESAFIO"),
   };
 }
+
 
 function renderGameDevSidebar(conteudo) {
   const contentElement = document.getElementById('lessonContent');
