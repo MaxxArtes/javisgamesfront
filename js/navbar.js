@@ -75,7 +75,7 @@ async function carregarNavbar() {
                 // Como não temos um endpoint direto de 'meu-perfil', usamos o campo 'nome' retornado aqui
                 // Note: Você precisará ajustar seu backend para retornar o email se desejar exibi-lo
                 const data = await resp.json();
-                const nomeReal = data.nome || "Aluno";
+                const nomeReal = data.nome_completo || "Aluno";
 
                 // Atualiza o texto na Navbar
                 document.getElementById('nav-user-name').textContent = nomeReal;
