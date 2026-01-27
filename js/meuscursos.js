@@ -222,9 +222,9 @@ function closeReplit() {
     if (!modal) return;
 
     modal.classList.add("hidden");
-    if (iframeContainer) iframeContainer.innerHTML = "";
+    if (iframeContainer) iframeContainer.innerHTML = ""; // Limpa o iframe para não gastar memória
     
-    // Reseta para tela cheia (padrão Canva) para a próxima abertura
+    // Reseta para tela cheia por padrão
     aplicarLayout(modal, false);
 }
 
@@ -286,12 +286,23 @@ async function abrirConteudoGeral(idAula, titulo = "", courseSlug = "") {
         </div>`;
     } 
     
-    // --- CASO B: PROGRAMAÇÃO (GAME DEV) ---
+// --- CASO B: PROGRAMAÇÃO (GAME DEV) ---
     else if (slug.includes("game-dev") || conteudoRaw.includes("[SCRIPT]")) {
       aplicarLayout(modal, true); // Ativa o modo dividido
       renderGameDevSidebar(conteudoRaw);
-      iframeContainer.innerHTML = `<div class="p-8 text-gray-500 text-center">Ambiente de desenvolvimento pronto.</div>`;
-    } 
+      
+      // ✅ CORREÇÃO: Inserir o iframe do Trinket em vez de apenas o texto
+      iframeContainer.innerHTML = `
+        <iframe src="${TRINKET_URL}" 
+                width="100%" 
+                height="100%" 
+                frameborder="0" 
+                marginwidth="0" 
+                marginheight="0" 
+                style="border-radius: 8px;"
+                allowfullscreen>
+        </iframe>`;
+    }
     
     // --- CASO C: TEXTO/HTML ---
     else {
