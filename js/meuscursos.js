@@ -7,7 +7,7 @@ const courseData = {
     title: 'GAME PRO',
     icon: 'fas fa-headset',
     description: 'Formação completa para ProPlayers e atletas digitais.',
-    duration: '160h',
+    duration: '120h',
     level: 'Avançado',
   },
   'designer-start': {
