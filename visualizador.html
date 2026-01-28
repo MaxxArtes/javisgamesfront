@@ -97,9 +97,45 @@
             const base = `https://www.canva.com/design/${p.designId}/${p.token ? p.token + "/" : ""}`;
             return `${base}view?embed`;
         }
+        function extractFirstCanvaUrl(text) {
+            const m = (text || "").match(/https?:\/\/(?:www\.)?canva\.com\/design\/[^\s"'<]+/i);
+            return m ? m[0] : null;
+            }
+
+            function parseCanvaUrl(anyTextOrUrl) {
+            const url = extractFirstCanvaUrl(anyTextOrUrl) || (anyTextOrUrl || "").trim();
+            try {
+                const u = new URL(url);
+                const parts = u.pathname.split("/").filter(Boolean);
+                const idx = parts.indexOf("design");
+                if (idx === -1 || !parts[idx + 1]) return null;
+
+                const designId = parts[idx + 1];
+                let token = null;
+
+                const maybeToken = parts[idx + 2];
+                if (maybeToken && !["view", "edit"].includes(maybeToken)) token = maybeToken;
+
+                return { designId, token };
+            } catch {
+                return null;
+            }
+            }
+
+            function buildCanvaViewEmbedUrl(anyTextOrUrl) {
+            const p = parseCanvaUrl(anyTextOrUrl);
+            if (!p) return null;
+            const base = `https://www.canva.com/design/${p.designId}/${p.token ? p.token + "/" : ""}`;
+            return `${base}view?embed`;
+            }
+
+            function isCanvaDesignLink(text) {
+            return !!extractFirstCanvaUrl(text);
+        }
 
 
         async function carregar() {
+            const embed = buildCanvaViewEmbedUrl(conteudo);
             const app = document.getElementById('app');
             const tituloTop = document.getElementById('titulo-aula-top');
 

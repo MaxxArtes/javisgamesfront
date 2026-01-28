@@ -1493,6 +1493,130 @@ window.onload = async () => {
    fecharModalUniversal()
    These control the #modalUniversal element present in portal-funcionario.html
 */
+// ====== CANVA (por LINK) - helpers ======
+function cursoUsaCanva(tituloCurso) {
+  const t = (tituloCurso || '').toLowerCase();
+  return t.includes('game pro') || t.includes('designer start');
+}
+
+function extractFirstCanvaUrl(text) {
+  const m = (text || "").match(/https?:\/\/(?:www\.)?canva\.com\/design\/[^\s"'<]+/i);
+  return m ? m[0] : null;
+}
+
+function parseCanvaUrl(anyTextOrUrl) {
+  const url = extractFirstCanvaUrl(anyTextOrUrl) || (anyTextOrUrl || "").trim();
+  try {
+    const u = new URL(url);
+    const parts = u.pathname.split("/").filter(Boolean);
+    const idx = parts.indexOf("design");
+    if (idx === -1 || !parts[idx + 1]) return null;
+
+    const designId = parts[idx + 1];
+
+    // token opcional: /design/{id}/{token}/edit
+    let token = null;
+    const maybeToken = parts[idx + 2];
+    if (maybeToken && !["view", "edit"].includes(maybeToken)) token = maybeToken;
+
+    return { designId, token };
+  } catch {
+    return null;
+  }
+}
+
+function buildCanvaEditUrl(anyTextOrUrl) {
+  const p = parseCanvaUrl(anyTextOrUrl);
+  if (!p) return null;
+  const base = `https://www.canva.com/design/${p.designId}/${p.token ? p.token + "/" : ""}`;
+  return `${base}edit`;
+}
+
+// Abre Canva para editar (e salva link se necessário)
+async function editarAulaCanvaPorLink(idAula, tituloAula) {
+  // 1) busca conteúdo atual da aula (pra ver se já tem link salvo)
+  let conteudoAtual = "";
+  try {
+    const res = await fetchAdmin(`${API_URL}/admin/aula/${idAula}/conteudo`);
+    if (res && res.ok) {
+      const dados = await res.json();
+      conteudoAtual = (dados.conteudo || dados.html || "").trim();
+    }
+  } catch (_) {}
+
+  // 2) se já tem link do Canva, abre direto (e normaliza pra /edit preservando token)
+  const linkExistente = extractFirstCanvaUrl(conteudoAtual);
+  if (linkExistente) {
+    const editUrl = buildCanvaEditUrl(linkExistente) || linkExistente;
+    window.open(editUrl, "_blank", "noopener,noreferrer");
+    return;
+  }
+
+  // 3) se não tem link salvo, pede pra colar e salva
+  const resp = await Swal.fire({
+    icon: 'info',
+    title: `Vincular Canva: ${tituloAula || 'Aula'}`,
+    html: `
+      <p style="font-size:12px;color:#aaa;margin-bottom:10px">
+        Cole aqui o link do Canva (o de <b>editar</b> /edit).<br>
+        Ex.: https://www.canva.com/design/ID/TOKEN/edit
+      </p>
+    `,
+    input: 'text',
+    inputPlaceholder: 'Cole o link do Canva aqui...',
+    showCancelButton: true,
+    confirmButtonText: 'Salvar e abrir',
+    cancelButtonText: 'Cancelar',
+    background: '#1a1a1a',
+    color: '#fff',
+    inputValidator: (v) => {
+      const url = (v || '').trim();
+      if (!url) return 'Cole um link do Canva.';
+      if (!/canva\.com\/design\//i.test(url)) return 'Esse link não parece ser do Canva (/design/...).';
+      return null;
+    }
+  });
+
+  if (!resp.isConfirmed) return;
+
+  const linkColado = resp.value.trim();
+  const editUrlFinal = buildCanvaEditUrl(linkColado) || linkColado;
+
+  // salva no backend
+  try {
+    const saveRes = await fetchAdmin(`${API_URL}/admin/aula/${idAula}/salvar`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ conteudo: editUrlFinal })
+    });
+
+    if (saveRes && saveRes.ok) {
+      Swal.fire({
+        icon: 'success',
+        title: 'Vinculado!',
+        text: 'Link do Canva salvo. Abrindo no Canva...',
+        timer: 1200,
+        showConfirmButton: false,
+        background: '#222',
+        color: '#fff'
+      });
+
+      // abre Canva pra editar
+      window.open(editUrlFinal, "_blank", "noopener,noreferrer");
+
+      // recarrega visualizador à direita (se existir)
+      const iframe = document.getElementById('frame-aula-prof');
+      if (iframe) iframe.src = `visualizador.html?id=${idAula}&t=${Date.now()}`;
+    } else {
+      let errText = 'Falha ao salvar link.';
+      try { const e = await saveRes.json(); errText = e.detail || e.message || errText; } catch(_) {}
+      Swal.fire({ icon: 'error', title: 'Erro', text: errText, background: '#222', color: '#fff' });
+    }
+  } catch (e) {
+    Swal.fire({ icon: 'error', title: 'Erro', text: 'Erro de conexão ao salvar link.', background: '#222', color: '#fff' });
+  }
+}
+
 function abrirModalUniversal(title, contentHTML, onConfirm) {
     const modal = document.getElementById('modalUniversal');
     const modalTitle = document.getElementById('modalTitle');
@@ -1770,93 +1894,106 @@ function carregarAulaProfessor(url) {
 }
 
 async function carregarConteudoDidatico() {
-    const container = document.getElementById('lista-conteudo-dinamico');
-    
-    // Mostra loading
-    container.innerHTML = '<p class="text-gray-500 text-center text-xs mt-4"><i class="fas fa-spinner fa-spin"></i> Carregando biblioteca...</p>';
+  const container = document.getElementById('lista-conteudo-dinamico');
 
-    try {
-        const token = localStorage.getItem('access_token');
-        if (!token) throw new Error("Sem token de autenticação");
+  container.innerHTML = '<p class="text-gray-500 text-center text-xs mt-4"><i class="fas fa-spinner fa-spin"></i> Carregando biblioteca...</p>';
 
-        const response = await fetch(`${API_URL}/admin/conteudo-didatico/cursos`, {
-            headers: { 
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            }
-        });
+  try {
+    const token = localStorage.getItem('access_token');
+    if (!token) throw new Error("Sem token de autenticação");
 
-        if (!response.ok) throw new Error('Erro na API');
-        const cursos = await response.json();
+    const response = await fetch(`${API_URL}/admin/conteudo-didatico/cursos`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
 
-        if (!cursos || cursos.length === 0) {
-            container.innerHTML = '<p class="text-gray-500 text-center text-xs mt-4">Nenhum conteúdo disponível.</p>';
-            return;
+    if (!response.ok) throw new Error('Erro na API');
+    const cursos = await response.json();
+
+    if (!cursos || cursos.length === 0) {
+      container.innerHTML = '<p class="text-gray-500 text-center text-xs mt-4">Nenhum conteúdo disponível.</p>';
+      return;
+    }
+
+    let htmlFinal = '';
+
+    cursos.forEach(curso => {
+      const esteCursoUsaCanva = cursoUsaCanva(curso.titulo);
+
+      htmlFinal += `
+        <div class="curso-section mb-4">
+          <h4 class="text-[#00FFFF] font-bold text-xs uppercase mb-2 border-b border-[#333] pb-1 sticky top-0 bg-[#222] z-10 flex items-center">
+            <i class="${curso.icone || 'fas fa-book'} mr-2"></i> ${curso.titulo}
+          </h4>
+          <div class="space-y-1">
+      `;
+
+      const modulos = curso.modulos || [];
+      modulos.forEach(modulo => {
+        htmlFinal += `
+          <details class="group">
+            <summary class="summary-btn">
+              <span class="text-gray-300">${modulo.titulo}</span>
+              <i class="fas fa-chevron-down arrow-icon"></i>
+            </summary>
+            <div class="aula-list">
+        `;
+
+        const aulas = modulo.aulas || [];
+        if (aulas.length > 0) {
+          aulas.forEach(aula => {
+            const iconClass = esteCursoUsaCanva
+              ? 'fas fa-file-pres text-blue-400'
+              : 'fas fa-play-circle text-gray-500';
+
+            const podeEditar =
+              (nivelUsuarioLogado >= 8) ||
+              (nivelUsuarioLogado === 5 && (aula.id_professor || curso.id_professor) == usuarioLogadoId);
+
+            const tituloEsc = (aula.titulo || '').replace(/'/g, "\\'");
+
+            const botaoEditarHTML = podeEditar
+              ? (esteCursoUsaCanva
+                  ? `<button onclick="gerenciarAulaCanva(${aula.id}, '${tituloEsc}')" class="text-gray-500 hover:text-[#00FFFF] p-2 opacity-0 group-hover/item:opacity-100 transition" title="Vincular / Alterar link do Canva">
+                       <i class="fas fa-pencil-alt text-xs"></i>
+                     </button>`
+                  : `<button onclick="abrirEditorAula(${aula.id}, '${tituloEsc}')" class="text-gray-500 hover:text-[#00FFFF] p-2 opacity-0 group-hover/item:opacity-100 transition" title="Editar Conteúdo (TinyMCE)">
+                       <i class="fas fa-pencil-alt text-xs"></i>
+                     </button>`
+                )
+              : '';
+
+            htmlFinal += `
+              <div class="flex items-center gap-1 group/item mb-1 hover:bg-white/5 rounded px-1 transition">
+                <i class="${iconClass} text-[10px] ml-2"></i>
+                <button onclick="carregarAulaProfessor('visualizador.html?id=${aula.id}')" class="btn-aula flex-1 text-left truncate py-1.5 text-xs text-gray-400 group-hover/item:text-white">
+                  ${aula.titulo}
+                </button>
+                ${botaoEditarHTML}
+              </div>
+            `;
+          });
+        } else {
+          htmlFinal += `<span class="text-gray-600 text-[10px] p-2">Sem aulas.</span>`;
         }
 
-        let htmlFinal = '';
+        htmlFinal += `</div></details>`;
+      });
 
-        cursos.forEach(curso => {
-            htmlFinal += `
-                <div class="curso-section mb-4">
-                    <h4 class="text-[#00FFFF] font-bold text-xs uppercase mb-2 border-b border-[#333] pb-1 sticky top-0 bg-[#222] z-10 flex items-center">
-                        <i class="${curso.icone || 'fas fa-book'} mr-2"></i> ${curso.titulo}
-                    </h4>
-                    <div class="space-y-1">
-            `;
+      htmlFinal += `</div></div>`;
+    });
 
-            const modulos = curso.modulos || [];
-            modulos.forEach(modulo => {
-                htmlFinal += `
-                    <details class="group">
-                        <summary class="summary-btn"><span class="text-gray-300">${modulo.titulo}</span><i class="fas fa-chevron-down arrow-icon"></i></summary>
-                        <div class="aula-list">
-                `;
+    container.innerHTML = htmlFinal;
 
-                const aulas = modulo.aulas || [];
-                if (aulas.length > 0) {
-                    aulas.forEach(aula => {
-                        // --- LÓGICA DE ÍCONE E PERMISSÃO (Movido para dentro do loop) ---
-                        const isCanva = aula.conteudo && (
-                            aula.conteudo.includes('canva.com') ||
-                            aula.conteudo.includes('canva-embed') ||
-                            aula.conteudo.includes('data-design-id')
-                        );
-                        const iconClass = isCanva ? 'fas fa-file-pres text-blue-400' : 'fas fa-play-circle text-gray-500';
-                        
-                        let podeEditar = (nivelUsuarioLogado >= 8) || (nivelUsuarioLogado === 5 && (aula.id_professor || curso.id_professor) == usuarioLogadoId);
-
-                        const botaoEditarHTML = podeEditar 
-                            ? `<button onclick="abrirEditorAula(${aula.id}, '${aula.titulo.replace(/'/g, "\\'")}')" class="text-gray-500 hover:text-[#00FFFF] p-2 opacity-0 group-hover/item:opacity-100 transition" title="Editar Conteúdo">
-                                 <i class="fas fa-pencil-alt text-xs"></i>
-                               </button>`
-                            : '';
-
-                        htmlFinal += `
-                            <div class="flex items-center gap-1 group/item mb-1 hover:bg-white/5 rounded px-1 transition">
-                                <i class="${iconClass} text-[10px] ml-2"></i>
-                                <button onclick="carregarAulaProfessor('visualizador.html?id=${aula.id}')" class="btn-aula flex-1 text-left truncate py-1.5 text-xs text-gray-400 group-hover/item:text-white">
-                                    ${aula.titulo}
-                                </button>
-                                ${botaoEditarHTML}
-                            </div>
-                        `;
-                    });
-                } else {
-                    htmlFinal += `<span class="text-gray-600 text-[10px] p-2">Sem aulas.</span>`;
-                }
-                htmlFinal += `</div></details>`;
-            });
-            htmlFinal += `</div></div>`;
-        });
-
-        container.innerHTML = htmlFinal;
-
-    } catch (err) {
-        console.error('Erro ao carregar cursos:', err);
-        container.innerHTML = '<p class="text-red-500 text-center text-xs mt-4">Erro ao carregar os cursos.</p>';
-    }
+  } catch (err) {
+    console.error('Erro ao carregar cursos:', err);
+    container.innerHTML = '<p class="text-red-500 text-center text-xs mt-4">Erro ao carregar os cursos.</p>';
+  }
 }
+
+
 
 // Toggle da Biblioteca no mobile (mostra/oculta o painel lateral de aulas)
 document.addEventListener('DOMContentLoaded', function() {
@@ -1887,8 +2024,6 @@ async function abrirEditorAula(idAula, tituloAula) {
     const modal = document.getElementById('modalEditorAula');
     modal.classList.remove('hidden');
     modal.classList.add('flex');
-
-    adicionarBotaoCanvaNoEditor();
 
     if (!editorInicializado) {
         await tinymce.init({
@@ -2181,22 +2316,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 });
-// --- INTEGRAÇÃO UNIFICADA CANVA SDK ---
-// let canvaApi = null;
-
-// async function iniciarCanva() {
-//     if (window.Canva && window.Canva.DesignButton) {
-//         try {
-//             canvaApi = await window.Canva.DesignButton.initialize({
-//                 apiKey: "OC-AZwBr23kGGVQ", // Seu Client ID real
-//             });
-//             console.log("Canva SDK inicializado com sucesso.");
-//         } catch (err) {
-//             console.error("Erro ao inicializar Canva SDK:", err);
-//         }
-//     }
-// }
-// window.addEventListener('load', iniciarCanva);
 
 function adicionarBotaoCanvaNoEditor() {
   const footer = document.querySelector('#modalEditorAula div.flex.gap-3');
@@ -2220,9 +2339,6 @@ function adicionarBotaoCanvaNoEditor() {
     };
     footer.prepend(btn);
   }
-
-  // (Opcional) mantenha seu botão do SDK se quiser
-  // se você não quiser mais SDK, remova tudo de canvaApi e esse botão.
 }
 
 
@@ -2243,48 +2359,6 @@ function canvaParaEmbed(urlOuTexto) {
   if (!designId) return null;
   return `https://www.canva.com/design/${designId}/view?embed`;
 }
-
-// async function abrirOuEditarCanva() {
-//   if (!canvaApi) {
-//     Swal.fire("Erro", "SDK do Canva não carregado.", "error");
-//     return;
-//   }
-
-//   const texto = tinymce.get('editorTexto')?.getContent({ format: 'text' })?.trim() || "";
-//   const designIdExistente = extrairCanvaDesignId(texto);
-
-//   const onPublish = (payload) => {
-//     // payload pode vir como { url } ou { designId } dependendo da versão do SDK
-//     const designId = payload?.designId || extrairCanvaDesignId(payload?.url || "");
-//     if (!designId) {
-//       Swal.fire("Erro", "Não consegui obter o ID do design publicado.", "error");
-//       return;
-//     }
-
-//     const embedUrl = `https://www.canva.com/design/${designId}/view?embed`;
-//     tinymce.get('editorTexto').setContent(embedUrl);
-//     Swal.fire("Sucesso", "Design vinculado! Clique em SALVAR para gravar no banco.", "success");
-//   };
-
-//   try {
-//     if (designIdExistente) {
-//       // EDITAR existente
-//       canvaApi.editDesign({
-//         design: { id: designIdExistente },
-//         onDesignPublish: onPublish,
-//       });
-//     } else {
-//       // CRIAR novo
-//       canvaApi.createDesign({
-//         design: { type: "Presentation" },
-//         onPublish,
-//       });
-//     }
-//   } catch (err) {
-//     console.error(err);
-//     Swal.fire("Erro", "Falha ao abrir o Canva. Verifique permissões/compartilhamento.", "error");
-//   }
-// }
 
 
 
@@ -2328,7 +2402,6 @@ function conteudoEditorParaSalvar() {
 
     const id = extrairCanvaDesignId(texto) || extrairCanvaDesignId(html);
 
-    // Se detectar Canva, salva como embed DIV (suportado pelo embed.js)
     if (id) {
         return `<div class="canva-embed" data-design-id="${id}" data-height="540"></div>`;
     }
@@ -2405,3 +2478,146 @@ function isCanvaDesignLink(text) {
   return !!extractFirstCanvaUrl(text);
 }
 
+
+/* ===== CANVA POR LINK (SEM SDK) ===== */
+
+function cursoUsaCanva(tituloCurso) {
+  const t = (tituloCurso || "").toLowerCase();
+  return t.includes("game pro") || t.includes("designer start");
+}
+
+function extractFirstCanvaUrl(text) {
+  const m = (text || "").match(/https?:\/\/(?:www\.)?canva\.com\/design\/[^\s"'<]+/i);
+  return m ? m[0] : null;
+}
+
+function parseCanvaUrl(anyTextOrUrl) {
+  const url = extractFirstCanvaUrl(anyTextOrUrl) || (anyTextOrUrl || "").trim();
+  try {
+    const u = new URL(url);
+    const parts = u.pathname.split("/").filter(Boolean);
+    const idx = parts.indexOf("design");
+    if (idx === -1 || !parts[idx + 1]) return null;
+
+    const designId = parts[idx + 1];
+
+    // token opcional: /design/{designId}/{token}/edit
+    let token = null;
+    const maybeToken = parts[idx + 2];
+    if (maybeToken && !["view", "edit"].includes(maybeToken)) token = maybeToken;
+
+    return { designId, token };
+  } catch {
+    return null;
+  }
+}
+
+function buildCanvaEditUrl(anyTextOrUrl) {
+  const p = parseCanvaUrl(anyTextOrUrl);
+  if (!p) return null;
+  const base = `https://www.canva.com/design/${p.designId}/${p.token ? p.token + "/" : ""}`;
+  return `${base}edit`;
+}
+
+function buildCanvaViewEmbedUrl(anyTextOrUrl) {
+  const p = parseCanvaUrl(anyTextOrUrl);
+  if (!p) return null;
+  const base = `https://www.canva.com/design/${p.designId}/${p.token ? p.token + "/" : ""}`;
+  return `${base}view?embed`;
+}
+
+async function gerenciarAulaCanva(idAula, tituloAula) {
+  // 1) Pega o link atual salvo no banco (se existir)
+  let conteudoAtual = "";
+  try {
+    const res = await fetchAdmin(`${API_URL}/admin/aula/${idAula}/conteudo`);
+    if (res && res.ok) {
+      const dados = await res.json();
+      conteudoAtual = (dados.conteudo || dados.html || "").trim();
+    }
+  } catch (_) {}
+
+  const linkAtual = extractFirstCanvaUrl(conteudoAtual) || "";
+
+  // 2) Modal pra alterar/remover
+  const resp = await Swal.fire({
+    icon: "info",
+    title: `Canva • ${tituloAula || "Aula"}`,
+    html: `
+      <p style="font-size:12px;color:#aaa;margin:0 0 10px 0">
+        Cole o <b>link de edição</b> do Canva (termina em <b>/edit</b>).<br>
+        Se o Canva gerar outro link depois, é só colar o novo aqui e salvar.
+      </p>
+    `,
+    input: "text",
+    inputValue: linkAtual,
+    inputPlaceholder: "https://www.canva.com/design/ID/TOKEN/edit",
+    showCancelButton: true,
+    cancelButtonText: "Cancelar",
+    confirmButtonText: "Salvar",
+    showDenyButton: !!linkAtual,
+    denyButtonText: "Remover link",
+    background: "#1a1a1a",
+    color: "#fff",
+    preConfirm: (v) => {
+      const url = (v || "").trim();
+      if (!url) return ""; // permite salvar vazio se quiser “limpar”
+      if (!/canva\.com\/design\//i.test(url)) {
+        Swal.showValidationMessage("Esse link não parece ser do Canva (/design/...).");
+        return false;
+      }
+      return url;
+    }
+  });
+
+  // Remover link
+  if (resp.isDenied) {
+    try {
+      const saveRes = await fetchAdmin(`${API_URL}/admin/aula/${idAula}/salvar`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ conteudo: "" })
+      });
+
+      if (saveRes && saveRes.ok) {
+        Swal.fire({ icon: "success", title: "Removido!", timer: 900, showConfirmButton: false, background: "#222", color: "#fff" });
+        const iframe = document.getElementById("frame-aula-prof");
+        if (iframe) iframe.src = `visualizador.html?id=${idAula}&t=${Date.now()}`;
+      } else {
+        Swal.fire({ icon: "error", title: "Erro", text: "Não consegui remover o link.", background: "#222", color: "#fff" });
+      }
+    } catch (_) {
+      Swal.fire({ icon: "error", title: "Erro", text: "Erro de conexão ao remover.", background: "#222", color: "#fff" });
+    }
+    return;
+  }
+
+  if (!resp.isConfirmed) return;
+
+  const linkColado = (resp.value || "").trim();
+  const editUrlFinal = linkColado ? (buildCanvaEditUrl(linkColado) || linkColado) : "";
+
+  // 3) Salva no banco (o portal sempre guarda o /edit)
+  try {
+    const saveRes = await fetchAdmin(`${API_URL}/admin/aula/${idAula}/salvar`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ conteudo: editUrlFinal })
+    });
+
+    if (saveRes && saveRes.ok) {
+      Swal.fire({ icon: "success", title: "Salvo!", timer: 900, showConfirmButton: false, background: "#222", color: "#fff" });
+
+      // Recarrega visualizador (vai mostrar /view?embed)
+      const iframe = document.getElementById("frame-aula-prof");
+      if (iframe) iframe.src = `visualizador.html?id=${idAula}&t=${Date.now()}`;
+
+      // Se tiver link, abre pra editar em nova aba (opcional, mas ajuda o professor)
+      if (editUrlFinal) window.open(editUrlFinal, "_blank", "noopener,noreferrer");
+    } else {
+      Swal.fire({ icon: "error", title: "Erro", text: "Falha ao salvar o link.", background: "#222", color: "#fff" });
+    }
+  } catch (_) {
+    Swal.fire({ icon: "error", title: "Erro", text: "Erro de conexão ao salvar o link.", background: "#222", color: "#fff" });
+  }
+}
