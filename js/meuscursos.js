@@ -201,17 +201,18 @@ function aplicarLayout(modal, modoSplit) {
 
     if (!sidebar || !mainContent) return;
 
+    sidebar.classList.remove("w-1/3", "md:w-1/3", "w-full");
+    mainContent.classList.remove("w-2/3", "md:w-2/3");
+    mainContent.classList.add("w-full");
+
     if (modoSplit) {
         sidebar.classList.remove("hidden");
-        sidebar.classList.add("w-1/3");
-        mainContent.classList.remove("w-full");
-        mainContent.classList.add("w-2/3");
+        sidebar.classList.add("w-full");
+        sidebar.classList.add("md:w-1/3");
+        mainContent.classList.add("md:w-2/3");
         if (warningHeader) warningHeader.classList.remove("hidden");
     } else {
         sidebar.classList.add("hidden");
-        sidebar.classList.remove("w-1/3");
-        mainContent.classList.remove("w-2/3");
-        mainContent.classList.add("w-full");
         if (warningHeader) warningHeader.classList.add("hidden");
     }
 }
@@ -238,6 +239,7 @@ async function abrirConteudoGeral(idAula, titulo = "", courseSlug = "") {
   const modal = document.getElementById("replitModal");
   const iframeContainer = document.getElementById("iframeContainer");
   const modalTitleEl = document.getElementById("modalTitle");
+  const slug = String(courseSlug || "").toLowerCase();
 
   if (!modal || !iframeContainer) return;
 
@@ -256,13 +258,13 @@ async function abrirConteudoGeral(idAula, titulo = "", courseSlug = "") {
   if (sidebar) sidebar.classList.add("hidden"); 
 
   modal.classList.remove("hidden");
+  aplicarLayout(modal, false);
 
   try {
     const aula = await apiGet(`/aluno/aula/${idAula}`, token);
     if (!aula) return;
 
     const conteudoRaw = (aula.conteudo || "").trim();
-    const slug = String(courseSlug || "").toLowerCase();
 
     // 2. DECISÃO DE LAYOUT (Agora sim, com o dado na mão)
     
@@ -287,7 +289,7 @@ async function abrirConteudoGeral(idAula, titulo = "", courseSlug = "") {
     } 
     
 // --- CASO B: PROGRAMAÇÃO (GAME DEV) ---
-    else if (slug.includes("game-dev") || conteudoRaw.includes("[SCRIPT]")) {
+    else if (slug === "game-dev") {
       aplicarLayout(modal, true); // Ativa o modo dividido
       renderGameDevSidebar(conteudoRaw);
       

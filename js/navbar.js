@@ -19,6 +19,9 @@ async function carregarNavbar() {
             <li class="nav-item"><a href="CertificadosIndex.html" class="nav-link" data-page="CertificadosIndex.html"><i class="fas fa-graduation-cap"></i> Certificados</a></li>
             <li class="nav-item"><a href="SuporteIndex.html" class="nav-link" data-page="SuporteIndex.html"><i class="fas fa-headset"></i> Suporte</a></li>
         </ul>
+        <button class="mobile-menu-btn" type="button" aria-label="Abrir menu">
+            <i class="fas fa-bars"></i>
+        </button>
         <div class="user-menu flex items-center gap-4">
             <div class="user-profile relative flex items-center gap-2 cursor-pointer">
                 <img id="nav-avatar-img" src="https://ui-avatars.com/api/?name=Aluno&background=00FFFF&color=000" alt="Avatar" class="w-8 h-8 rounded-full border border-[#00FFFF]">
