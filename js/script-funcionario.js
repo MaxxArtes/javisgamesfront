@@ -269,7 +269,7 @@ async function salvarTurma(e) {
     
     let editandoTurmaCodigo = document.getElementById('tmCodigo').disabled ? document.getElementById('tmCodigo').value : null;
     let url = `${API_URL}/admin/salvar-turma`; let method = 'POST';
-    if(editandoTurmaCodigo) { url = `${API_URL}/editar-turma/${editandoTurmaCodigo}`; method = 'PUT'; }
+    if(editandoTurmaCodigo) { url = `${API_URL}/admin/editar-turma/${editandoTurmaCodigo}`; method = 'PUT'; }
     
     try {
     const res = await fetchAdmin(url, { method: method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(dados) });
