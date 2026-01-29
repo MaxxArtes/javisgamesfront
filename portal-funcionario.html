@@ -30,31 +30,46 @@
         </div>
 
         <nav class="flex-1 space-y-1 px-3 py-4 overflow-y-auto" id="menu-lateral">
-            <a href="#" onclick="showTab('dashboard')" id="menu-dashboard" class="sidebar-item active flex items-center px-4 py-3 rounded-md text-gray-400"><i class="fas fa-chart-pie w-6 mr-3"></i> Dashboard</a>
-            <a href="#" onclick="showTab('inscricoes')" id="menu-inscricoes" class="sidebar-item flex items-center px-4 py-3 rounded-md text-gray-400"><i class="fas fa-clipboard-list w-6 mr-3"></i> Leads Workshops</a>
-            <a href="#" onclick="showTab('alunos')" id="menu-alunos" class="sidebar-item flex items-center px-4 py-3 rounded-md text-gray-400"><i class="fas fa-users w-6 mr-3"></i> Meus Alunos</a>
-            <a href="#" onclick="showTab('conteudo-didatico')" id="menu-conteudo-didatico" class="sidebar-item flex items-center px-4 py-3 rounded-md text-gray-400 hover:bg-white/5 transition">
-                <i class="fas fa-book-open w-6 mr-3"></i> Conteúdo Aulas
+            <a href="#" onclick="showTab('dashboard')" id="menu-dashboard" class="sidebar-item active flex items-center px-4 py-3 rounded-md text-gray-400">
+                <i class="fas fa-chart-pie w-6 mr-3"></i> Dashboard
             </a>
-            <a href="#" onclick="showTab('agenda')" id="menu-agenda" class="sidebar-item flex items-center px-4 py-3 rounded-md text-gray-400"><i class="fas fa-calendar-alt w-6 mr-3"></i> Agenda</a>
-            <a href="#" onclick="showTab('atendimento')" id="menu-atendimento" class="sidebar-item flex items-center px-4 py-3 rounded-md text-gray-400"><i class="fas fa-comments w-6 mr-3"></i> Chat & Grupos</a>
+            <a href="#" onclick="showTab('inscricoes')" id="menu-inscricoes" class="sidebar-item flex items-center px-4 py-3 rounded-md text-gray-400">
+                <i class="fas fa-bullseye w-6 mr-3"></i> Leads
+            </a>
+            <a href="#" onclick="showTab('alunos')" id="menu-alunos" class="sidebar-item flex items-center px-4 py-3 rounded-md text-gray-400">
+                <i class="fas fa-user-graduate w-6 mr-3"></i> Meus Alunos
+            </a>
             <a href="#" onclick="showTab('equipe')" id="menu-equipe" class="sidebar-item flex items-center px-4 py-3 rounded-md text-gray-400">
                 <i class="fas fa-id-badge w-6 mr-3"></i> Gestão de Equipe
             </a>
-            
+
             <div class="pt-4 mt-4 border-t border-[#222]">
-                <p class="px-4 text-xs text-gray-600 uppercase font-bold mb-2">Ações</p>
-                <a href="#" onclick="showTab('turmas')" id="menu-turmas" class="sidebar-item flex items-center px-4 py-3 rounded-md text-gray-400">
-                    <i class="fas fa-layer-group w-6 mr-3"></i> Gestão de Turmas
+                <p class="px-4 text-[10px] text-gray-600 uppercase font-bold mb-2 tracking-widest">Acadêmico</p>
+                <a href="#" onclick="showTab('turmas')" id="menu-turmas" class="sidebar-item flex items-center px-4 py-2 rounded-md text-gray-400 text-sm">
+                    <i class="fas fa-layer-group w-5 mr-3"></i> Gestão de Turmas
                 </a>
-                <a href="#" onclick="showTab('cadastro')" id="menu-cadastro" class="sidebar-item flex items-center px-4 py-3 rounded-md text-gray-400"><i class="fas fa-user-plus w-6 mr-3"></i> Novo Aluno</a>
-                <a href="#"
-                    onclick="showTab('novo-usuario')"
-                    id="menu-novo-usuario"
-                    class="sidebar-item flex items-center px-4 py-3 rounded-md text-gray-400">
-                    <i class="fas fa-user-lock w-6 mr-3"></i> Novo Usuário
+                <a href="#" onclick="showTab('frequencia')" id="menu-frequencia" class="sidebar-item flex items-center px-4 py-2 rounded-md text-gray-400 text-sm">
+                    <i class="fas fa-list-check w-5 mr-3"></i> Frequências
                 </a>
-                <a href="#" onclick="showTab('reposicao')" id="menu-reposicao" class="sidebar-item flex items-center px-4 py-3 rounded-md text-gray-400"><i class="fas fa-clock w-6 mr-3"></i> Reposições</a>
+                <a href="#" onclick="showTab('chamada')" id="menu-chamada" class="sidebar-item flex items-center px-4 py-2 rounded-md text-gray-400 text-sm">
+                    <i class="fas fa-check-double w-5 mr-3"></i> Chamadas
+                </a>
+                <a href="#" onclick="showTab('reposicao')" id="menu-reposicao" class="sidebar-item flex items-center px-4 py-2 rounded-md text-gray-400 text-sm">
+                    <i class="fas fa-clock w-5 mr-3"></i> Reposições
+                </a>
+                <a href="#" onclick="showTab('feriados')" id="menu-feriados" class="sidebar-item flex items-center px-4 py-2 rounded-md text-gray-400 text-sm">
+                    <i class="fas fa-calendar-times w-5 mr-3"></i> Feriados
+                </a>
+                <a href="#" onclick="showTab('atendimento')" id="menu-atendimento" class="sidebar-item flex items-center px-4 py-2 rounded-md text-gray-400 text-sm">
+                    <i class="fas fa-comments w-5 mr-3"></i> Chat & Grupos
+                </a>
+            </div>
+
+            <div class="pt-4 mt-4 border-t border-[#222]">
+                <p class="px-4 text-[10px] text-gray-600 uppercase font-bold mb-2 tracking-widest">Eventos</p>
+                <a href="#" onclick="showTab('aniversario')" id="menu-aniversario" class="sidebar-item flex items-center px-4 py-2 rounded-md text-gray-400 text-sm">
+                    <i class="fas fa-birthday-cake w-5 mr-3"></i> Aniversário Gamer
+                </a>
             </div>
         </nav>
         
@@ -308,6 +323,24 @@
                         </div>
                         <button type="submit" class="w-full bg-[#00FFFF] text-black font-bold py-3 rounded hover:bg-[#00cccc] mt-4">CADASTRAR ALUNO</button>
                     </form>
+                </div>
+            </div>
+
+            <div id="chamada" class="tab-content hidden p-6">
+                <div class="flex flex-col md:flex-row gap-4 mb-6 items-end">
+                    <div class="flex-1">
+                        <label class="text-xs text-gray-400">Selecione a Turma</label>
+                        <select id="selectTurmaChamada" onchange="carregarListaChamada()" class="w-full bg-[#1a1a1a] border border-[#333] p-2 rounded text-white outline-none focus:border-[#00FFFF]">
+                            <option value="">Selecione...</option>
+                            </select>
+                    </div>
+                    <button onclick="enviarChamada()" class="bg-[#00FFFF] text-black font-bold px-6 py-2 rounded-lg hover:bg-[#00FFFF]/80 transition">
+                        Finalizar Chamada
+                    </button>
+                </div>
+
+                <div id="listaChamadaAlunos" class="bg-[#1a1a1a] rounded-xl p-4 border border-[#333]">
+                    <p class="text-gray-500 text-center py-10">Selecione uma turma para iniciar a chamada.</p>
                 </div>
             </div>
 

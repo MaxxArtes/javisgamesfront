@@ -66,14 +66,29 @@ async function verificarPermissoes() {
 
 function aplicarRegras(nivel) {
     console.log("Aplicando regras para nível:", nivel);
+    const menuInsc = document.getElementById('menu-inscricoes');
+    const menus = ['menu-inscricoes', 'menu-alunos', 'menu-agenda', 'menu-atendimento', 'menu-cadastro', 'menu-reposicao', 'menu-turmas', 'menu-equipe','menu-chamada'];
+    const menusAcad = ['menu-turmas', 'menu-frequencia', 'menu-chamada', 'menu-reposicao', 'menu-feriados', 'menu-atendimento'];
     
-    const menus = ['menu-inscricoes', 'menu-alunos', 'menu-agenda', 'menu-atendimento', 'menu-cadastro', 'menu-reposicao', 'menu-turmas', 'menu-equipe'];
+    // Nível 5 (Professor) e Nível 4 (Coordenador) acessam o Acadêmico
+    if (nivel === 5 || nivel >= 4) {
+        menusAcad.forEach(m => {
+            const el = document.getElementById(m);
+            if(el) el.classList.remove('bloqueado');
+        });
+    }
+    
     menus.forEach(m => { 
         const el = document.getElementById(m); 
         if(el) el.classList.add('bloqueado'); 
     });
 
-    const menuInsc = document.getElementById('menu-inscricoes');
+    // Libere para professores e cargos superiores
+    if (nivel >= 4 || nivel === 5) {
+        if(document.getElementById('menu-chamada')) 
+            document.getElementById('menu-chamada').classList.remove('bloqueado');
+    }
+
     if(menuInsc) menuInsc.classList.remove('bloqueado'); 
 
     if (nivel >= 4) {
@@ -145,10 +160,15 @@ function showTab(tabId) {
     if(tabId === 'agenda') renderCalendar();
     if(tabId === 'atendimento') atualizarListaChat();
     if(tabId === 'turmas') carregarListaTurmas();
+    if(tabId === 'chamada') carregarTurmasParaChamada();
     if(tabId === 'equipe') {
         carregarCargosSelect();
         carregarListaEquipe();
     }
+    if(tabId === 'chamada') carregarTurmasParaChamada(); // Função que você já tem
+    if(tabId === 'frequencia') carregarRelatorioFrequencia(); 
+    if(tabId === 'feriados') carregarListaFeriados();
+    
     setTimeout(aplicarMascaras, 100);
 }
 
@@ -2620,4 +2640,70 @@ async function gerenciarAulaCanva(idAula, tituloAula) {
   } catch (_) {
     Swal.fire({ icon: "error", title: "Erro", text: "Erro de conexão ao salvar o link.", background: "#222", color: "#fff" });
   }
+}
+async function carregarListaChamada() {
+    const codTurma = document.getElementById('selectTurmaChamada').value;
+    const container = document.getElementById('listaChamadaAlunos');
+    
+    if(!codTurma) return;
+    container.innerHTML = "Carregando...";
+
+    try {
+        const res = await fetchAdmin(`${API_URL}/admin/chamada/turma/${codTurma}`);
+        const matriculas = await res.json();
+        
+        let html = '<table class="w-full text-left text-sm"><thead><tr class="border-b border-[#333]"><th class="p-2">Aluno</th><th class="p-2 text-center">Presença</th></tr></thead><tbody>';
+        
+        matriculas.forEach(m => {
+            html += `
+                <tr class="border-b border-[#222]">
+                    <td class="p-2 text-white">${m.tb_alunos.nome_completo}</td>
+                    <td class="p-2 text-center">
+                        <input type="checkbox" class="presenca-check w-5 h-5 accent-[#00FFFF]" data-id="${m.id_aluno}">
+                    </td>
+                </tr>`;
+        });
+        
+        html += '</tbody></table>';
+        container.innerHTML = html;
+    } catch (e) {
+        container.innerHTML = "Erro ao carregar alunos.";
+    }
+}
+
+async function enviarChamada() {
+    const codTurma = document.getElementById('selectTurmaChamada').value;
+    const checks = document.querySelectorAll('.presenca-check');
+    const dados = [];
+
+    checks.forEach(c => {
+        dados.push({
+            id_aluno: parseInt(c.getAttribute('data-id')),
+            codigo_turma: codTurma,
+            presenca: c.checked
+        });
+    });
+
+    try {
+        const res = await fetchAdmin(`${API_URL}/admin/chamada/salvar`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(dados)
+        });
+        if(res.ok) Swal.fire("Sucesso", "Chamada salva!", "success");
+    } catch (e) {
+        Swal.fire("Erro", "Falha ao salvar chamada.", "error");
+    }
+}
+async function carregarTurmasParaChamada() {
+    const select = document.getElementById('selectTurmaChamada');
+    // Reutiliza a lógica de carregar turmas que você já tem no sistema
+    const res = await fetchAdmin(`${API_URL}/admin/listar-turmas`);
+    if (res && res.ok) {
+        const turmas = await res.json();
+        select.innerHTML = '<option value="">Selecione a Turma...</option>';
+        turmas.forEach(t => {
+            select.innerHTML += `<option value="${t.codigo_turma}">${t.codigo_turma} - ${t.nome_curso}</option>`;
+        });
+    }
 }
