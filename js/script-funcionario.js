@@ -2798,6 +2798,7 @@ async function carregarFestasAniversario() {
     params.set('sort_by', festasSort.by);
     params.set('sort_dir', festasSort.dir);
 
+
     // ✅ bugfix aqui
     if ([...params.keys()].length) url += `?${params.toString()}`;
 
@@ -3442,9 +3443,54 @@ let festasSort = { by: 'data_festa', dir: 'asc' };
 // colunas que o backend permite ordenar (segurança)
 const allowedSortColsFestas = new Set([
   'data_festa', 'horario', 'contratante', 'telefone', 'aniversariante',
-  'idade', 'data_pagamento', 'kit_festa', 'valor', 'id_vendedor',
-  'id_unidade', 'status', 'created_at'
+  'idade', 'data_pagamento', 'kit_festa', 'valor',
+  'id_vendedor', 'id_unidade', 'status', 'created_at'
 ]);
+
+function toggleSortFestas(th) {
+  const col = th.getAttribute('data-sort');
+  if (!allowedSortColsFestas.has(col)) {
+    console.warn('Coluna não permitida para ordenação:', col);
+    return;
+  }
+
+  // ciclo: none -> asc -> desc -> none
+  if (festasSort.by !== col) {
+    festasSort.by = col;
+    festasSort.dir = 'asc';
+  } else {
+    if (festasSort.dir === 'asc') festasSort.dir = 'desc';
+    else if (festasSort.dir === 'desc') festasSort = { by: 'data_festa', dir: 'asc' }; // "limpa"
+    else festasSort.dir = 'asc';
+  }
+
+  atualizarSetasOrdenacaoFestas();
+  carregarFestasAniversario();
+}
+
+function atualizarSetasOrdenacaoFestas() {
+  // reseta todas
+  document.querySelectorAll('#aniversario thead th[data-sort]').forEach(th => {
+    const arrow = th.querySelector('[data-arrow]');
+    if (arrow) {
+      arrow.textContent = '↕';
+      arrow.classList.remove('text-[#00FFFF]');
+      arrow.classList.add('text-gray-500');
+    }
+  });
+
+  // marca a ativa
+  const thAtivo = document.querySelector(`#aniversario thead th[data-sort="${festasSort.by}"]`);
+  if (!thAtivo) return;
+
+  const arrow = thAtivo.querySelector('[data-arrow]');
+  if (!arrow) return;
+
+  arrow.textContent = (festasSort.dir === 'desc') ? '↓' : '↑';
+  arrow.classList.remove('text-gray-500');
+  arrow.classList.add('text-[#00FFFF]');
+}
+
 
 function onSortChange(selectEl) {
   const col = selectEl.getAttribute('data-sort');

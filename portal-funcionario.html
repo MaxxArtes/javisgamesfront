@@ -525,138 +525,79 @@
                     <table class="min-w-[1000px] w-full text-sm">
                         <thead class="bg-[#111] text-gray-300">
                         <tr class="border-b border-[#222]">
-                                <th class="text-left p-3 whitespace-nowrap">
-                                    Data
-                                    <select class="ml-2 bg-[#111] border border-[#333] rounded px-2 py-1 text-[10px] text-gray-200"
-                                            data-sort="data_festa"
-                                            onchange="onSortChange(this)">
-                                        <option value="">—</option>
-                                        <option value="asc"> ⬇</option>
-                                        <option value="desc">⬆</option>
-                                    </select>
+                                <th class="text-left p-3 whitespace-nowrap cursor-pointer select-none"
+                                        data-sort="data_festa"
+                                        onclick="toggleSortFestas(this)">
+                                    Data <span class="ml-1 text-gray-500" data-arrow>↕</span>
                                 </th>
 
-                                <th class="text-left p-3 whitespace-nowrap">
-                                    Horário
-                                    <select class="ml-2 bg-[#111] border border-[#333] rounded px-2 py-1 text-[10px] text-gray-200"
-                                            data-sort="horario"
-                                            onchange="onSortChange(this)">
-                                        <option value="">—</option>
-                                        <option value="asc"> ⬇</option>
-                                        <option value="desc">⬆</option>
-                                    </select>
+                                <th class="text-left p-3 whitespace-nowrap cursor-pointer select-none"
+                                        data-sort="horario"
+                                        onclick="toggleSortFestas(this)">
+                                    Horario <span class="ml-1 text-gray-500" data-arrow>↕</span>
                                 </th>
 
-                                <th class="text-left p-3 whitespace-nowrap">
-                                    Contratante
-                                    <select class="ml-2 bg-[#111] border border-[#333] rounded px-2 py-1 text-[10px] text-gray-200"
-                                            data-sort="contratante"
-                                            onchange="onSortChange(this)">
-                                        <option value="">—</option>
-                                        <option value="asc"> ⬇</option>
-                                        <option value="desc">⬆</option>
-                                    </select>
+                                <th class="text-left p-3 whitespace-nowrap cursor-pointer select-none"
+                                        data-sort="contratante"
+                                        onclick="toggleSortFestas(this)">
+                                    Contratante <span class="ml-1 text-gray-500" data-arrow>↕</span>
                                 </th>
 
-                                <th class="text-left p-3 whitespace-nowrap">
-                                    Telefone
-                                    <select class="ml-2 bg-[#111] border border-[#333] rounded px-2 py-1 text-[10px] text-gray-200"
-                                            data-sort="telefone"
-                                            onchange="onSortChange(this)">
-                                        <option value="">—</option>
-                                        <option value="asc"> ⬇</option>
-                                        <option value="desc">⬆</option>
-                                    </select>
+                                <th class="text-left p-3 whitespace-nowrap cursor-pointer select-none"
+                                        data-sort="telefone"
+                                        onclick="toggleSortFestas(this)">
+                                    Telefone <span class="ml-1 text-gray-500" data-arrow>↕</span>
                                 </th>
                                 
 
-                                <th class="text-left p-3 whitespace-nowrap">
-                                    Aniversariante
-                                    <select class="ml-2 bg-[#111] border border-[#333] rounded px-2 py-1 text-[10px] text-gray-200"
-                                            data-sort="aniversariante"
-                                            onchange="onSortChange(this)">
-                                        <option value="">—</option>
-                                        <option value="asc"> ⬇</option>
-                                        <option value="desc">⬆</option>
-                                    </select>
+                                <th class="text-left p-3 whitespace-nowrap cursor-pointer select-none"
+                                        data-sort="aniversariante"
+                                        onclick="toggleSortFestas(this)">
+                                    Aniversariante <span class="ml-1 text-gray-500" data-arrow>↕</span>
                                 </th>
 
-                                <th class="text-left p-3 whitespace-nowrap">
-                                    idade
-                                    <select class="ml-2 bg-[#111] border border-[#333] rounded px-2 py-1 text-[10px] text-gray-200"
-                                            data-sort="idade"
-                                            onchange="onSortChange(this)">
-                                        <option value="">—</option>
-                                        <option value="asc"> ⬇</option>
-                                        <option value="desc">⬆</option>
-                                    </select>
+                                <th class="text-left p-3 whitespace-nowrap cursor-pointer select-none"
+                                        data-sort="idade"
+                                        onclick="toggleSortFestas(this)">
+                                    Idade <span class="ml-1 text-gray-500" data-arrow>↕</span>
                                 </th>
 
-                                <th class="text-left p-3 whitespace-nowrap">
-                                    data pagamento
-                                    <select class="ml-2 bg-[#111] border border-[#333] rounded px-2 py-1 text-[10px] text-gray-200"
-                                            data-sort="data_pagamento"
-                                            onchange="onSortChange(this)">
-                                        <option value="">—</option>
-                                        <option value="asc"> ⬇</option>
-                                        <option value="desc">⬆</option>
-                                    </select>
+                                <th class="text-left p-3 whitespace-nowrap cursor-pointer select-none"
+                                        data-sort="data_pagamento"
+                                        onclick="toggleSortFestas(this)">
+                                    Data pagamento <span class="ml-1 text-gray-500" data-arrow>↕</span>
                                 </th>
 
-                                <th class="text-left p-3 whitespace-nowrap">
-                                    Kit festa
-                                    <select class="ml-2 bg-[#111] border border-[#333] rounded px-2 py-1 text-[10px] text-gray-200"
-                                            data-sort="kit_festa"
-                                            onchange="onSortChange(this)">
-                                        <option value="">—</option>
-                                        <option value="asc"> ⬇</option>
-                                        <option value="desc">⬆</option>
-                                    </select>
+                                <th class="text-left p-3 whitespace-nowrap cursor-pointer select-none"
+                                        data-sort="kit_festa"
+                                        onclick="toggleSortFestas(this)">
+                                    Kit festas <span class="ml-1 text-gray-500" data-arrow>↕</span>
                                 </th>
 
-                                <th class="text-left p-3 whitespace-nowrap">
-                                    Valor
-                                    <select class="ml-2 bg-[#111] border border-[#333] rounded px-2 py-1 text-[10px] text-gray-200"
-                                            data-sort="valor"
-                                            onchange="onSortChange(this)">
-                                        <option value="">—</option>
-                                        <option value="asc"> ⬇</option>
-                                        <option value="desc">⬆</option>
-                                    </select>
+                                <th class="text-left p-3 whitespace-nowrap cursor-pointer select-none"
+                                        data-sort="valor"
+                                        onclick="toggleSortFestas(this)">
+                                    Valor <span class="ml-1 text-gray-500" data-arrow>↕</span>
+                                </th>
+                                                                    
+                                <th class="text-left p-3 whitespace-nowrap cursor-pointer select-none"
+                                        data-sort="vendedor"
+                                        onclick="toggleSortFestas(this)">
+                                    Vendedor <span class="ml-1 text-gray-500" data-arrow>↕</span>
                                 </th>
 
-                                
-                                <th class="text-left p-3 whitespace-nowrap">
-                                        Vendedor
-                                    <select class="ml-2 bg-[#111] border border-[#333] rounded px-2 py-1 text-[10px] text-gray-200"
-                                        data-sort="id_vendedor"
-                                        onchange="onSortChange(this)">
-                                        <option value="">—</option>
-                                        <option value="asc"> ⬇</option>
-                                        <option value="desc">⬆</option>
-                                    </select>
-                                 </th>
-
-                                <th class="text-left p-3 whitespace-nowrap">
-                                    Unidade
-                                    <select class="ml-2 bg-[#111] border border-[#333] rounded px-2 py-1 text-[10px] text-gray-200"
-                                            data-sort="id_unidade"
-                                            onchange="onSortChange(this)">
-                                        <option value="">—</option>
-                                        <option value="asc"> ⬇</option>
-                                        <option value="desc">⬆</option>
-                                    </select>
+                                <th class="text-left p-3 whitespace-nowrap cursor-pointer select-none"
+                                        data-sort="id_unidade"
+                                        onclick="toggleSortFestas(this)">
+                                    Unidade <span class="ml-1 text-gray-500" data-arrow>↕</span>
                                 </th>
-
-                                <th class="text-left p-3 whitespace-nowrap">
-                                    Status
-                                    <select class="ml-2 bg-[#111] border border-[#333] rounded px-2 py-1 text-[10px] text-gray-200"
-                                            data-sort="status"
-                                            onchange="onSortChange(this)">
-                                        <option value="">—</option>
-                                        <option value="asc"> ⬇</option>
-                                        <option value="desc">⬆</option>
-                                    </select>
+                                       
+                                <th class="text-left p-3 whitespace-nowrap cursor-pointer select-none"
+                                        data-sort="status"
+                                        onclick="toggleSortFestas(this)">
+                                    Status <span class="ml-1 text-gray-500" data-arrow>↕</span>
+                                </th>
+                                        
                                 </th>
 
                             <th class="text-left p-3">Observações</th>
