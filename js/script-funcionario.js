@@ -2767,18 +2767,6 @@ function badgeBool(v) {
   return `-`;
 }
 
-let festasSort = { by: 'data_festa', dir: 'asc' };
-
-function setSortFestas(by) {
-  if (festasSort.by === by) {
-    festasSort.dir = (festasSort.dir === 'asc') ? 'desc' : 'asc';
-  } else {
-    festasSort.by = by;
-    festasSort.dir = 'asc';
-  }
-  carregarFestasAniversario();
-}
-
 async function carregarFestasAniversario() {
   const tbody = document.getElementById('listaFestasBody');
   if (!tbody) return;
@@ -3448,3 +3436,43 @@ async function salvarNovaFestaAniversario() {
   }
 }
 
+// estado global da ordenação da tabela de festas
+let festasSort = { by: 'data_festa', dir: 'asc' };
+
+// colunas que o backend permite ordenar (segurança)
+const allowedSortColsFestas = new Set([
+  'data_festa', 'horario', 'contratante', 'telefone', 'aniversariante',
+  'idade', 'data_pagamento', 'kit_festa', 'valor', 'id_vendedor',
+  'id_unidade', 'status', 'created_at'
+]);
+
+function onSortChange(selectEl) {
+  const col = selectEl.getAttribute('data-sort');
+  const dir = selectEl.value; // '', 'asc', 'desc'
+
+  // se limpou (—), volta pro padrão
+  if (!dir) {
+    festasSort = { by: 'data_festa', dir: 'asc' };
+    // limpa todos os selects
+    document.querySelectorAll('#aniversario thead select[data-sort]').forEach(s => {
+      if (s !== selectEl) s.value = '';
+    });
+    carregarFestasAniversario();
+    return;
+  }
+
+  // valida coluna
+  if (!allowedSortColsFestas.has(col)) {
+    console.warn('Coluna de ordenação não permitida:', col);
+    selectEl.value = '';
+    return;
+  }
+
+  // deixa apenas UM select ativo por vez
+  document.querySelectorAll('#aniversario thead select[data-sort]').forEach(s => {
+    if (s !== selectEl) s.value = '';
+  });
+
+  festasSort = { by: col, dir };
+  carregarFestasAniversario();
+}

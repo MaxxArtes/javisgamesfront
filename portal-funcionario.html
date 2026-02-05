@@ -525,18 +525,140 @@
                     <table class="min-w-[1000px] w-full text-sm">
                         <thead class="bg-[#111] text-gray-300">
                         <tr class="border-b border-[#222]">
-                            <th class="text-left p-3">Data</th>
-                            <th class="text-left p-3">Horário</th>
-                            <th class="text-left p-3">Contratante</th>
-                            <th class="text-left p-3">Telefone</th>
-                            <th class="text-left p-3">Aniversariante</th>
-                            <th class="text-left p-3">Idade</th>
-                            <th class="text-left p-3">Pagamento</th>
-                            <th class="text-left p-3">Kit</th>
-                            <th class="text-left p-3">Valor</th>
-                            <th class="text-left p-3">Vendedor</th>
-                            <th class="text-left p-3">Cidade</th>
-                            <th class="text-left p-3">Status</th>
+                                <th class="text-left p-3 whitespace-nowrap">
+                                    Data
+                                    <select class="ml-2 bg-[#111] border border-[#333] rounded px-2 py-1 text-[10px] text-gray-200"
+                                            data-sort="data_festa"
+                                            onchange="onSortChange(this)">
+                                        <option value="">—</option>
+                                        <option value="asc"> ⬇</option>
+                                        <option value="desc">⬆</option>
+                                    </select>
+                                </th>
+
+                                <th class="text-left p-3 whitespace-nowrap">
+                                    Horário
+                                    <select class="ml-2 bg-[#111] border border-[#333] rounded px-2 py-1 text-[10px] text-gray-200"
+                                            data-sort="horario"
+                                            onchange="onSortChange(this)">
+                                        <option value="">—</option>
+                                        <option value="asc"> ⬇</option>
+                                        <option value="desc">⬆</option>
+                                    </select>
+                                </th>
+
+                                <th class="text-left p-3 whitespace-nowrap">
+                                    Contratante
+                                    <select class="ml-2 bg-[#111] border border-[#333] rounded px-2 py-1 text-[10px] text-gray-200"
+                                            data-sort="contratante"
+                                            onchange="onSortChange(this)">
+                                        <option value="">—</option>
+                                        <option value="asc"> ⬇</option>
+                                        <option value="desc">⬆</option>
+                                    </select>
+                                </th>
+
+                                <th class="text-left p-3 whitespace-nowrap">
+                                    Telefone
+                                    <select class="ml-2 bg-[#111] border border-[#333] rounded px-2 py-1 text-[10px] text-gray-200"
+                                            data-sort="telefone"
+                                            onchange="onSortChange(this)">
+                                        <option value="">—</option>
+                                        <option value="asc"> ⬇</option>
+                                        <option value="desc">⬆</option>
+                                    </select>
+                                </th>
+                                
+
+                                <th class="text-left p-3 whitespace-nowrap">
+                                    Aniversariante
+                                    <select class="ml-2 bg-[#111] border border-[#333] rounded px-2 py-1 text-[10px] text-gray-200"
+                                            data-sort="aniversariante"
+                                            onchange="onSortChange(this)">
+                                        <option value="">—</option>
+                                        <option value="asc"> ⬇</option>
+                                        <option value="desc">⬆</option>
+                                    </select>
+                                </th>
+
+                                <th class="text-left p-3 whitespace-nowrap">
+                                    idade
+                                    <select class="ml-2 bg-[#111] border border-[#333] rounded px-2 py-1 text-[10px] text-gray-200"
+                                            data-sort="idade"
+                                            onchange="onSortChange(this)">
+                                        <option value="">—</option>
+                                        <option value="asc"> ⬇</option>
+                                        <option value="desc">⬆</option>
+                                    </select>
+                                </th>
+
+                                <th class="text-left p-3 whitespace-nowrap">
+                                    data pagamento
+                                    <select class="ml-2 bg-[#111] border border-[#333] rounded px-2 py-1 text-[10px] text-gray-200"
+                                            data-sort="data_pagamento"
+                                            onchange="onSortChange(this)">
+                                        <option value="">—</option>
+                                        <option value="asc"> ⬇</option>
+                                        <option value="desc">⬆</option>
+                                    </select>
+                                </th>
+
+                                <th class="text-left p-3 whitespace-nowrap">
+                                    Kit festa
+                                    <select class="ml-2 bg-[#111] border border-[#333] rounded px-2 py-1 text-[10px] text-gray-200"
+                                            data-sort="kit_festa"
+                                            onchange="onSortChange(this)">
+                                        <option value="">—</option>
+                                        <option value="asc"> ⬇</option>
+                                        <option value="desc">⬆</option>
+                                    </select>
+                                </th>
+
+                                <th class="text-left p-3 whitespace-nowrap">
+                                    Valor
+                                    <select class="ml-2 bg-[#111] border border-[#333] rounded px-2 py-1 text-[10px] text-gray-200"
+                                            data-sort="valor"
+                                            onchange="onSortChange(this)">
+                                        <option value="">—</option>
+                                        <option value="asc"> ⬇</option>
+                                        <option value="desc">⬆</option>
+                                    </select>
+                                </th>
+
+                                
+                                <th class="text-left p-3 whitespace-nowrap">
+                                        Vendedor
+                                    <select class="ml-2 bg-[#111] border border-[#333] rounded px-2 py-1 text-[10px] text-gray-200"
+                                        data-sort="id_vendedor"
+                                        onchange="onSortChange(this)">
+                                        <option value="">—</option>
+                                        <option value="asc"> ⬇</option>
+                                        <option value="desc">⬆</option>
+                                    </select>
+                                 </th>
+
+                                <th class="text-left p-3 whitespace-nowrap">
+                                    Unidade
+                                    <select class="ml-2 bg-[#111] border border-[#333] rounded px-2 py-1 text-[10px] text-gray-200"
+                                            data-sort="id_unidade"
+                                            onchange="onSortChange(this)">
+                                        <option value="">—</option>
+                                        <option value="asc"> ⬇</option>
+                                        <option value="desc">⬆</option>
+                                    </select>
+                                </th>
+
+                                <th class="text-left p-3 whitespace-nowrap">
+                                    Status
+                                    <select class="ml-2 bg-[#111] border border-[#333] rounded px-2 py-1 text-[10px] text-gray-200"
+                                            data-sort="status"
+                                            onchange="onSortChange(this)">
+                                        <option value="">—</option>
+                                        <option value="asc"> ⬇</option>
+                                        <option value="desc">⬆</option>
+                                    </select>
+                                </th>
+
                             <th class="text-left p-3">Observações</th>
                             <th class="text-left p-3">Ações</th>
                         </tr>
