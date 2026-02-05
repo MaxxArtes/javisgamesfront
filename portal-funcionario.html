@@ -492,6 +492,59 @@
                     </div>
                 </div>
             </div>
+            <div id="aniversario" class="tab-content hidden p-4 md:p-8 fade-in">
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+                    <h1 class="text-2xl md:text-3xl font-bold text-[#00FFFF]">
+                    Aniversário Gamer
+                    </h1>
+
+                    <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                    <select id="filtroStatusFesta"
+                        class="bg-[#111] border border-[#333] rounded px-3 py-2 text-white w-full sm:w-56"
+                        onchange="carregarFestasAniversario()">
+                        <option value="">Todos</option>
+                        <option value="PARA_ACONTECER">Para acontecer</option>
+                        <option value="FECHADA">Fechadas</option>
+                    </select>
+
+                    <input id="buscaFesta" type="text"
+                        class="bg-[#111] border border-[#333] rounded px-3 py-2 text-white w-full sm:w-72"
+                        placeholder="Buscar por contratante, aniversariante ou vendedor..."
+                        oninput="debounceCarregarFestasAniversario()" />
+                    </div>
+                </div>
+
+                <div class="bg-black/30 border border-[#222] rounded-xl overflow-hidden">
+                    <div class="overflow-auto">
+                    <table class="min-w-[1000px] w-full text-sm">
+                        <thead class="bg-[#111] text-gray-300">
+                        <tr class="border-b border-[#222]">
+                            <th class="text-left p-3">Data</th>
+                            <th class="text-left p-3">Horário</th>
+                            <th class="text-left p-3">Contratante</th>
+                            <th class="text-left p-3">Telefone</th>
+                            <th class="text-left p-3">Aniversariante</th>
+                            <th class="text-left p-3">Idade</th>
+                            <th class="text-left p-3">Pagamento</th>
+                            <th class="text-left p-3">Kit</th>
+                            <th class="text-left p-3">Valor</th>
+                            <th class="text-left p-3">Vendedor</th>
+                            <th class="text-left p-3">Status</th>
+                        </tr>
+                        </thead>
+
+                        <tbody id="listaFestasBody" class="text-gray-200">
+                        <tr>
+                            <td colspan="11" class="p-6 text-center text-gray-500">
+                            Abra a aba para carregar as festas.
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    </div>
+                </div>
+            </div>
+
 
             <div id="perfil" class="tab-content hidden p-4 md:p-8 fade-in">
                 <h1 class="text-2xl md:text-3xl font-bold text-[#00FFFF] mb-6">Meu Perfil</h1>

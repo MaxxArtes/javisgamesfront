@@ -67,67 +67,85 @@ async function verificarPermissoes() {
 function aplicarRegras(nivel) {
     console.log("Aplicando regras para nível:", nivel);
     const menuInsc = document.getElementById('menu-inscricoes');
-    const menus = ['menu-inscricoes', 'menu-alunos', 'menu-agenda', 'menu-atendimento', 'menu-cadastro', 'menu-reposicao', 'menu-turmas', 'menu-equipe','menu-chamada'];
+
+    // ✅ inclua menu-aniversario aqui
+    const menus = [
+        'menu-inscricoes', 'menu-alunos', 'menu-agenda', 'menu-atendimento',
+        'menu-cadastro', 'menu-reposicao', 'menu-turmas', 'menu-equipe',
+        'menu-chamada', 'menu-aniversario'
+    ];
+
     const menusAcad = ['menu-turmas', 'menu-frequencia', 'menu-chamada', 'menu-reposicao', 'menu-feriados', 'menu-atendimento'];
-    
+
     // Nível 5 (Professor) e Nível 4 (Coordenador) acessam o Acadêmico
     if (nivel === 5 || nivel >= 4) {
         menusAcad.forEach(m => {
             const el = document.getElementById(m);
-            if(el) el.classList.remove('bloqueado');
+            if (el) el.classList.remove('bloqueado');
         });
     }
-    
-    menus.forEach(m => { 
-        const el = document.getElementById(m); 
-        if(el) el.classList.add('bloqueado'); 
+
+    // bloqueia tudo
+    menus.forEach(m => {
+        const el = document.getElementById(m);
+        if (el) el.classList.add('bloqueado');
     });
 
     // Libere para professores e cargos superiores
     if (nivel >= 4 || nivel === 5) {
-        if(document.getElementById('menu-chamada')) 
-            document.getElementById('menu-chamada').classList.remove('bloqueado');
+        const mc = document.getElementById('menu-chamada');
+        if (mc) mc.classList.remove('bloqueado');
     }
 
-    if(menuInsc) menuInsc.classList.remove('bloqueado'); 
+    if (menuInsc) menuInsc.classList.remove('bloqueado');
 
     if (nivel >= 4) {
-        if(document.getElementById('menu-turmas')) document.getElementById('menu-turmas').classList.remove('bloqueado');
-        if(document.getElementById('menu-reposicao')) document.getElementById('menu-reposicao').classList.remove('bloqueado');
-        if(document.getElementById('menu-equipe')) document.getElementById('menu-equipe').classList.remove('bloqueado');
+        const mt = document.getElementById('menu-turmas');
+        const mr = document.getElementById('menu-reposicao');
+        const me = document.getElementById('menu-equipe');
+        if (mt) mt.classList.remove('bloqueado');
+        if (mr) mr.classList.remove('bloqueado');
+        if (me) me.classList.remove('bloqueado');
     }
 
-    if (nivel >= 8) { 
-        menus.forEach(m => { 
-            const el = document.getElementById(m); 
-            if(el) el.classList.remove('bloqueado'); 
+    // ✅ só 8+ pode ver aniversario e o restante admin
+    if (nivel >= 8) {
+        menus.forEach(m => {
+            const el = document.getElementById(m);
+            if (el) el.classList.remove('bloqueado');
         });
-        showTab('dashboard'); 
-    } 
-    
+        showTab('dashboard');
+    }
+
     if (nivel >= 9) {
         const filtroEq = document.getElementById('filtroCidadeEquipe');
-        if(filtroEq) filtroEq.classList.remove('hidden');
-        
-        const filtroLeads = document.getElementById('filtroCidadeLeads');
-        if(filtroLeads) filtroLeads.classList.remove('hidden');
-    }
+        if (filtroEq) filtroEq.classList.remove('hidden');
 
-    else if (nivel === 5) { // Professor
-        ['menu-alunos', 'menu-agenda', 'menu-atendimento'].forEach(m => { if(document.getElementById(m)) document.getElementById(m).classList.remove('bloqueado'); });
+        const filtroLeads = document.getElementById('filtroCidadeLeads');
+        if (filtroLeads) filtroLeads.classList.remove('hidden');
+    } else if (nivel === 5) {
+        ['menu-alunos', 'menu-agenda', 'menu-atendimento'].forEach(m => {
+            const el = document.getElementById(m);
+            if (el) el.classList.remove('bloqueado');
+        });
         showTab('agenda');
-    } 
-    else if (nivel === 3) { // Vendedor
-        ['menu-inscricoes', 'menu-cadastro', 'menu-agenda'].forEach(m => { if(document.getElementById(m)) document.getElementById(m).classList.remove('bloqueado'); });
+    } else if (nivel === 3) {
+        ['menu-inscricoes', 'menu-cadastro', 'menu-agenda'].forEach(m => {
+            const el = document.getElementById(m);
+            if (el) el.classList.remove('bloqueado');
+        });
         showTab('inscricoes');
-    } 
-    else if (nivel === 2) { // Atendente
-        ['menu-agenda', 'menu-atendimento'].forEach(m => { if(document.getElementById(m)) document.getElementById(m).classList.remove('bloqueado'); });
+    } else if (nivel === 2) {
+        ['menu-agenda', 'menu-atendimento'].forEach(m => {
+            const el = document.getElementById(m);
+            if (el) el.classList.remove('bloqueado');
+        });
         showTab('atendimento');
     }
 }
 
-function showTab(tabId) {
+
+async function showTab(tabId) {
     const targetTab = document.getElementById(tabId);
     if (!targetTab) return; // Se a aba não existir, não faz nada e evita erro no console
 
@@ -165,9 +183,15 @@ function showTab(tabId) {
         carregarCargosSelect();
         carregarListaEquipe();
     }
+    
     if(tabId === 'chamada') carregarTurmasParaChamada(); // Função que você já tem
     if(tabId === 'frequencia') carregarRelatorioFrequencia(); 
     if(tabId === 'feriados') carregarListaFeriados();
+    if (tabId === 'aniversario') {
+        await carregarFiltrosFestasAniversario();
+        carregarFestasAniversario();
+    }
+
     
     setTimeout(aplicarMascaras, 100);
 }
@@ -2707,3 +2731,298 @@ async function carregarTurmasParaChamada() {
         });
     }
 }
+
+let debounceFestasTimer = null;
+
+function debounceCarregarFestasAniversario() {
+  clearTimeout(debounceFestasTimer);
+  debounceFestasTimer = setTimeout(() => carregarFestasAniversario(), 300);
+}
+
+function formatarDataBR(isoOrDateString) {
+  if (!isoOrDateString) return '-';
+  // se vier "2026-02-01"
+  if (/^\d{4}-\d{2}-\d{2}/.test(isoOrDateString)) {
+    const d = new Date(isoOrDateString + "T00:00:00");
+    return d.toLocaleDateString('pt-BR');
+  }
+  // fallback
+  try { return new Date(isoOrDateString).toLocaleDateString('pt-BR'); } catch { return isoOrDateString; }
+}
+
+function badgeStatus(status) {
+  if (status === 'FECHADA') {
+    return `<span class="text-[10px] px-2 py-1 rounded bg-red-900/40 border border-red-700 text-red-200 font-bold">FECHADA</span>`;
+  }
+  if (status === 'PARA_ACONTECER') {
+    return `<span class="text-[10px] px-2 py-1 rounded bg-yellow-900/40 border border-yellow-700 text-yellow-200 font-bold">PARA ACONTECER</span>`;
+  }
+  return `<span class="text-[10px] px-2 py-1 rounded bg-gray-800 border border-gray-600 text-gray-200 font-bold">${status || '-'}</span>`;
+}
+
+function badgeBool(v) {
+  if (v === true) return `<span class="text-[10px] px-2 py-1 rounded bg-green-900/40 border border-green-700 text-green-200 font-bold">SIM</span>`;
+  if (v === false) return `<span class="text-[10px] px-2 py-1 rounded bg-gray-900/40 border border-gray-700 text-gray-300 font-bold">NÃO</span>`;
+  return `-`;
+}
+
+let festasSort = { by: 'data_festa', dir: 'asc' };
+
+function setSortFestas(by) {
+  if (festasSort.by === by) {
+    festasSort.dir = (festasSort.dir === 'asc') ? 'desc' : 'asc';
+  } else {
+    festasSort.by = by;
+    festasSort.dir = 'asc';
+  }
+  carregarFestasAniversario();
+}
+
+async function carregarFestasAniversario() {
+  const tbody = document.getElementById('listaFestasBody');
+  if (!tbody) return;
+
+  tbody.innerHTML = `<tr><td colspan="13" class="p-6 text-center text-gray-500">Carregando.</td></tr>`;
+
+  const status = document.getElementById('filtroStatusFesta')?.value || '';
+  const q = (document.getElementById('buscaFesta')?.value || '').trim();
+
+  // ✅ novos filtros
+  const dataIni = document.getElementById('filtroDataIniFesta')?.value || '';
+  const dataFim = document.getElementById('filtroDataFimFesta')?.value || '';
+  const vendedorId = document.getElementById('filtroVendedorFesta')?.value || '';
+  const unidadeId = document.getElementById('filtroUnidadeFesta')?.value || '';
+
+  try {
+    let url = `${API_URL}/admin/festas-aniversario`;
+    const params = new URLSearchParams();
+
+    if (status) params.set('status', status);
+    if (q) params.set('q', q);
+
+    if (dataIni) params.set('data_ini', dataIni);
+    if (dataFim) params.set('data_fim', dataFim);
+    if (vendedorId) params.set('id_vendedor', vendedorId);
+    if (unidadeId) params.set('id_unidade', unidadeId);
+
+    // sort
+    params.set('sort_by', festasSort.by);
+    params.set('sort_dir', festasSort.dir);
+
+    // ✅ bugfix aqui
+    if ([...params.keys()].length) url += `?${params.toString()}`;
+
+    const res = await fetchAdmin(url);
+    if (!res) {
+      tbody.innerHTML = `<tr><td colspan="13" class="p-6 text-center text-red-400">Sem resposta do servidor.</td></tr>`;
+      return;
+    }
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      tbody.innerHTML = `<tr><td colspan="13" class="p-6 text-center text-red-400">${err.detail || 'Erro ao carregar festas.'}</td></tr>`;
+      return;
+    }
+
+    const festas = await res.json();
+    if (!Array.isArray(festas) || festas.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="13" class="p-6 text-center text-gray-500">Nenhuma festa encontrada.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = '';
+    festas.forEach(f => {
+      const valor = (f.valor !== null && f.valor !== undefined)
+        ? `R$ ${Number(f.valor).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+        : '-';
+
+      const unidadeNome =
+        (f.tb_unidades && f.tb_unidades.nome_unidade) ? f.tb_unidades.nome_unidade :
+        (f.nome_unidade ? f.nome_unidade : '-');
+
+      const vendedorNome =
+        (f.tb_colaboradores && f.tb_colaboradores.nome_completo) ? f.tb_colaboradores.nome_completo :
+        (f.quem_vendeu || '-');
+
+      const btnEditar = `<button onclick="abrirModalFestaAniversario('edit', ${encodeURIComponent(JSON.stringify(f))})"
+                              class="text-gray-400 hover:text-[#00FFFF]" title="Editar">
+                          <i class="fas fa-edit"></i>
+                        </button>`;
+
+      tbody.innerHTML += `
+        <tr class="border-b border-[#222] hover:bg-[#2a2a2a] transition">
+          <td class="p-3 text-[#00FFFF] font-mono">${formatarDataBR(f.data_festa)}</td>
+          <td class="p-3">${f.horario || '-'}</td>
+          <td class="p-3 font-bold text-white">${f.contratante || '-'}</td>
+          <td class="p-3 text-gray-300">${f.telefone || '-'}</td>
+          <td class="p-3">${f.aniversariante || '-'}</td>
+          <td class="p-3">${f.idade ?? '-'}</td>
+          <td class="p-3">${formatarDataBR(f.data_pagamento)}</td>
+          <td class="p-3">${badgeBool(f.kit_festa)}</td>
+          <td class="p-3">${valor}</td>
+          <td class="p-3">${vendedorNome}</td>
+          <td class="p-3">${unidadeNome}</td>
+          <td class="p-3">${badgeStatus(f.status)}</td>
+          <td class="p-3 text-center">${btnEditar}</td>
+        </tr>`;
+    });
+
+  } catch (e) {
+    console.error(e);
+    tbody.innerHTML = `<tr><td colspan="13" class="p-6 text-center text-red-400">Erro ao carregar. Veja o console.</td></tr>`;
+  }
+}
+
+async function carregarFiltrosFestasAniversario() {
+  await Promise.all([
+    carregarSelectVendedoresFesta(),
+    carregarSelectUnidadesFesta()
+  ]);
+}
+
+async function carregarSelectVendedoresFesta() {
+  const sel = document.getElementById('filtroVendedorFesta');
+  if (!sel) return;
+
+  sel.innerHTML = `<option value="">Todos os vendedores</option>`;
+
+  try {
+    const res = await fetchAdmin(`${API_URL}/admin/festas-aniversario/vendedores`);
+    if (!res || !res.ok) return;
+
+    const dados = await res.json();
+    if (!Array.isArray(dados)) return;
+
+    dados.forEach(v => {
+      sel.innerHTML += `<option value="${v.id_colaborador}">${v.nome_completo}</option>`;
+    });
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+async function carregarSelectUnidadesFesta() {
+  const sel = document.getElementById('filtroUnidadeFesta');
+  if (!sel) return;
+
+  sel.innerHTML = `<option value="">Todas as unidades</option>`;
+
+  try {
+    const res = await fetchAdmin(`${API_URL}/admin/unidades`);
+    if (!res || !res.ok) return;
+
+    const unidades = await res.json();
+    if (!Array.isArray(unidades)) return;
+
+    unidades.forEach(u => {
+      sel.innerHTML += `<option value="${u.id_unidade}">${u.nome_unidade}</option>`;
+    });
+  } catch (e) {
+    console.error(e);
+  }
+}
+function abrirModalFestaAniversario(modo, festaEncodedJson = null) {
+  // modo: 'create' | 'edit'
+  const festa = festaEncodedJson ? JSON.parse(decodeURIComponent(festaEncodedJson)) : null;
+
+  document.getElementById('modalFestaTitulo').innerText =
+    (modo === 'edit') ? 'Editar Festa' : 'Adicionar Festa';
+
+  document.getElementById('festaModo').value = modo;
+  document.getElementById('festaId').value = festa?.id_festa || festa?.id || '';
+
+  // campos
+  document.getElementById('festaData').value = festa?.data_festa || '';
+  document.getElementById('festaHorario').value = festa?.horario || '';
+  document.getElementById('festaContratante').value = festa?.contratante || '';
+  document.getElementById('festaTelefone').value = festa?.telefone || '';
+  document.getElementById('festaAniversariante').value = festa?.aniversariante || '';
+  document.getElementById('festaIdade').value = festa?.idade ?? '';
+  document.getElementById('festaDataPagamento').value = festa?.data_pagamento || '';
+  document.getElementById('festaKit').value = (festa?.kit_festa === true) ? 'true' : (festa?.kit_festa === false ? 'false' : '');
+  document.getElementById('festaValor').value = (festa?.valor ?? '');
+  document.getElementById('festaStatus').value = festa?.status || 'PARA_ACONTECER';
+
+  // vendedor/unidade (se já existir no registro)
+  if (document.getElementById('festaVendedor')) {
+    document.getElementById('festaVendedor').value = festa?.id_vendedor ?? '';
+  }
+  if (document.getElementById('festaUnidade')) {
+    document.getElementById('festaUnidade').value = festa?.id_unidade ?? '1'; // ✅ default Cuiabá
+  }
+
+  const modal = document.getElementById('modalFesta');
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+}
+
+function fecharModalFestaAniversario() {
+  const modal = document.getElementById('modalFesta');
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
+}
+
+async function salvarFestaAniversario(e) {
+  e.preventDefault();
+
+  const modo = document.getElementById('festaModo').value;
+  const id = document.getElementById('festaId').value;
+
+  const btn = document.getElementById('btnSalvarFesta');
+  const original = btn.innerText;
+  btn.innerText = "SALVANDO...";
+  btn.disabled = true;
+
+  const payload = {
+    data_festa: document.getElementById('festaData').value || null,
+    horario: document.getElementById('festaHorario').value || null,
+    contratante: document.getElementById('festaContratante').value || null,
+    telefone: document.getElementById('festaTelefone').value || null,
+    aniversariante: document.getElementById('festaAniversariante').value || null,
+    idade: document.getElementById('festaIdade').value ? parseInt(document.getElementById('festaIdade').value) : null,
+    data_pagamento: document.getElementById('festaDataPagamento').value || null,
+    kit_festa: document.getElementById('festaKit').value === '' ? null : (document.getElementById('festaKit').value === 'true'),
+    valor: document.getElementById('festaValor').value === '' ? null : parseFloat(document.getElementById('festaValor').value),
+    status: document.getElementById('festaStatus').value || 'PARA_ACONTECER',
+
+    // ✅ novos campos
+    id_vendedor: document.getElementById('festaVendedor')?.value ? parseInt(document.getElementById('festaVendedor').value) : null,
+    id_unidade: document.getElementById('festaUnidade')?.value ? parseInt(document.getElementById('festaUnidade').value) : 1 // default Cuiabá
+  };
+
+  try {
+    const url =
+      (modo === 'edit')
+        ? `${API_URL}/admin/festas-aniversario/${id}`
+        : `${API_URL}/admin/festas-aniversario`;
+
+    const method = (modo === 'edit') ? 'PUT' : 'POST';
+
+    const res = await fetchAdmin(url, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (!res) {
+      Swal.fire({ icon: 'error', title: 'Erro', text: 'Sem resposta do servidor.', background: '#222', color: '#fff' });
+      return;
+    }
+
+    if (res.ok) {
+      Swal.fire({ icon: 'success', title: 'Sucesso!', text: 'Festa salva.', timer: 1400, showConfirmButton: false, background: '#222', color: '#fff' });
+      fecharModalFestaAniversario();
+      carregarFestasAniversario();
+    } else {
+      const err = await res.json().catch(() => ({}));
+      Swal.fire({ icon: 'error', title: 'Erro', text: err.detail || 'Erro ao salvar.', background: '#222', color: '#fff' });
+    }
+  } catch (err) {
+    console.error(err);
+    Swal.fire({ icon: 'error', title: 'Erro', text: 'Erro de conexão.', background: '#222', color: '#fff' });
+  } finally {
+    btn.innerText = original;
+    btn.disabled = false;
+  }
+}
+
