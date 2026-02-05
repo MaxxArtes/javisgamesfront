@@ -5,6 +5,7 @@ let chatAdminInterval = null;
 let selecionadoId = null; // ID do Aluno ou Codigo da Turma
 let nivelUsuarioLogado = 0; 
 let usuarioLogadoId = null; // Para filtros de professor
+let cacheFestasAniversario = new Map(); // id -> objeto festa
 
 // Estado do Chat - Padrão para 'conversas' (Histórico Recente)
 let modoChat = 'conversas'; 
@@ -2832,39 +2833,43 @@ async function carregarFestasAniversario() {
 
     tbody.innerHTML = '';
     festas.forEach(f => {
-      const valor = (f.valor !== null && f.valor !== undefined)
-        ? `R$ ${Number(f.valor).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-        : '-';
+        cacheFestasAniversario.set(f.id, f);
+        const valor = (f.valor !== null && f.valor !== undefined)
+            ? `R$ ${Number(f.valor).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+            : '-';
 
-      const unidadeNome =
-        (f.tb_unidades && f.tb_unidades.nome_unidade) ? f.tb_unidades.nome_unidade :
-        (f.nome_unidade ? f.nome_unidade : '-');
+        const unidadeNome =
+            (f.tb_unidades && f.tb_unidades.nome_unidade) ? f.tb_unidades.nome_unidade :
+            (f.nome_unidade ? f.nome_unidade : '-');
 
-      const vendedorNome =
-        (f.tb_colaboradores && f.tb_colaboradores.nome_completo) ? f.tb_colaboradores.nome_completo :
-        (f.quem_vendeu || '-');
+        const vendedorNome =
+            (f.tb_colaboradores && f.tb_colaboradores.nome_completo) ? f.tb_colaboradores.nome_completo :
+            (f.quem_vendeu || '-');
 
-      const btnEditar = `<button onclick="abrirModalFestaAniversario('edit', ${encodeURIComponent(JSON.stringify(f))})"
-                              class="text-gray-400 hover:text-[#00FFFF]" title="Editar">
-                          <i class="fas fa-edit"></i>
-                        </button>`;
+        const btnEditar = `
+            <button onclick="abrirModalEditarFestaAniversario(${f.id})"
+                class="text-gray-300 hover:text-[#00FFFF] transition" title="Editar">
+                <i class="fas fa-edit"></i>
+            </button>
+        `;
 
-      tbody.innerHTML += `
-        <tr class="border-b border-[#222] hover:bg-[#2a2a2a] transition">
-          <td class="p-3 text-[#00FFFF] font-mono">${formatarDataBR(f.data_festa)}</td>
-          <td class="p-3">${f.horario || '-'}</td>
-          <td class="p-3 font-bold text-white">${f.contratante || '-'}</td>
-          <td class="p-3 text-gray-300">${f.telefone || '-'}</td>
-          <td class="p-3">${f.aniversariante || '-'}</td>
-          <td class="p-3">${f.idade ?? '-'}</td>
-          <td class="p-3">${formatarDataBR(f.data_pagamento)}</td>
-          <td class="p-3">${badgeBool(f.kit_festa)}</td>
-          <td class="p-3">${valor}</td>
-          <td class="p-3">${vendedorNome}</td>
-          <td class="p-3">${unidadeNome}</td>
-          <td class="p-3">${badgeStatus(f.status)}</td>
-          <td class="p-3 text-center">${btnEditar}</td>
-        </tr>`;
+        tbody.innerHTML += `
+            <tr class="border-b border-[#222] hover:bg-[#2a2a2a] transition">
+                <td class="p-3 text-[#00FFFF] font-mono">${formatarDataBR(f.data_festa)}</td>
+                <td class="p-3">${f.horario || '-'}</td>
+                <td class="p-3 font-bold text-white">${f.contratante || '-'}</td>
+                <td class="p-3 text-gray-300">${f.telefone || '-'}</td>
+                <td class="p-3">${f.aniversariante || '-'}</td>
+                <td class="p-3">${f.idade ?? '-'}</td>
+                <td class="p-3">${formatarDataBR(f.data_pagamento)}</td>
+                <td class="p-3">${badgeBool(f.kit_festa)}</td>
+                <td class="p-3">${valor}</td>
+                <td class="p-3">${vendedorNome}</td>
+                <td class="p-3">${unidadeNome}</td>
+                <td class="p-3">${badgeStatus(f.status)}</td>
+                <td class="p-3">${f.observacoes || '-'}</td>
+                <td class="p-3 text-center">${btnEditar}</td>
+            </tr>`;
     });
 
   } catch (e) {
@@ -2872,6 +2877,226 @@ async function carregarFestasAniversario() {
     tbody.innerHTML = `<tr><td colspan="13" class="p-6 text-center text-red-400">Erro ao carregar. Veja o console.</td></tr>`;
   }
 }
+
+function escapeHtml(s) {
+  return (s ?? '').toString()
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
+}
+
+function montarFormFestaAniversario(dados) {
+  const f = dados || {};
+
+  // valores seguros para HTML
+  const contratante = escapeHtml(f.contratante);
+  const telefone = escapeHtml(f.telefone);
+  const aniversariante = escapeHtml(f.aniversariante);
+  const horario = escapeHtml(f.horario);
+  const obs = escapeHtml(f.observacoes);
+
+  const idade = (f.idade ?? '');
+  const valor = (f.valor ?? '');
+
+  const kitVal = (f.kit_festa === true) ? 'true' : (f.kit_festa === false ? 'false' : '');
+  const status = f.status || 'PARA_ACONTECER';
+
+  // datas já vêm "YYYY-MM-DD" do Supabase
+  const dataFesta = f.data_festa || '';
+  const dataPgto = f.data_pagamento || '';
+
+  return `
+    <div class="space-y-3 text-sm">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div>
+          <label class="block text-gray-300 font-semibold mb-1">Status</label>
+          <select id="faStatus" class="w-full bg-[#111] border border-[#333] rounded px-3 py-2 text-white">
+            <option value="PARA_ACONTECER" ${status === 'PARA_ACONTECER' ? 'selected' : ''}>Para acontecer</option>
+            <option value="FECHADA" ${status === 'FECHADA' ? 'selected' : ''}>Fechada</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-gray-300 font-semibold mb-1">Data da festa</label>
+          <input id="faDataFesta" type="date" value="${dataFesta}"
+            class="w-full bg-[#111] border border-[#333] rounded px-3 py-2 text-white" />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div>
+          <label class="block text-gray-300 font-semibold mb-1">Horário</label>
+          <input id="faHorario" value="${horario}"
+            class="w-full bg-[#111] border border-[#333] rounded px-3 py-2 text-white" />
+        </div>
+        <div>
+          <label class="block text-gray-300 font-semibold mb-1">Telefone</label>
+          <input id="faTelefone" value="${telefone}"
+            class="w-full bg-[#111] border border-[#333] rounded px-3 py-2 text-white" />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div>
+          <label class="block text-gray-300 font-semibold mb-1">Contratante</label>
+          <input id="faContratante" value="${contratante}"
+            class="w-full bg-[#111] border border-[#333] rounded px-3 py-2 text-white" />
+        </div>
+        <div>
+          <label class="block text-gray-300 font-semibold mb-1">Aniversariante</label>
+          <input id="faAniversariante" value="${aniversariante}"
+            class="w-full bg-[#111] border border-[#333] rounded px-3 py-2 text-white" />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div>
+          <label class="block text-gray-300 font-semibold mb-1">Idade</label>
+          <input id="faIdade" type="number" min="0" value="${idade}"
+            class="w-full bg-[#111] border border-[#333] rounded px-3 py-2 text-white" />
+        </div>
+
+        <div>
+          <label class="block text-gray-300 font-semibold mb-1">Data pagamento</label>
+          <input id="faDataPgto" type="date" value="${dataPgto}"
+            class="w-full bg-[#111] border border-[#333] rounded px-3 py-2 text-white" />
+        </div>
+
+        <div>
+          <label class="block text-gray-300 font-semibold mb-1">Valor</label>
+          <input id="faValor" type="number" step="0.01" value="${valor}"
+            class="w-full bg-[#111] border border-[#333] rounded px-3 py-2 text-white" />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div>
+          <label class="block text-gray-300 font-semibold mb-1">Vendedor</label>
+          <select id="faVendedor"
+            class="w-full bg-[#111] border border-[#333] rounded px-3 py-2 text-white">
+            <option value="">Carregando...</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-gray-300 font-semibold mb-1">Kit festa</label>
+          <select id="faKit"
+            class="w-full bg-[#111] border border-[#333] rounded px-3 py-2 text-white">
+            <option value="" ${kitVal === '' ? 'selected' : ''}>Não informado</option>
+            <option value="true" ${kitVal === 'true' ? 'selected' : ''}>Sim</option>
+            <option value="false" ${kitVal === 'false' ? 'selected' : ''}>Não</option>
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-gray-300 font-semibold mb-1">Observações</label>
+        <textarea id="faObs" rows="3"
+          class="w-full bg-[#111] border border-[#333] rounded px-3 py-2 text-white">${obs}</textarea>
+      </div>
+    </div>
+  `;
+}
+
+async function preencherSelectVendedores(selectId, selecionadoId) {
+  const sel = document.getElementById(selectId);
+  if (!sel) return;
+
+  sel.innerHTML = `<option value="">Selecione</option>`;
+
+  const res = await fetchAdmin(`${API_URL}/admin/festas-aniversario/vendedores`);
+  if (!res || !res.ok) {
+    sel.innerHTML = `<option value="">(erro ao carregar)</option>`;
+    return;
+  }
+
+  const vendedores = await res.json().catch(() => []);
+  vendedores.forEach(v => {
+    const opt = document.createElement('option');
+    opt.value = v.id_colaborador;
+    opt.textContent = v.nome_completo;
+    if (selecionadoId && Number(selecionadoId) === Number(v.id_colaborador)) opt.selected = true;
+    sel.appendChild(opt);
+  });
+}
+
+async function abrirModalEditarFestaAniversario(id) {
+  const f = cacheFestasAniversario.get(Number(id));
+  if (!f) {
+    Swal.fire({ icon: 'error', title: 'Erro', text: 'Não encontrei os dados dessa festa no cache.', background: '#222', color: '#fff' });
+    return;
+  }
+
+  const conteudo = montarFormFestaAniversario(f);
+
+  abrirModalUniversal(`Editar Evento #${id}`, conteudo, async () => {
+    await salvarEdicaoFestaAniversario(id);
+  });
+
+  // carrega vendedores e seleciona o atual
+  await preencherSelectVendedores('faVendedor', f.id_vendedor);
+}
+
+async function salvarEdicaoFestaAniversario(id) {
+  const payload = {
+    tipo: "ANIVERSARIO_GAMER",
+    status: document.getElementById('faStatus')?.value || 'PARA_ACONTECER',
+    data_festa: document.getElementById('faDataFesta')?.value || null,
+    horario: document.getElementById('faHorario')?.value || null,
+    contratante: document.getElementById('faContratante')?.value || null,
+    telefone: document.getElementById('faTelefone')?.value || null,
+    aniversariante: document.getElementById('faAniversariante')?.value || null,
+    idade: (() => {
+      const v = document.getElementById('faIdade')?.value;
+      return v === '' || v == null ? null : Number(v);
+    })(),
+    data_pagamento: document.getElementById('faDataPgto')?.value || null,
+    valor: (() => {
+      const v = document.getElementById('faValor')?.value;
+      return v === '' || v == null ? null : Number(v);
+    })(),
+    kit_festa: (() => {
+      const v = document.getElementById('faKit')?.value ?? '';
+      if (v === '') return null;
+      return v === 'true';
+    })(),
+    id_vendedor: (() => {
+      const v = document.getElementById('faVendedor')?.value ?? '';
+      return v === '' ? null : Number(v);
+    })(),
+    observacoes: document.getElementById('faObs')?.value || null
+  };
+
+  const btn = document.getElementById('modalConfirmBtn');
+  const original = btn?.innerText;
+  if (btn) { btn.disabled = true; btn.innerText = 'SALVANDO...'; }
+
+  try {
+    const res = await fetchAdmin(`${API_URL}/admin/festas-aniversario/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (!res) throw new Error('Sem resposta do servidor.');
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || 'Falha ao atualizar.');
+    }
+
+    Swal.fire({ icon: 'success', title: 'Atualizado!', timer: 1200, showConfirmButton: false, background: '#222', color: '#fff' });
+
+    fecharModalUniversal();
+    await carregarFestasAniversario();
+  } catch (e) {
+    Swal.fire({ icon: 'error', title: 'Erro', text: e.message || 'Erro ao atualizar.', background: '#222', color: '#fff' });
+  } finally {
+    if (btn) { btn.disabled = false; btn.innerText = original || 'SALVAR'; }
+  }
+}
+
 
 async function carregarFiltrosFestasAniversario() {
   await Promise.all([
@@ -3023,6 +3248,203 @@ async function salvarFestaAniversario(e) {
   } finally {
     btn.innerText = original;
     btn.disabled = false;
+  }
+}
+
+async function abrirModalNovaFestaAniversario() {
+  const conteudo = `
+    <form id="formNovaFesta" class="space-y-4 text-sm">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div>
+          <label class="text-xs text-gray-400">Status</label>
+          <select id="nfStatus" class="w-full bg-[#1a1a1a] border border-[#444] rounded p-2 text-white outline-none focus:border-[#00FFFF]">
+            <option value="PARA_ACONTECER">Para acontecer</option>
+            <option value="FECHADA">Fechada</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-xs text-gray-400">Data da festa</label>
+          <input type="date" id="nfDataFesta"
+            class="w-full bg-[#1a1a1a] border border-[#444] rounded p-2 text-white outline-none focus:border-[#00FFFF]" />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div>
+          <label class="text-xs text-gray-400">Horário</label>
+          <input type="text" id="nfHorario" placeholder="Ex: 17 AS 20"
+            class="w-full bg-[#1a1a1a] border border-[#444] rounded p-2 text-white outline-none focus:border-[#00FFFF]" />
+        </div>
+        <div>
+          <label class="text-xs text-gray-400">Telefone</label>
+          <input type="text" id="nfTelefone"
+            class="w-full bg-[#1a1a1a] border border-[#444] rounded p-2 text-white outline-none focus:border-[#00FFFF]" />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div>
+          <label class="text-xs text-gray-400">Contratante</label>
+          <input type="text" id="nfContratante"
+            class="w-full bg-[#1a1a1a] border border-[#444] rounded p-2 text-white uppercase outline-none focus:border-[#00FFFF]" />
+        </div>
+        <div>
+          <label class="text-xs text-gray-400">Aniversariante</label>
+          <input type="text" id="nfAniversariante"
+            class="w-full bg-[#1a1a1a] border border-[#444] rounded p-2 text-white uppercase outline-none focus:border-[#00FFFF]" />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div>
+          <label class="text-xs text-gray-400">Idade</label>
+          <input type="number" id="nfIdade" min="0"
+            class="w-full bg-[#1a1a1a] border border-[#444] rounded p-2 text-white outline-none focus:border-[#00FFFF]" />
+        </div>
+
+        <div>
+          <label class="text-xs text-gray-400">Data pagamento</label>
+          <input type="date" id="nfDataPagamento"
+            class="w-full bg-[#1a1a1a] border border-[#444] rounded p-2 text-white outline-none focus:border-[#00FFFF]" />
+        </div>
+
+        <div>
+          <label class="text-xs text-gray-400">Valor</label>
+          <input type="number" id="nfValor" step="0.01"
+            class="w-full bg-[#1a1a1a] border border-[#444] rounded p-2 text-white outline-none focus:border-[#00FFFF]" />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div>
+          <label class="text-xs text-gray-400">Kit festa</label>
+          <select id="nfKit" class="w-full bg-[#1a1a1a] border border-[#444] rounded p-2 text-white outline-none focus:border-[#00FFFF]">
+            <option value="">Não informado</option>
+            <option value="true">Sim</option>
+            <option value="false">Não</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="text-xs text-gray-400">Vendedor</label>
+          <select id="nfVendedor" class="w-full bg-[#1a1a1a] border border-[#444] rounded p-2 text-white outline-none focus:border-[#00FFFF]">
+            <option value="">Carregando vendedores...</option>
+          </select>
+          <p class="text-[11px] text-gray-500 mt-1">Selecione para gravar o id_vendedor (join).</p>
+        </div>
+      </div>
+
+      <div>
+        <label class="text-xs text-gray-400">Observações</label>
+        <textarea id="nfObs" rows="3"
+          class="w-full bg-[#1a1a1a] border border-[#444] rounded p-2 text-white outline-none focus:border-[#00FFFF]"></textarea>
+      </div>
+    </form>
+  `;
+
+  abrirModalUniversal("Novo Evento - Aniversário Gamer", conteudo, salvarNovaFestaAniversario);
+
+  // carrega vendedores no select
+  await carregarVendedoresNoSelect("nfVendedor");
+}
+
+async function carregarVendedoresNoSelect(selectId) {
+  const sel = document.getElementById(selectId);
+  if (!sel) return;
+
+  sel.innerHTML = `<option value="">Selecione</option>`;
+
+  try {
+    const res = await fetchAdmin(`${API_URL}/admin/festas-aniversario/vendedores`);
+    if (!res || !res.ok) {
+      sel.innerHTML = `<option value="">(erro ao carregar)</option>`;
+      return;
+    }
+
+    const vendedores = await res.json().catch(() => []);
+    if (!Array.isArray(vendedores) || vendedores.length === 0) {
+      sel.innerHTML = `<option value="">(nenhum vendedor)</option>`;
+      return;
+    }
+
+    vendedores.forEach(v => {
+      sel.innerHTML += `<option value="${v.id_colaborador}">${v.nome_completo}</option>`;
+    });
+  } catch (e) {
+    console.error(e);
+    sel.innerHTML = `<option value="">(erro)</option>`;
+  }
+}
+
+async function salvarNovaFestaAniversario() {
+  // pega campos do modal
+  const status = document.getElementById("nfStatus")?.value || "PARA_ACONTECER";
+  const data_festa = document.getElementById("nfDataFesta")?.value || null;
+  const horario = document.getElementById("nfHorario")?.value || null;
+  const telefone = document.getElementById("nfTelefone")?.value || null;
+  const contratante = document.getElementById("nfContratante")?.value || null;
+  const aniversariante = document.getElementById("nfAniversariante")?.value || null;
+  const idade = document.getElementById("nfIdade")?.value ? parseInt(document.getElementById("nfIdade").value) : null;
+  const data_pagamento = document.getElementById("nfDataPagamento")?.value || null;
+  const valor = document.getElementById("nfValor")?.value ? parseFloat(document.getElementById("nfValor").value) : null;
+
+  const kitRaw = document.getElementById("nfKit")?.value ?? "";
+  const kit_festa = kitRaw === "" ? null : (kitRaw === "true");
+
+  const id_vendedor = document.getElementById("nfVendedor")?.value ? parseInt(document.getElementById("nfVendedor").value) : null;
+
+  const observacoes = document.getElementById("nfObs")?.value || null;
+
+  // payload para sua tb_festas_aniversario
+  const payload = {
+    tipo: "ANIVERSARIO_GAMER",
+    status,
+    data_festa,
+    horario,
+    telefone,
+    contratante,
+    aniversariante,
+    idade,
+    data_pagamento,
+    kit_festa,
+    valor,
+    id_vendedor,
+    observacoes,
+    // se o backend já força unidade por ctx, pode remover.
+    id_unidade: 1
+  };
+
+  const btn = document.getElementById("modalConfirmBtn");
+  const original = btn?.innerText;
+  if (btn) { btn.disabled = true; btn.innerText = "SALVANDO..."; }
+
+  try {
+    const res = await fetchAdmin(`${API_URL}/admin/festas-aniversario`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    if (!res) {
+      Swal.fire({ icon: "error", title: "Erro", text: "Sem resposta do servidor.", background: "#222", color: "#fff" });
+      return;
+    }
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      Swal.fire({ icon: "error", title: "Erro", text: err.detail || "Falha ao salvar evento.", background: "#222", color: "#fff" });
+      return;
+    }
+
+    Swal.fire({ icon: "success", title: "Salvo!", text: "Novo evento cadastrado.", timer: 1400, showConfirmButton: false, background: "#222", color: "#fff" });
+
+    fecharModalUniversal();
+    carregarFestasAniversario();
+  } catch (e) {
+    console.error(e);
+    Swal.fire({ icon: "error", title: "Erro", text: "Erro de conexão.", background: "#222", color: "#fff" });
+  } finally {
+    if (btn) { btn.disabled = false; btn.innerText = original || "SALVAR"; }
   }
 }
 
