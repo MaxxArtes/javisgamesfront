@@ -504,6 +504,25 @@
                         + NOVO EVENTO
                         </button>
 
+                        <div class="flex gap-2 items-center">
+                            <input id="filtroDataIniFesta" type="date"
+                            class="bg-[#111] border border-[#333] rounded px-3 py-2 text-white"
+                            onchange="carregarFestasAniversario()" />
+
+                            <span class="text-gray-500 text-xs">até</span>
+
+                            <input id="filtroDataFimFesta" type="date"
+                            class="bg-[#111] border border-[#333] rounded px-3 py-2 text-white"
+                            onchange="carregarFestasAniversario()" />
+
+                            <button onclick="limparPeriodoFesta()"
+                                class="bg-[#333] text-white font-bold px-3 py-2 rounded hover:bg-[#444]">
+                                Limpar datas
+                            </button>
+
+                        </div>
+
+
                         <select id="filtroStatusFesta"
                         class="bg-[#111] border border-[#333] rounded px-3 py-2 text-white w-full sm:w-56"
                         onchange="carregarFestasAniversario()">
@@ -514,7 +533,7 @@
 
                         <input id="buscaFesta" type="text"
                         class="bg-[#111] border border-[#333] rounded px-3 py-2 text-white w-full sm:w-72"
-                        placeholder="Buscar por contratante, aniversariante ou vendedor."
+                        placeholder="Buscar"
                         oninput="debounceCarregarFestasAniversario()" />
                     </div>
                 </div>

@@ -2794,6 +2794,8 @@ async function carregarFestasAniversario() {
     if (vendedorId) params.set('id_vendedor', vendedorId);
     if (unidadeId) params.set('id_unidade', unidadeId);
 
+
+
     // sort
     params.set('sort_by', festasSort.by);
     params.set('sort_dir', festasSort.dir);
@@ -3520,5 +3522,10 @@ function onSortChange(selectEl) {
   });
 
   festasSort = { by: col, dir };
+  carregarFestasAniversario();
+}
+function limparPeriodoFesta() {
+  document.getElementById('filtroDataIniFesta').value = '';
+  document.getElementById('filtroDataFimFesta').value = '';
   carregarFestasAniversario();
 }
