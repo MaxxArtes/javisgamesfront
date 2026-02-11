@@ -71,10 +71,12 @@ function aplicarRegras(nivel) {
 
     // ✅ inclua menu-aniversario aqui
     const menus = [
-        'menu-inscricoes', 'menu-alunos', 'menu-agenda', 'menu-atendimento',
-        'menu-cadastro', 'menu-reposicao', 'menu-turmas', 'menu-equipe',
-        'menu-chamada', 'menu-aniversario'
+      'menu-inscricoes', 'menu-alunos', 'menu-agenda', 'menu-atendimento',
+      'menu-cadastro', 'menu-novo-usuario',
+      'menu-reposicao', 'menu-turmas', 'menu-equipe',
+      'menu-chamada', 'menu-aniversario'
     ];
+
 
     const menusAcad = ['menu-turmas', 'menu-frequencia', 'menu-chamada', 'menu-reposicao', 'menu-feriados', 'menu-atendimento'];
 
@@ -478,7 +480,7 @@ async function carregarSelectAlunos() {
     if (select.options.length > 1) return; 
     try {
     const res = await fetchAdmin(`${API_URL}/admin/listar-alunos`);
-    if (!res) { tbody.innerHTML = '<option>Erro ao carregar lista</option>'; return; }
+    if (!res) { select.innerHTML = '<option>Erro ao carregar lista</option>'; return; }
         const alunos = await res.json();
         select.innerHTML = '<option value="" disabled selected>Selecione o Aluno...</option>';
         alunos.sort((a, b) => a.nome_completo.localeCompare(b.nome_completo));
@@ -2307,7 +2309,8 @@ async function carregarAlunosParaNovoUsuario() {
     alunos.forEach(a => {
       const opt = document.createElement('option');
       opt.value = a.id_aluno;
-      opt.textContent = `${a.nome_completo}${a.turma_codigo ? ' - ' + a.turma_codigo : ''}`;
+      const turma = (a.tb_matriculas && a.tb_matriculas[0]) ? a.tb_matriculas[0].codigo_turma : '';
+      opt.textContent = `${a.nome_completo}${turma ? ' - ' + turma : ''}`;
       select.appendChild(opt);
     });
 
@@ -3528,4 +3531,122 @@ function limparPeriodoFesta() {
   document.getElementById('filtroDataIniFesta').value = '';
   document.getElementById('filtroDataFimFesta').value = '';
   carregarFestasAniversario();
+}
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.getElementById('formCadastroAluno');
+  if (form) form.addEventListener('submit', cadastrarAluno);
+});
+
+async function cadastrarAluno(e) {
+  e.preventDefault();
+
+  const form = e.target;
+  const btn = e.submitter || form.querySelector('button[type="submit"]');
+
+  // Lê os campos do HTML
+  const nome = document.getElementById('cadNome')?.value?.trim() || '';
+  const email = document.getElementById('cadEmail')?.value?.trim() || '';
+  const cpfRaw = document.getElementById('cadCpf')?.value?.trim() || '';
+  const dataNascimento = document.getElementById('cadNascimento')?.value || null;
+  const celularRaw = document.getElementById('cadCelular')?.value?.trim() || '';
+  const telefoneRaw = document.getElementById('cadTelefone')?.value?.trim() || '';
+  const senha = document.getElementById('cadSenha')?.value || '';
+  const turmaCodigo = document.getElementById('cadTurma')?.value || '';
+
+  // (Opcional) Normaliza CPF/telefones (remove máscara)
+  const cpf = cpfRaw.replace(/\D/g, '');
+  const celular = celularRaw.replace(/\D/g, '');
+  const telefone = telefoneRaw.replace(/\D/g, '');
+
+  // Validações básicas
+  if (!nome || !email || !senha || !turmaCodigo) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Campos obrigatórios',
+      text: 'Preencha Nome, Email, Senha e Turma.',
+      background: '#222',
+      color: '#fff'
+    });
+    return;
+  }
+
+  // CPF pode ser opcional, mas se veio preenchido, valida tamanho
+  if (cpf && cpf.length !== 11) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'CPF inválido',
+      text: 'O CPF precisa ter 11 dígitos.',
+      background: '#222',
+      color: '#fff'
+    });
+    return;
+  }
+
+  const payload = {
+    nome,
+    email,
+    cpf: cpfRaw,              // se você preferir salvar com máscara no banco, mantém cpfRaw
+    data_nascimento: dataNascimento,
+    celular: celularRaw,      // idem: mantém com máscara (ou troque por "celular" para salvar só dígitos)
+    telefone: telefoneRaw,    // idem: mantém com máscara (ou troque por "telefone")
+    senha,
+    turma_codigo: turmaCodigo
+  };
+
+  try {
+    if (btn) btn.disabled = true;
+
+    Swal.fire({
+      title: 'Cadastrando...',
+      allowOutsideClick: false,
+      background: '#222',
+      color: '#fff',
+      didOpen: () => Swal.showLoading()
+    });
+
+    const res = await fetchAdmin(`${API_URL}/admin/cadastrar-aluno`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (!res) return; // fetchAdmin já trata 401 e redireciona
+
+    if (res.ok) {
+      Swal.fire({
+        icon: 'success',
+        title: 'Aluno cadastrado!',
+        timer: 1400,
+        showConfirmButton: false,
+        background: '#222',
+        color: '#fff'
+      });
+
+      form.reset();
+
+      // Se você tiver essas funções, ajuda a atualizar a tela:
+      if (typeof carregarAlunos === 'function') carregarAlunos();
+      if (typeof carregarSelectAlunos === 'function') carregarSelectAlunos();
+    } else {
+      const err = await res.json().catch(() => ({}));
+      Swal.fire({
+        icon: 'error',
+        title: 'Erro ao cadastrar',
+        text: err.detail || 'Falha ao cadastrar aluno.',
+        background: '#222',
+        color: '#fff'
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    Swal.fire({
+      icon: 'error',
+      title: 'Erro',
+      text: 'Erro de conexão.',
+      background: '#222',
+      color: '#fff'
+    });
+  } finally {
+    if (btn) btn.disabled = false;
+  }
 }

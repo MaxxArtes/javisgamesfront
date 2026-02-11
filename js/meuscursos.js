@@ -44,7 +44,7 @@ async function apiGet(path, token) {
   const resp = await fetch(`${API_URL}${path}`, {
     headers: {
       'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
+      // 'Content-Type': 'application/json'
     }
   });
 
