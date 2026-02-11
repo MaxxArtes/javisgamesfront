@@ -674,7 +674,7 @@ async function carregarListaEquipe() {
                     </td>
                     <td class="p-3">${status}</td>
                     <td class="p-3 text-center">
-                        <button onclick="abrirModalColaborador('${jsonFunc}')" class="text-gray-400 hover:text-[#00FFFF] transition">
+                        <button onclick="abrirModalEditarEquipe('${jsonFunc}')" class="text-gray-400 hover:text-[#00FFFF] transition">
                             <i class="fas fa-edit"></i>
                         </button>
                     </td>
@@ -1036,59 +1036,43 @@ function fecharModalRepo() {
 }
 
 async function salvarEdicaoRepo(event) {
-    event.preventDefault(); 
-    
-    // Feedback visual no botão
-    const btn = event.target.querySelector('button[type="submit"]');
-    const textoOriginal = btn ? btn.innerText : "SALVAR";
-    if(btn) { btn.innerText = "SALVANDO..."; btn.disabled = true; }
+  event.preventDefault();
 
-    const id = document.getElementById('editRepoId').value;
-    
-    // Dados para enviar ao backend (ajuste conforme sua API espera receber)
-    const dadosParaEnvio = {
-        data_hora: document.getElementById('editRepoData').value,
-        conteudo: document.getElementById('editRepoConteudo').value
-        // Se houver select de status no futuro, adicione aqui
-    };
+  const btn = event.target.querySelector('button[type="submit"]');
+  const textoOriginal = btn ? btn.innerText : "SALVAR";
+  if (btn) { btn.innerText = "SALVANDO..."; btn.disabled = true; }
 
-    try {
-        // NOTA: Verifique se sua API usa '/reposicao-completa' ou outra rota para editar data.
-        // Se for apenas edição de dados, talvez seja um PUT em /editar-reposicao/{id}
-        const res = await fetchAdmin(`${API_URL}/admin/editar-reposicao/${id}`, { 
-            method: 'PUT', 
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(dadosParaEnvio) 
-        });
+  const id = document.getElementById('editRepoId').value;
 
-        if (!res) { 
-            throw new Error('Sem resposta do servidor'); 
-        }
+  const dadosParaEnvio = {
+    data_hora: document.getElementById('editRepoData').value,
+    conteudo_aula: document.getElementById('editRepoConteudo').value
+  };
 
-        if(res.ok) {
-            Swal.fire({ 
-                icon: 'success', 
-                title: 'Atualizado!', 
-                text: 'Reposição alterada com sucesso.', 
-                timer: 1500, 
-                showConfirmButton: false, 
-                background: '#222', color: '#fff' 
-            });
-            
-            // Fecha modal e atualiza calendário
-            document.getElementById('modalEditarRepo').classList.add('hidden');
-            document.getElementById('modalEditarRepo').classList.remove('flex');
-            renderCalendar(); 
-        } else {
-            const erro = await res.json();
-            Swal.fire({ icon: 'error', title: 'Erro', text: erro.detail || 'Falha ao salvar.', background: '#222', color: '#fff' });
-        }
-    } catch(e) {
-        console.error(e);
-        Swal.fire({ icon: 'error', title: 'Erro', text: 'Erro de conexão ou rota inválida.', background: '#222', color: '#fff' });
-    } finally {
-        if(btn) { btn.innerText = textoOriginal; btn.disabled = false; }
+  try {
+    const res = await fetchAdmin(`${API_URL}/admin/editar-reposicao/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(dadosParaEnvio)
+    });
+
+    if (!res) throw new Error('Sem resposta do servidor');
+
+    if (res.ok) {
+      Swal.fire({ icon: 'success', title: 'Atualizado!', timer: 1500, showConfirmButton: false, background: '#222', color: '#fff' });
+      document.getElementById('modalEditarRepo').classList.add('hidden');
+      document.getElementById('modalEditarRepo').classList.remove('flex');
+      renderCalendar();
+    } else {
+      const erro = await res.json().catch(() => ({}));
+      Swal.fire({ icon: 'error', title: 'Erro', text: erro.detail || 'Falha ao salvar.', background: '#222', color: '#fff' });
     }
+  } catch (e) {
+    console.error(e);
+    Swal.fire({ icon: 'error', title: 'Erro', text: 'Erro de conexão ou rota inválida.', background: '#222', color: '#fff' });
+  } finally {
+    if (btn) { btn.innerText = textoOriginal; btn.disabled = false; }
+  }
 }
 
 // --- LÓGICA DO CHAT COM 3 ABAS ---
@@ -1899,7 +1883,7 @@ async function salvarDadosColaborador(isEdit, id = null) {
     const senha = document.getElementById('eqSenha').value;
     if (senha) payload.senha = senha; // Só envia a senha se houver texto (importante para edição)
 
-    const url = isEdit ? `${API_URL}/editar-funcionario/${id}` : `${API_URL}/cadastrar-funcionario`;
+    const url = isEdit ? `${API_URL}/admin/editar-funcionario/${id}` : `${API_URL}/admin/cadastrar-funcionario`;
     const method = isEdit ? 'PUT' : 'POST';
 
     btn.innerText = "PROCESSANDO...";
