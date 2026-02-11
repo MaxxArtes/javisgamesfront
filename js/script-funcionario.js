@@ -167,10 +167,12 @@ async function showTab(tabId) {
     if(link) { link.classList.add('active'); if(tabId === 'perfil') link.classList.add('bg-white/5'); }
     
     if(tabId === 'reposicao') { 
-        carregarSelectRepTurma(); 
-        carregarSelectProfessores(); 
-        carregarSelectAlunos();
+      carregarSelectRepTurma(); 
+      carregarSelectProfessores(); 
+      carregarSelectAlunos();
+      renderCalendar(); // ✅ adiciona isso
     }
+
     if(tabId === 'dashboard') carregarDashboard();
     if(tabId === 'cadastro') carregarOpcoesTurmas();
     if(tabId === 'inscricoes') carregarInscricoes();
@@ -178,7 +180,6 @@ async function showTab(tabId) {
     if (tabId === 'novo-usuario') {
         carregarAlunosParaNovoUsuario();
     }
-    if(tabId === 'agenda') renderCalendar();
     if(tabId === 'atendimento') atualizarListaChat();
     if(tabId === 'turmas') carregarListaTurmas();
     if(tabId === 'chamada') carregarTurmasParaChamada();
