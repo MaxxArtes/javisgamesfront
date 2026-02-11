@@ -860,10 +860,10 @@ document.getElementById('formReposicao').addEventListener('submit', async (e) =>
         }
 
         if(res.ok) {
-            Swal.fire({ icon: 'success', title: 'Agendada!', text: 'Reposição agendada com sucesso.', timer: 1400, showConfirmButton: false, background: '#222', color: '#fff' });
-            e.target.reset();
-            // Atualiza o calendário se a função estiver disponível
-            if (typeof renderCalendar === 'function') renderCalendar();
+          Swal.fire({ icon: 'success', title: 'Agendada!', ... });
+          e.target.reset();
+          fecharModalAgendarReposicao();   // ✅ fecha modal
+          if (typeof renderCalendar === 'function') renderCalendar();
         } else {
             // Tenta ler a mensagem de erro detalhada da API
             const erroApi = await res.json().catch(() => ({ detail: 'Erro ao agendar.' }));
@@ -3665,4 +3665,23 @@ async function cadastrarAluno(e) {
   } finally {
     if (btn) btn.disabled = false;
   }
+}
+
+function abrirModalAgendarReposicao() {
+  const modal = document.getElementById('modalAgendarRepo');
+  if (!modal) return;
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+
+  // garante que os selects estejam carregados
+  carregarSelectRepTurma();
+  carregarSelectProfessores();
+  carregarSelectAlunos();
+}
+
+function fecharModalAgendarReposicao() {
+  const modal = document.getElementById('modalAgendarRepo');
+  if (!modal) return;
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
 }
