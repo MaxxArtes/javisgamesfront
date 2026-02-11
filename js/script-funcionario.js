@@ -1870,47 +1870,78 @@ async function executarEdicaoEquipe(id) {
 }
 
 async function salvarDadosColaborador(isEdit, id = null) {
-    const btn = document.getElementById('modalConfirmBtn');
-    const originalText = btn.innerText;
+  const btn = document.getElementById('modalConfirmBtn');
+  const originalText = btn.innerText;
 
-    const payload = {
-        nome: document.getElementById('eqNome').value,
-        email: document.getElementById('eqEmail').value,
-        telefone: document.getElementById('eqTelefone').value,
-        id_cargo: document.getElementById('eqCargo').value
-    };
+  const payload = {
+    nome: document.getElementById('eqNome').value,
+    email: document.getElementById('eqEmail').value,
+    telefone: document.getElementById('eqTelefone').value,
+    id_cargo: document.getElementById('eqCargo').value
+  };
 
-    const senha = document.getElementById('eqSenha').value;
-    if (senha) payload.senha = senha; // Só envia a senha se houver texto (importante para edição)
+  const senha = document.getElementById('eqSenha').value;
+  if (!isEdit && !senha) {
+    Swal.fire({ icon: 'warning', title: 'Senha obrigatória', text: 'Informe uma senha inicial.', background: '#222', color: '#fff' });
+    return;
+  }
+  if (senha) payload.senha = senha;
 
-    const url = isEdit ? `${API_URL}/admin/editar-funcionario/${id}` : `${API_URL}/admin/cadastrar-funcionario`;
-    const method = isEdit ? 'PUT' : 'POST';
+  // ✅ CORREÇÃO: endpoints com /admin
+  const url = isEdit
+    ? `${API_URL}/admin/editar-funcionario/${id}`
+    : `${API_URL}/admin/cadastrar-funcionario`;
 
-    btn.innerText = "PROCESSANDO...";
-    btn.disabled = true;
+  const method = isEdit ? 'PUT' : 'POST';
 
-    try {
-        const res = await fetchAdmin(url, {
-            method: method,
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
+  btn.innerText = "PROCESSANDO...";
+  btn.disabled = true;
 
-        if (res && res.ok) {
-            Swal.fire({ icon: 'success', title: 'Sucesso!', text: isEdit ? 'Dados atualizados.' : 'Colaborador cadastrado.', timer: 1400, showConfirmButton: false, background: '#222', color: '#fff' });
-            fecharModalUniversal();
-            carregarListaEquipe();
-        } else {
-            const err = await res.json();
-            Swal.fire({ icon: 'error', title: 'Erro', text: err.detail || 'Erro na operação.', background: '#222', color: '#fff' });
-        }
-    } catch (e) {
-        Swal.fire({ icon: 'error', title: 'Erro', text: 'Erro de conexão.', background: '#222', color: '#fff' });
-    } finally {
-        btn.innerText = originalText;
-        btn.disabled = false;
+  try {
+    const res = await fetchAdmin(url, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (!res) return; // fetchAdmin já trata 401
+
+    if (res.ok) {
+      Swal.fire({
+        icon: 'success',
+        title: 'Sucesso!',
+        text: isEdit ? 'Dados atualizados.' : 'Colaborador cadastrado.',
+        timer: 1400,
+        showConfirmButton: false,
+        background: '#222',
+        color: '#fff'
+      });
+      fecharModalUniversal();
+      carregarListaEquipe();
+      return;
     }
+
+    // fallback robusto (às vezes não vem JSON)
+    let msg = `Erro (${res.status})`;
+    try {
+      const err = await res.json();
+      msg = err.detail || msg;
+    } catch {
+      const t = await res.text().catch(() => "");
+      if (t) msg = t;
+    }
+
+    Swal.fire({ icon: 'error', title: 'Erro', text: msg, background: '#222', color: '#fff' });
+
+  } catch (e) {
+    console.error(e);
+    Swal.fire({ icon: 'error', title: 'Erro', text: 'Erro de conexão.', background: '#222', color: '#fff' });
+  } finally {
+    btn.innerText = originalText;
+    btn.disabled = false;
+  }
 }
+
 function carregarAulaProfessor(url) {
     const iframe = document.getElementById('frame-aula-prof');
     const placeholder = document.getElementById('placeholder-aula');
