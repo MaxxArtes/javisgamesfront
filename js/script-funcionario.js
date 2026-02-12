@@ -149,55 +149,48 @@ function aplicarRegras(nivel) {
 
 
 async function showTab(tabId) {
-    const targetTab = document.getElementById(tabId);
-    if (!targetTab) return; // Se a aba não existir, não faz nada e evita erro no console
+  const targetTab = document.getElementById(tabId);
+  if (!targetTab) return;
 
-    
-    document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-    targetTab.classList.remove('hidden');
-    
-    document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-    document.getElementById(tabId).classList.remove('hidden');
-    
-    document.querySelectorAll('.sidebar-item').forEach(el => {
-        el.classList.remove('active', 'border-r-4', 'border-[#00FFFF]', 'bg-white/5', 'text-[#00FFFF]');
-        if(el.id === 'menu-perfil') el.classList.remove('bg-white/5');
-    });
-    const link = document.getElementById('menu-' + tabId);
-    if(link) { link.classList.add('active'); if(tabId === 'perfil') link.classList.add('bg-white/5'); }
-    
-    if(tabId === 'reposicao') { 
-      carregarSelectRepTurma(); 
-      carregarSelectProfessores(); 
-      carregarSelectAlunos();
-      renderCalendar(); // ✅ adiciona isso
-    }
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+  targetTab.classList.remove('hidden');
 
-    if(tabId === 'dashboard') carregarDashboard();
-    if(tabId === 'cadastro') carregarOpcoesTurmas();
-    if(tabId === 'inscricoes') carregarInscricoes();
-    if(tabId === 'alunos') carregarAlunos();
-    if (tabId === 'novo-usuario') {
-        carregarAlunosParaNovoUsuario();
-    }
-    if(tabId === 'atendimento') atualizarListaChat();
-    if(tabId === 'turmas') carregarListaTurmas();
-    if(tabId === 'chamada') carregarTurmasParaChamada();
-    if(tabId === 'equipe') {
-        carregarCargosSelect();
-        carregarListaEquipe();
-    }
-    
-    if(tabId === 'chamada') carregarTurmasParaChamada(); // Função que você já tem
-    if(tabId === 'frequencia') carregarRelatorioFrequencia(); 
-    if(tabId === 'feriados') carregarListaFeriados();
-    if (tabId === 'aniversario') {
-        await carregarFiltrosFestasAniversario();
-        carregarFestasAniversario();
-    }
+  document.querySelectorAll('.sidebar-item').forEach(el => {
+    el.classList.remove('active', 'border-r-4', 'border-[#00FFFF]', 'bg-white/5', 'text-[#00FFFF]');
+    if (el.id === 'menu-perfil') el.classList.remove('bg-white/5');
+  });
 
-    
-    setTimeout(aplicarMascaras, 100);
+  const link = document.getElementById('menu-' + tabId);
+  if (link) {
+    link.classList.add('active');
+    if (tabId === 'perfil') link.classList.add('bg-white/5');
+  }
+
+  if (tabId === 'reposicao') {
+    carregarSelectRepTurma();
+    carregarSelectProfessores();
+    carregarSelectAlunos();
+    renderCalendar(); // ✅ agora o calendário é aqui
+  }
+
+  if (tabId === 'dashboard') carregarDashboard();
+  if (tabId === 'cadastro') carregarOpcoesTurmas();
+  if (tabId === 'inscricoes') carregarInscricoes();
+  if (tabId === 'alunos') carregarAlunos();
+  if (tabId === 'novo-usuario') carregarAlunosParaNovoUsuario();
+  if (tabId === 'atendimento') atualizarListaChat();
+  if (tabId === 'turmas') carregarListaTurmas();
+  if (tabId === 'chamada') carregarTurmasParaChamada();
+  if (tabId === 'equipe') { carregarCargosSelect(); carregarListaEquipe(); }
+  if (tabId === 'frequencia') carregarRelatorioFrequencia();
+  if (tabId === 'feriados') carregarListaFeriados();
+
+  if (tabId === 'aniversario') {
+    await carregarFiltrosFestasAniversario();
+    carregarFestasAniversario();
+  }
+
+  setTimeout(aplicarMascaras, 100);
 }
 
 // --- DASHBOARD ---
@@ -817,88 +810,104 @@ async function salvarFuncionario(e) {
 }
 
 // --- CHAT & REPO ---
-document.getElementById('formReposicao').addEventListener('submit', async (e) => {
+const formReposicaoEl = document.getElementById('formReposicao');
+
+if (formReposicaoEl) {
+  formReposicaoEl.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const btn = e.target.querySelector('button');
-    const textoOriginal = btn.innerText; // Salva o texto original
-    btn.innerText = "AGENDANDO..."; 
-    btn.disabled = true;
 
-    // Captura os valores
-    const idAlunoVal = document.getElementById('repIdAluno').value;
-    const idProfVal = document.getElementById('repProfessor').value;
-    const dataHoraVal = document.getElementById('repData').value;
-    const turmaVal = document.getElementById('repTurma').value;
-    const conteudoVal = document.getElementById('repConteudo').value;
+    const btn = e.target.querySelector('button[type="submit"]') || document.getElementById('btnAgendarReposicao');
+    const textoOriginal = btn ? btn.innerText : null;
+    if (btn) { btn.innerText = "AGENDANDO..."; btn.disabled = true; }
 
-    // VALIDAÇÃO PRÉVIA: Verifica se os IDs são válidos e se campos obrigatórios estão cheios
+    const idAlunoVal = document.getElementById('repIdAluno')?.value;
+    const idProfVal = document.getElementById('repProfessor')?.value;
+    const dataHoraVal = document.getElementById('repData')?.value;
+    const turmaVal = document.getElementById('repTurma')?.value;
+    const conteudoVal = document.getElementById('repConteudo')?.value;
+
     if (!idAlunoVal || !idProfVal || !dataHoraVal || !turmaVal) {
-        Swal.fire({ icon: 'warning', title: 'Atenção', text: 'Preencha todos os campos obrigatórios (Aluno, Professor, Data e Turma).', background: '#222', color: '#fff' });
-        btn.innerText = textoOriginal;
-        btn.disabled = false;
-        return;
+      Swal.fire({
+        icon: 'warning',
+        title: 'Atenção',
+        text: 'Preencha Aluno, Professor, Data e Turma.',
+        background: '#222',
+        color: '#fff'
+      });
+      if (btn) { btn.innerText = textoOriginal; btn.disabled = false; }
+      return;
     }
 
     const dados = {
-        id_aluno: parseInt(idAlunoVal), // Converte para Inteiro
-        data_hora: dataHoraVal,
-        turma_codigo: turmaVal,
-        id_professor: parseInt(idProfVal), // Converte para Inteiro
-        conteudo_aula: conteudoVal,
+      id_aluno: parseInt(idAlunoVal),
+      data_hora: dataHoraVal,
+      turma_codigo: turmaVal,
+      id_professor: parseInt(idProfVal),
+      conteudo_aula: conteudoVal
     };
 
     try {
-        const res = await fetchAdmin(`${API_URL}/admin/agendar-reposicao`, {
-            method: 'POST', 
-            headers: { 'Content-Type': 'application/json' }, 
-            body: JSON.stringify(dados)
-        });
+      const res = await fetchAdmin(`${API_URL}/admin/agendar-reposicao`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dados)
+      });
 
-        if (!res) { 
-            Swal.fire({ icon: 'error', title: 'Erro', text: 'Sem resposta do servidor.', background: '#222', color: '#fff' }); 
-            return; 
-        }
+      if (!res) {
+        Swal.fire({ icon: 'error', title: 'Erro', text: 'Sem resposta do servidor.', background: '#222', color: '#fff' });
+        return;
+      }
 
-        if(res.ok) {
-          Swal.fire({ icon: 'success', title: 'Agendada!', ... });
-          e.target.reset();
-          fecharModalAgendarReposicao();   // ✅ fecha modal
-          if (typeof renderCalendar === 'function') renderCalendar();
-        } else {
-            // Tenta ler a mensagem de erro detalhada da API
-            const erroApi = await res.json().catch(() => ({ detail: 'Erro ao agendar.' }));
-            Swal.fire({ 
-                icon: 'error', 
-                title: 'Erro', 
-                text: erroApi.detail || 'Erro ao agendar reposição.', 
-                background: '#222', 
-                color: '#fff' 
-            });
-        }
-    } catch(err) {
-        console.error(err);
-        Swal.fire({ icon: 'error', title: 'Erro', text: 'Erro de conexão', background: '#222', color: '#fff' });
-    } finally { 
-        btn.innerText = textoOriginal; // Restaura o texto original
-        btn.disabled = false; 
+      if (res.ok) {
+        Swal.fire({ icon: 'success', title: 'Agendada!', text: 'Reposição agendada com sucesso.', timer: 1200, showConfirmButton: false, background: '#222', color: '#fff' });
+
+        e.target.reset();
+        fecharModalAgendarReposicao();
+        renderCalendar();
+      } else {
+        const erroApi = await res.json().catch(() => ({ detail: 'Erro ao agendar.' }));
+        Swal.fire({ icon: 'error', title: 'Erro', text: erroApi.detail || 'Erro ao agendar reposição.', background: '#222', color: '#fff' });
+      }
+    } catch (err) {
+      console.error(err);
+      Swal.fire({ icon: 'error', title: 'Erro', text: 'Erro de conexão', background: '#222', color: '#fff' });
+    } finally {
+      if (btn) { btn.innerText = textoOriginal; btn.disabled = false; }
     }
-});
+  });
+}
 
+let calendarInstance = null;
 function renderCalendar() {
-    var calendarEl = document.getElementById('calendar');
-    if(calendarEl.innerHTML !== "") calendarEl.innerHTML = "";
-    var calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'dayGridMonth', locale: 'pt-br', height: 500,
-        events: async function(info, successCallback, failureCallback) {
-            try { 
-                const res = await fetchAdmin(`${API_URL}/admin/agenda-geral`);
-                if (!res) { failureCallback(new Error('Sem resposta do servidor')); return; }
-                const eventos = await res.json(); 
-                successCallback(eventos); atualizarListaAgenda(eventos);
-            } catch (e) { failureCallback(e); } 
-        }
-    });
-    calendar.render();
+  const calendarEl = document.getElementById('calendar');
+  if (!calendarEl) return;
+
+  if (calendarInstance) {
+    calendarInstance.destroy();
+    calendarInstance = null;
+  }
+
+  calendarEl.innerHTML = "";
+
+  calendarInstance = new FullCalendar.Calendar(calendarEl, {
+    initialView: 'dayGridMonth',
+    locale: 'pt-br',
+    height: 500,
+    events: async function(info, successCallback, failureCallback) {
+      try {
+        const res = await fetchAdmin(`${API_URL}/admin/agenda-geral`);
+        if (!res) { failureCallback(new Error('Sem resposta do servidor')); return; }
+
+        const eventos = await res.json();
+        successCallback(eventos);
+        atualizarListaAgenda(eventos);
+      } catch (e) {
+        failureCallback(e);
+      }
+    }
+  });
+
+  calendarInstance.render();
 }
 
 function atualizarListaAgenda(eventos) {
@@ -3670,18 +3679,22 @@ async function cadastrarAluno(e) {
 function abrirModalAgendarReposicao() {
   const modal = document.getElementById('modalAgendarRepo');
   if (!modal) return;
+
   modal.classList.remove('hidden');
   modal.classList.add('flex');
 
-  // garante que os selects estejam carregados
+  // garante selects carregados
   carregarSelectRepTurma();
   carregarSelectProfessores();
   carregarSelectAlunos();
+
+  setTimeout(aplicarMascaras, 50);
 }
 
 function fecharModalAgendarReposicao() {
   const modal = document.getElementById('modalAgendarRepo');
   if (!modal) return;
+
   modal.classList.add('hidden');
   modal.classList.remove('flex');
 }
