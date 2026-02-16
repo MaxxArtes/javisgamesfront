@@ -202,6 +202,88 @@
             </div>
         </div>
     </div>
+    <!-- Botão flutuante "Meu Perfil" -->
+<button id="openProfileBtn"
+  class="fixed bottom-6 right-6 z-40 bg-[#00FFFF] text-black font-bold px-4 py-3 rounded-full shadow-[0_0_25px_rgba(0,255,255,0.25)] hover:scale-[1.02] transition flex items-center gap-2">
+  <i class="fas fa-user"></i>
+  Meu Perfil
+</button>
+
+    <!-- Modal de Perfil -->
+    <div id="profileModal" class="fixed inset-0 z-50 hidden bg-black/90 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-[#161616] w-full max-w-2xl rounded-xl border border-[#00FFFF] shadow-[0_0_30px_rgba(0,255,255,0.2)] overflow-hidden">
+
+            <div class="flex justify-between items-center p-4 border-b border-[#333] bg-[#1a1a1a]">
+            <div class="flex items-center gap-3">
+                <i class="fas fa-id-card text-[#00FFFF]"></i>
+                <h3 class="text-gray-200 font-bold">Editar Perfil</h3>
+            </div>
+            <button id="closeProfileBtn" class="text-gray-400 hover:text-red-500 transition">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+            </div>
+
+            <form id="profileForm" class="p-5 space-y-5">
+            <div id="profileAlert" class="hidden p-3 rounded-lg text-sm border"></div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                <label class="text-xs text-gray-400">Nome completo</label>
+                <input id="pf_nome" type="text"
+                    class="w-full mt-1 bg-[#111] border border-[#333] rounded-lg px-3 py-2 text-gray-200 focus:outline-none focus:border-[#00FFFF]" />
+                </div>
+
+                <div>
+                <label class="text-xs text-gray-400">Telefone</label>
+                <input id="pf_telefone" type="text"
+                    class="w-full mt-1 bg-[#111] border border-[#333] rounded-lg px-3 py-2 text-gray-200 focus:outline-none focus:border-[#00FFFF]" />
+                </div>
+
+                <div class="md:col-span-2">
+                <label class="text-xs text-gray-400">E-mail</label>
+                <input id="pf_email" type="email"
+                    class="w-full mt-1 bg-[#111] border border-[#333] rounded-lg px-3 py-2 text-gray-200 focus:outline-none focus:border-[#00FFFF]" />
+                <p class="text-[11px] text-gray-500 mt-1">Se o Supabase estiver com confirmação por e-mail, pode exigir verificação.</p>
+                </div>
+            </div>
+
+            <div class="border-t border-[#333] pt-4">
+                <div class="flex items-center gap-2 mb-3">
+                <i class="fas fa-key text-[#00FFFF]"></i>
+                <h4 class="text-gray-200 font-bold">Trocar senha</h4>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="text-xs text-gray-400">Senha atual</label>
+                    <input id="pf_senha_atual" type="password"
+                    class="w-full mt-1 bg-[#111] border border-[#333] rounded-lg px-3 py-2 text-gray-200 focus:outline-none focus:border-[#00FFFF]" />
+                </div>
+
+                <div>
+                    <label class="text-xs text-gray-400">Nova senha</label>
+                    <input id="pf_senha_nova" type="password"
+                    class="w-full mt-1 bg-[#111] border border-[#333] rounded-lg px-3 py-2 text-gray-200 focus:outline-none focus:border-[#00FFFF]" />
+                </div>
+                </div>
+
+                <p class="text-[11px] text-gray-500 mt-2">Deixe em branco se não quiser trocar a senha.</p>
+            </div>
+
+            <div class="flex items-center justify-end gap-3 pt-2">
+                <button type="button" id="cancelProfileBtn"
+                class="px-4 py-2 rounded-lg border border-[#333] text-gray-300 hover:bg-[#222] transition">
+                Cancelar
+                </button>
+                <button type="submit" id="saveProfileBtn"
+                class="px-5 py-2 rounded-lg bg-[#00FFFF] text-black font-bold hover:scale-[1.01] transition">
+                Salvar
+                </button>
+            </div>
+            </form>
+        </div>
+    </div>
+
     <script src="js/navbar.js"></script>
     <script src="js/meuscursos.js"></script>
 </body>

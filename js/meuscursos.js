@@ -62,6 +62,130 @@ async function apiGet(path, token) {
   return resp.json();
 }
 
+async function apiSend(path, method, token, bodyObj) {
+  const resp = await fetch(`${API_URL}${path}`, {
+    method,
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: bodyObj ? JSON.stringify(bodyObj) : undefined
+  });
+
+  if (resp.status === 401) {
+    localStorage.removeItem('access_token');
+    alert("Sua sessão expirou. Por favor, faça login novamente.");
+    window.location.href = "IndexHome.html";
+    return null;
+  }
+
+  if (!resp.ok) {
+    const txt = await resp.text().catch(() => '');
+    throw new Error(`API ${resp.status}: ${txt || resp.statusText}`);
+  }
+
+  // se vier vazio, evita erro
+  const text = await resp.text().catch(() => '');
+  return text ? JSON.parse(text) : {};
+}
+
+function showProfileAlert(type, msg) {
+  const el = document.getElementById('profileAlert');
+  if (!el) return;
+
+  el.classList.remove('hidden');
+  el.classList.toggle('border-red-500', type === 'error');
+  el.classList.toggle('text-red-300', type === 'error');
+  el.classList.toggle('bg-red-500/10', type === 'error');
+
+  el.classList.toggle('border-green-500', type === 'success');
+  el.classList.toggle('text-green-300', type === 'success');
+  el.classList.toggle('bg-green-500/10', type === 'success');
+
+  el.textContent = msg;
+}
+
+function hideProfileAlert() {
+  const el = document.getElementById('profileAlert');
+  if (el) el.classList.add('hidden');
+}
+
+function openProfileModal() {
+  const modal = document.getElementById('profileModal');
+  if (!modal) return;
+  hideProfileAlert();
+  modal.classList.remove('hidden');
+}
+
+function closeProfileModal() {
+  const modal = document.getElementById('profileModal');
+  if (!modal) return;
+  modal.classList.add('hidden');
+}
+
+// Carrega dados do perfil
+async function loadProfile() {
+  const token = getTokenOrRedirect();
+  if (!token) return;
+
+  const nomeEl = document.getElementById('pf_nome');
+  const telEl = document.getElementById('pf_telefone');
+  const emailEl = document.getElementById('pf_email');
+
+  // loading simples
+  if (nomeEl) nomeEl.value = '';
+  if (telEl) telEl.value = '';
+  if (emailEl) emailEl.value = '';
+
+  const data = await apiGet('/aluno/perfil', token);
+  if (!data) return;
+
+  if (nomeEl) nomeEl.value = data.nome_completo || '';
+  if (telEl) telEl.value = data.telefone || '';
+  if (emailEl) emailEl.value = data.email || '';
+}
+
+// Salva dados do perfil (e opcionalmente senha)
+async function saveProfile(e) {
+  e.preventDefault();
+  hideProfileAlert();
+
+  const token = getTokenOrRedirect();
+  if (!token) return;
+
+  const payloadPerfil = {
+    nome_completo: document.getElementById('pf_nome')?.value?.trim() || null,
+    telefone: document.getElementById('pf_telefone')?.value?.trim() || null,
+    email: document.getElementById('pf_email')?.value?.trim() || null,
+  };
+
+  const senhaAtual = document.getElementById('pf_senha_atual')?.value || '';
+  const senhaNova = document.getElementById('pf_senha_nova')?.value || '';
+
+  try {
+    // 1) Atualiza perfil + email
+    await apiSend('/aluno/perfil', 'PUT', token, payloadPerfil);
+
+    // 2) Troca senha (se preenchida)
+    if (senhaNova.trim()) {
+      await apiSend('/aluno/senha', 'PUT', token, {
+        senha_atual: senhaAtual,
+        senha_nova: senhaNova
+      });
+    }
+
+    showProfileAlert('success', 'Perfil atualizado com sucesso!');
+    // limpa campos de senha
+    if (document.getElementById('pf_senha_atual')) document.getElementById('pf_senha_atual').value = '';
+    if (document.getElementById('pf_senha_nova')) document.getElementById('pf_senha_nova').value = '';
+
+  } catch (err) {
+    console.error(err);
+    showProfileAlert('error', err.message || 'Erro ao salvar.');
+  }
+}
+
+
 function escapeHtml(str) {
   return (str || '').replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#039;');
 }
@@ -82,6 +206,34 @@ document.addEventListener('DOMContentLoaded', async function () {
   const courseItems = document.querySelectorAll('.course-item');
   const loadingOverlay = document.getElementById('loadingOverlay');
   const token = getTokenOrRedirect();
+  const openBtn = document.getElementById('openProfileBtn');
+  const closeBtn = document.getElementById('closeProfileBtn');
+  const cancelBtn = document.getElementById('cancelProfileBtn');
+  const profileModal = document.getElementById('profileModal');
+  const profileForm = document.getElementById('profileForm');
+  if (openBtn) {
+    openBtn.addEventListener('click', async () => {
+      openProfileModal();
+      await loadProfile();
+    });
+  }
+  if (closeBtn) closeBtn.addEventListener('click', closeProfileModal);
+  if (cancelBtn) cancelBtn.addEventListener('click', closeProfileModal);
+
+  if (profileForm) profileForm.addEventListener('submit', saveProfile);
+
+  // fecha ao clicar fora do card
+  if (profileModal) {
+    profileModal.addEventListener('click', (ev) => {
+      if (ev.target === profileModal) closeProfileModal();
+    });
+  }
+
+  // fecha no ESC
+  document.addEventListener('keydown', (ev) => {
+    if (ev.key === 'Escape') closeProfileModal();
+  });
+  
   if (!token) return;
 
   try {
